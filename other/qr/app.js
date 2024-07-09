@@ -1,6 +1,6 @@
 function func(){
     var x = document.getElementById("input").value;
-    var url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${x}`;
+    var url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${x}`;
 
     var img = document.getElementById("img");
 
