@@ -1,0 +1,61 @@
+
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐẠI SỐ</title>
+    <style>
+        body {
+            margin-left: 10%;
+            margin-right: 5%;
+        }
+
+        @media screen and (max-width: 600px) {
+            nav a {
+                float: none;
+                width: 100%;
+            }
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tiêu đề h1 -->
+    <h1>MÔN HỌC: GIẢI TÍCH 2</h1>
+<p>Dành cho sinh viên hệ từ xa học kỳ 241</p>
+    <!-- Các tiêu đề con h2 -->
+    <h2>Tài liệu học tập</h2>
+    <p> Bài giảng: GIẢi TÍCH 2, TS. Vũ Gia Tề .Link <a href="https://drive.google.com/drive/folders/1DKsGzs3BRXmCsQlw9tnse2bKwvKHNtsu?usp=sharing" target="blank">Thư mục Tài liệu</a></p>
+
+    <h2>Nội dung chính</h2>
+Chương I: Phép tính vi phân hàm nhiều biến. lý thuyết trường <br>
+Chương II: Tích phân bội<br>
+Chương III: Tích phân mặt/tích phân đường<br>
+Chương IV: Phương trình vi phân<br>
+
+      <h2>Bài tập</h2>
+    <p>Bài tập nộp chỉ gồm 1 file duy nhất</p>
+    <p>Bài tập 1: , thời gian đến . Link <a>nộp bài</a> </p>. 
+    <p>Bài tập 2: , thời gian đến . Link <a>nộp bài</a> </p>.
+
+    <h2>Điểm số đánh giá</h2>
+    <p>Điểm quá trình 30%: Bài tập 10%, Kiểm tra 10%, Điểm danh 10%.</p>
+
+<p>Xem điểm số tại <a href="" target="blank">link này </a></p>
+
+    <!-- Footer -->
+    <footer>
+        <p>Liên hệ Email <a href="mailto:hoangnam.sp101@gmail.com" target="_blank">hoangnam.sp101@gmail.com</a>.</p>
+    </footer>
+</body>
+</html>
