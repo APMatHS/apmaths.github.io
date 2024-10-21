@@ -11,6 +11,19 @@ permalink: /
     </section>
 </section>
 
+<div class="page">
+<h1>{{ page.title }}</h1>
+
+<!-- This loops through the paginated posts -->
+{% for post in paginator.posts %}
+  <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+  <p class="author">
+    <span class="date">{{ post.date | date_to_string  }}</span>
+  </p>
+{% endfor %}
+<!-- Pagination links -->
+</div>
+
 <h2>Giải tích</h2>
 <p>Giải tích toán học hay gọi ngắn là giải tích (Tiếng Anh: Analysis) là phân nhánh của toán học làm việc với hàm liên tục, giới hạn và các lý thuyết liên quan như đạo hàm, tích phân, đo lường, chuỗi vô hạn và các hàm giải tích.
 Những lý thuyết này thường được nghiên cứu trong trường số thực và số phức. Giải tích phát triển từ vi tích phân, từ đó phát triển các khái niệm và kỹ thuật giải tích cơ bản. Giải tích và hình học là hai nhánh riêng biệt; tuy nhiên, giải tích có thể được áp dụng cho bất kỳ không gian nào của các đối tượng toán học có định nghĩa lân cận (không gian tôpô) hoặc khoảng cách cụ thể giữa các đối tượng (không gian metric).
