@@ -9,11 +9,12 @@
     * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
       background-color: #f4f4f4;
-      color: black; /* Chữ màu đen */
+      color: black;
       font-family: Arial, sans-serif;
     }
 
@@ -23,32 +24,32 @@
       display: flex;
       align-items: center;
       flex-direction: column;
-      justify-content: center;
     }
 
     h1 {
       color: black;
-      margin: 15px;
+      margin-top: 80px; /* Cách lề trên cố định */
+      margin-bottom: 20px;
     }
 
     input {
       width: 300px;
       height: 40px;
-      background: none;
-      border: none;
-      border-bottom: 2px solid black;
-      margin: 15px;
+      background: white;
+      border: 1px solid black; /* Khung nhập chữ */
+      margin-bottom: 20px;
       outline: none;
       font-size: 1.2rem;
       color: black;
       padding: 0 10px;
+      border-radius: 6px;
     }
 
     button {
       width: 150px;
       height: 40px;
       font-size: 1.1rem;
-      margin: 5px;
+      margin: 10px;
       cursor: pointer;
       outline: none;
       background: gray; /* Nút màu xám */
@@ -58,7 +59,11 @@
     }
 
     #img {
-      margin-top: 20px;
+      margin-top: 30px;
+    }
+
+    .buttons {
+      margin-top: 10px; /* Khoảng cách cố định giữa input và các nút */
     }
   </style>
 </head>
@@ -66,7 +71,7 @@
   <div class="main">
     <h1>TEXT TO QR CODE</h1>
     <input type="text" id="input" autocomplete="off"/>
-    <div>
+    <div class="buttons">
       <button onclick="generateQR()">Generate QR</button>
       <button onclick="clearInput()">Clear</button>
     </div>
@@ -78,16 +83,4 @@
       const input = document.getElementById("input").value;
       const img = document.getElementById("img");
 
-      if (input.trim() !== "") {
-        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(input)}`;
-      } else {
-        img.src = "";
-      }
-    }
-
-    function clearInput() {
-      document.getElementById("input").value = "";
-    }
-  </script>
-</body>
-</html>
+      if (input.trim()
