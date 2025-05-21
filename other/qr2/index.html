@@ -1,57 +1,99 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>TEXT TO QR CODE</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Code Generator</title>
+
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
     body {
+      background-color: #f4f4f4;
+      color: black; /* Đổi chữ thành màu đen */
       font-family: Arial, sans-serif;
-      padding: 20px;
-      text-align: center;
     }
-    input[type="text"] {
+
+    .main {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      color: black;
+      margin: 15px;
+    }
+
+    input {
       width: 300px;
-      padding: 10px;
-      font-size: 16px;
+      height: 40px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid black;
+      margin: 15px;
+      outline: none;
+      font-size: 1.2rem;
+      color: black;
+      padding: 0 10px;
     }
+
     button {
-      padding: 10px 15px;
-      margin: 10px;
-      font-size: 16px;
+      width: 150px;
+      height: 40px;
+      font-size: 1.1rem;
+      margin: 5px;
       cursor: pointer;
+      outline: none;
+      background: #b721ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
     }
-    #qrcode {
+
+    #img {
       margin-top: 20px;
     }
   </style>
 </head>
+<body>
+  <div class="main">
+    <h1>TEXT TO QR CODE</h1>
+    <input type="text" id="input" autocomplete="off"/>
+    <div>
+      <button onclick="generateQR()">Generate QR</button>
+      <button onclick="resetAll()">Đặt mặc định</button>
+      <button onclick="clearInput()">Clear</button>
+    </div>
+    <img src="" alt="" id="img">
+  </div>
 
-   <body>
-    <div class="body">
-      <h1>TEXT TO QR CODE</h1>
-        <input type="text" id="text" placeholder="Text content...">
-  <br>
-  <button onclick="func()">Generate QR</button>
-  <button onclick="clearQR()">Clear</button>
-  <div id="qrcode"></div>
+  <script>
+    function generateQR() {
+      const input = document.getElementById("input").value;
+      const img = document.getElementById("img");
 
-     
-    <script>
-      function func(){
-    var x = document.getElementById("input").value;
-    var url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${x}`;
-
-    var img = document.getElementById("img");
-
-    img.src = url;
-    console.log(url);
-  }
-
-      function clearQR() {
-      document.getElementById("text").value = "";
-      document.getElementById("qrcode").innerHTML = "";
+      if (input.trim() !== "") {
+        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(input)}`;
+      } else {
+        img.src = "";
+      }
     }
-    </script>
-  </body>
 
+    function resetAll() {
+      document.getElementById("input").value = "";
+      document.getElementById("img").src = "";
+    }
+
+    function clearInput() {
+      document.getElementById("input").value = "";
+    }
+  </script>
+</body>
 </html>
