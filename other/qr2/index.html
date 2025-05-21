@@ -13,7 +13,7 @@
 
     body {
       background-color: #f4f4f4;
-      color: black; /* Đổi chữ thành màu đen */
+      color: black; /* Chữ màu đen */
       font-family: Arial, sans-serif;
     }
 
@@ -51,7 +51,7 @@
       margin: 5px;
       cursor: pointer;
       outline: none;
-      background: #b721ff;
+      background: gray; /* Nút màu xám */
       color: white;
       border: none;
       border-radius: 5px;
@@ -68,7 +68,6 @@
     <input type="text" id="input" autocomplete="off"/>
     <div>
       <button onclick="generateQR()">Generate QR</button>
-      <button onclick="resetAll()">Đặt mặc định</button>
       <button onclick="clearInput()">Clear</button>
     </div>
     <img src="" alt="" id="img">
@@ -84,11 +83,6 @@
       } else {
         img.src = "";
       }
-    }
-
-    function resetAll() {
-      document.getElementById("input").value = "";
-      document.getElementById("img").src = "";
     }
 
     function clearInput() {
