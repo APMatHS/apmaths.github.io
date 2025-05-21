@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Code Generator</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #f4f4f4;
+      color: black; /* Đổi chữ thành màu đen */
+      font-family: Arial, sans-serif;
+    }
+
+    .main {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      color: black;
+      margin: 15px;
+    }
+
+    input {
+      width: 300px;
+      height: 40px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid black;
+      margin: 15px;
+      outline: none;
+      font-size: 1.2rem;
+      color: black;
+      padding: 0 10px;
+    }
+
+    button {
+      width: 150px;
+      height: 40px;
+      font-size: 1.1rem;
+      margin: 5px;
+      cursor: pointer;
+      outline: none;
+      background: #b721ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #img {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <h1>TEXT TO QR CODE</h1>
+    <input type="text" id="input" autocomplete="off"/>
+    <div>
+      <button onclick="generateQR()">Generate QR</button>
+      <button onclick="resetAll()">Đặt mặc định</button>
+      <button onclick="clearInput()">Clear</button>
+    </div>
+    <img src="" alt="" id="img">
+  </div>
+
+  <script>
+    function generateQR() {
+      const input = document.getElementById("input").value;
+      const img = document.getElementById("img");
+
+      if (input.trim() !== "") {
+        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(input)}`;
+      } else {
+        img.src = "";
+      }
+    }
+
+    function resetAll() {
+      document.getElementById("input").value = "";
+      document.getElementById("img").src = "";
+    }
+
+    function clearInput() {
+      document.getElementById("input").value = "";
+    }
+  </script>
+</body>
+</html>
