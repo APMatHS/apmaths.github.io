@@ -1,79 +1,58 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Responsive trên di động -->
-  <title>Tạo mã QR từ Text</title>
+  <title>Tạo mã QR (sử dụng api.qrserver.com)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
       text-align: center;
-      margin: 0;
     }
-
-    h1 {
-      font-size: 1.5em;
-      margin-bottom: 20px;
-    }
-
     input[type="text"] {
-      width: 90%;
-      max-width: 400px;
+      width: 300px;
       padding: 10px;
       font-size: 16px;
-      margin-bottom: 10px;
-      box-sizing: border-box;
     }
-
     button {
       padding: 10px 15px;
-      margin: 5px;
+      margin: 10px;
       font-size: 16px;
       cursor: pointer;
-      width: 120px;
-      max-width: 90%;
     }
-
-    #qrcode {
+    #qrcode img {
       margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
     }
   </style>
 </head>
 <body>
-  <h1>Tạo mã QR từ Text</h1>
+  <h1>Tạo mã QR từ Tiếng Việt</h1>
   <input type="text" id="text" placeholder="Nhập nội dung tiếng Việt...">
   <br>
   <button onclick="generateQR()">Tạo QR</button>
-  <button onclick="clearQR()">Clear</button>
+  <button onclick="clearQR()">Xóa</button>
   <div id="qrcode"></div>
 
-  <!-- Thư viện QRCode.js -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-
   <script>
-    let qr;
-
     function generateQR() {
-      const text = document.getElementById("text").value;
+      const text = document.getElementById("text").value.trim();
       const qrContainer = document.getElementById("qrcode");
-      qrContainer.innerHTML = ""; // Xoá QR cũ nếu có
-      if (text.trim() === "") return;
+      qrContainer.innerHTML = ""; // Xóa mã QR cũ
 
-      // Mã hóa tiếng Việt (Unicode) đúng cách
-      const utf8Text = unescape(encodeURIComponent(text));
+      if (!text) {
+        alert("Vui lòng nhập nội dung!");
+        return;
+      }
 
-      qr = new QRCode(qrContainer, {
-        text: utf8Text,
-        width: 200,
-        height: 200,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
+      const encodedText = encodeURIComponent(text);
+      const imageUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodedText}&size=200x200`;
+
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = "Mã QR";
+      img.onload = () => qrContainer.appendChild(img); // Đảm bảo ảnh tải xong mới hiển thị
+      img.onerror = () => alert("Không thể tải mã QR. Kiểm tra kết nối Internet hoặc API.");
     }
 
     function clearQR() {
