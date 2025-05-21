@@ -1,86 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QR Code Generator</title>
-
+  <meta charset="UTF-8">
+  <title>Tạo mã QR (sử dụng api.qrserver.com)</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      background-color: #f4f4f4;
-      color: black;
       font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
     }
-
-    .main {
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    h1 {
-      color: black;
-      margin-top: 80px; /* Cách lề trên cố định */
-      margin-bottom: 20px;
-    }
-
-    input {
+    input[type="text"] {
       width: 300px;
-      height: 40px;
-      background: white;
-      border: 1px solid black; /* Khung nhập chữ */
-      margin-bottom: 20px;
-      outline: none;
-      font-size: 1.2rem;
-      color: black;
-      padding: 0 10px;
-      border-radius: 6px;
+      padding: 10px;
+      font-size: 16px;
     }
-
     button {
-      width: 150px;
-      height: 40px;
-      font-size: 1.1rem;
+      padding: 10px 15px;
       margin: 10px;
+      font-size: 16px;
       cursor: pointer;
-      outline: none;
-      background: gray; /* Nút màu xám */
-      color: white;
-      border: none;
-      border-radius: 5px;
     }
-
-    #img {
-      margin-top: 30px;
-    }
-
-    .buttons {
-      margin-top: 10px; /* Khoảng cách cố định giữa input và các nút */
+    #qrcode img {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="main">
-    <h1>TEXT TO QR CODE</h1>
-    <input type="text" id="input" autocomplete="off"/>
-    <div class="buttons">
-      <button onclick="generateQR()">Generate QR</button>
-      <button onclick="clearInput()">Clear</button>
-    </div>
-    <img src="" alt="" id="img">
-  </div>
+  <h1>Tạo mã QR từ Tiếng Việt</h1>
+  <input type="text" id="text" placeholder="Nhập nội dung tiếng Việt...">
+  <br>
+  <button onclick="generateQR()">Tạo QR</button>
+  <button onclick="clearQR()">Clear</button>
+  <div id="qrcode"></div>
 
   <script>
     function generateQR() {
-      const input = document.getElementById("input").value;
-      const img = document.getElementById("img");
+      const text = document.getElementById("text").value.trim();
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = ""; // Xóa mã QR cũ
 
-      if (input.trim()
+      if (text === "") return;
+
+      const encodedText = encodeURIComponent(text); // Mã hóa tiếng Việt
+      const imageUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodedText}&size=200x200`;
+
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = "Mã QR";
+      qrContainer.appendChild(img);
+    }
+
+    function clearQR() {
+      document.getElementById("text").value = "";
+      document.getElementById("qrcode").innerHTML = "";
+    }
+  </script>
+</body>
+</html>
