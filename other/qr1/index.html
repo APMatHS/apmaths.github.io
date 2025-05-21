@@ -29,11 +29,13 @@
 </head>
 <body>
   <h1>Tạo mã QR từ Text</h1>
-  <input type="text" id="text" placeholder="Nhập nội dung...">
+  <input type="text" id="text" placeholder="Nhập nội dung tiếng Việt...">
   <br>
   <button onclick="generateQR()">Tạo QR</button>
   <button onclick="clearQR()">Clear</button>
   <div id="qrcode"></div>
+
+  <!-- Thư viện QRCode.js -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
   <script>
@@ -44,8 +46,12 @@
       const qrContainer = document.getElementById("qrcode");
       qrContainer.innerHTML = ""; // Xoá QR cũ nếu có
       if (text.trim() === "") return;
+
+      // Mã hóa tiếng Việt (Unicode) đúng cách
+      const utf8Text = unescape(encodeURIComponent(text));
+
       qr = new QRCode(qrContainer, {
-        text: text,
+        text: utf8Text,
         width: 200,
         height: 200,
         colorDark: "#000000",
@@ -59,7 +65,5 @@
       document.getElementById("qrcode").innerHTML = "";
     }
   </script>
-  <!-- Thư viện QRCode.js -->
-
 </body>
 </html>
