@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>TEXT TO QR CODE</title>
+  <title>Tạo mã QR (sử dụng api.qrserver.com)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,37 +20,36 @@
       font-size: 16px;
       cursor: pointer;
     }
-    #qrcode {
+    #qrcode img {
       margin-top: 20px;
+      display: flex;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
-  <h1>TEXT TO QR CODE
-</h1>
-  <input type="text" id="text" placeholder="Text content...">
+  <h1>Tạo mã QR từ Tiếng Việt</h1>
+  <input type="text" id="text" placeholder="Nhập nội dung tiếng Việt...">
   <br>
-  <button onclick="generateQR()">Generate QR</button>
+  <button onclick="generateQR()">Tạo QR</button>
   <button onclick="clearQR()">Clear</button>
   <div id="qrcode"></div>
-
-  <!-- Thư viện hỗ trợ Unicode tốt -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
 
   <script>
     function generateQR() {
       const text = document.getElementById("text").value.trim();
       const qrContainer = document.getElementById("qrcode");
-      qrContainer.innerHTML = ""; // Xoá QR cũ nếu có
+      qrContainer.innerHTML = ""; // Xóa mã QR cũ
+
       if (text === "") return;
 
-      const qr = qrcode(0, 'H'); // typeNumber = 0 (tự động chọn), H = High error correction
-      qr.addData(text);         // Không cần encode tiếng Việt
-      qr.make();
+      const encodedText = encodeURIComponent(text); // Mã hóa tiếng Việt
+      const imageUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodedText}&size=200x200`;
 
-      // Tạo thẻ <img> chứa mã QR
-      const qrImgTag = qr.createImgTag(6); // 6 = scale (độ lớn)
-      qrContainer.innerHTML = qrImgTag;
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = "Mã QR";
+      qrContainer.appendChild(img);
     }
 
     function clearQR() {
