@@ -1,0 +1,57 @@
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TEXT TO QR CODE</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #qrcode {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+   <body>
+    <div class="body">
+      <h1>TEXT TO QR CODE</h1>
+        <input type="text" id="text" placeholder="Text content...">
+  <br>
+  <button onclick="func()">Generate QR</button>
+  <button onclick="clearQR()">Clear</button>
+  <div id="qrcode"></div>
+
+     
+    <script>
+      function func(){
+    var x = document.getElementById("input").value;
+    var url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${x}`;
+
+    var img = document.getElementById("img");
+
+    img.src = url;
+    console.log(url);
+  }
+
+      function clearQR() {
+      document.getElementById("text").value = "";
+      document.getElementById("qrcode").innerHTML = "";
+    }
+    </script>
+  </body>
+
+</html>
