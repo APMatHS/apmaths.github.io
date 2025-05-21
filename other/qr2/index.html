@@ -29,31 +29,4 @@
   <h1>Tạo mã QR từ Tiếng Việt</h1>
   <input type="text" id="text" placeholder="Nhập nội dung tiếng Việt...">
   <br>
-  <button onclick="generateQR()">Tạo QR</button>
-  <button onclick="clearQR()">Clear</button>
-  <div id="qrcode"></div>
-
-  <script>
-    function generateQR() {
-      const text = document.getElementById("text").value.trim();
-      const qrContainer = document.getElementById("qrcode");
-      qrContainer.innerHTML = ""; // Xóa mã QR cũ
-
-      if (text === "") return;
-
-      const encodedText = encodeURIComponent(text); // Mã hóa tiếng Việt
-      const imageUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodedText}&size=200x200`;
-
-      const img = document.createElement("img");
-      img.src = imageUrl;
-      img.alt = "Mã QR";
-      qrContainer.appendChild(img);
-    }
-
-    function clearQR() {
-      document.getElementById("text").value = "";
-      document.getElementById("qrcode").innerHTML = "";
-    }
-  </script>
-</body>
-</html>
+  <button onclick
