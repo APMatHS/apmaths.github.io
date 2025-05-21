@@ -3,7 +3,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Tạo mã QR (sử dụng api.qrserver.com)</title>
+  <title>QR Generator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -27,11 +27,11 @@
   </style>
 </head>
 <body>
-  <h1>Tạo mã QR từ Tiếng Việt</h1>
-  <input type="text" id="text" placeholder="Nhập nội dung tiếng Việt...">
+  <h1>QR Code Generator</h1>
+  <input type="text" id="text" placeholder="Enter content...">
   <br>
-  <button onclick="generateQR()">Tạo QR</button>
-  <button onclick="clearQR()">Xóa</button>
+  <button onclick="generateQR()">Generate QR</button>
+  <button onclick="clearQR()">Clear</button>
   <div id="qrcode"></div>
 
   <script>
@@ -41,7 +41,7 @@
       qrContainer.innerHTML = ""; // Xóa mã QR cũ
 
       if (!text) {
-        alert("Vui lòng nhập nội dung!");
+        alert("Please enter content!");
         return;
       }
 
@@ -52,7 +52,7 @@
       img.src = imageUrl;
       img.alt = "Mã QR";
       img.onload = () => qrContainer.appendChild(img); // Đảm bảo ảnh tải xong mới hiển thị
-      img.onerror = () => alert("Không thể tải mã QR. Kiểm tra kết nối Internet hoặc API.");
+      img.onerror = () => alert("Cannot load QR code. Please check your Internet connection or API.");
     }
 
     function clearQR() {
