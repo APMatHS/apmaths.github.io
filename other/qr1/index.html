@@ -22,6 +22,8 @@
     }
     #qrcode {
       margin-top: 20px;
+      display: flex;
+      justify-content: center;
     }
   </style>
 </head>
@@ -32,7 +34,7 @@
   <button onclick="generateQR()">Tạo QR</button>
   <button onclick="clearQR()">Clear</button>
   <div id="qrcode"></div>
-<center>  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
   <script>
     let qr;
@@ -56,7 +58,7 @@
       document.getElementById("text").value = "";
       document.getElementById("qrcode").innerHTML = "";
     }
-  </script> </center>
+  </script>
   <!-- Thư viện QRCode.js -->
 
 </body>
