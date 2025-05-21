@@ -2,28 +2,44 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Responsive trên di động -->
   <title>Tạo mã QR từ Text</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
       text-align: center;
+      margin: 0;
     }
+
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+
     input[type="text"] {
-      width: 300px;
+      width: 90%;
+      max-width: 400px;
       padding: 10px;
       font-size: 16px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
     }
+
     button {
       padding: 10px 15px;
-      margin: 10px;
+      margin: 5px;
       font-size: 16px;
       cursor: pointer;
+      width: 120px;
+      max-width: 90%;
     }
+
     #qrcode {
       margin-top: 20px;
       display: flex;
       justify-content: center;
+      flex-wrap: wrap;
     }
   </style>
 </head>
