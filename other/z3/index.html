@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Máy tính ma trận Z₃</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+    .controls, .result, .matrix-area { margin-top: 20px; }
+    .matrix-input { display: inline-block; margin: 10px; }
+    table { border-collapse: collapse; margin: auto; }
+    td { border: 1px solid #333; padding: 5px; }
+    input[type=number] { width: 40px; text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>Máy tính ma trận trên trường Z<sub>3</sub></h2>
+
+  <div class="controls">
+    <label for="matrix-size">Cấp ma trận (2-6):</label>
+    <select id="matrix-size">
+      <option>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+    </select>
+    <label for="matrix-count">Số ma trận (1-4):</label>
+    <input type="number" id="matrix-count" value="2" min="1" max="4" />
+    <button onclick="generateMatrices()">Tạo ma trận</button>
+  </div>
+
+  <div class="matrix-area" id="matrix-area"></div>
+
+  <div class="controls">
+    <label for="expression">Biểu thức (ví dụ: A*(B+C), A^3, det(A), A*B*A^-1*B^-1, A^T*B):</label>
+    <input type="text" id="expression" size="50" />
+    <button onclick="evaluateExpression()">Tính toán</button>
+  </div>
+
+  <div class="result">
+    <h3>Kết quả</h3>
+    <div id="result"></div>
+  </div>
+
+<script>
+  const fieldMod = 3;
+
+  function generateMatrices() {
+    const size = +document.getElementById('matrix-size').value;
+    const count = Math.max(1, Math.min(4, +document.getElementById('matrix-count').value));
+    const area = document.getElementById('matrix-area');
+    area.innerHTML = '';
+    for (let m = 0; m < count; m++) {
+      const div = document.createElement('div');
+      div.className = 'matrix-input';
+      div.innerHTML = `<div>${String.fromCharCode(65 + m)}</div>`;
+      const table = document.createElement('table');
+      for (let i = 0; i < size; i++) {
+        const row = document.createElement('tr');
+        for (let j = 0; j < size; j++) {
+          const cell = document.createElement('td');
+          cell.innerHTML = `<input type="number" min="0" max="2" value="0" id="m${m}_${i}_${j}" />`;
+          row.appendChild(cell);
+        }
+        table.appendChild(row);
+      }
+      div.appendChild(table);
+      area.appendChild(div);
+    }
+  }
+
+  function getMatrix(index, size) {
+    const mat = [];
+    for (let i = 0; i < size; i++) {
+      const row = [];
+      for (let j = 0; j < size; j++) {
+        let val = +document.getElementById(`m${index}_${i}_${j}`).value;
+        row.push((val % fieldMod + fieldMod) % fieldMod);
+      }
+      mat.push(row);
+    }
+    return mat;
+  }
+
+  function modInv(a, mod = fieldMod) {
+    for (let i = 1; i < mod; i++) if ((a * i) % mod === 1) return i;
+    return null;
+  }
+
+  function matrixAdd(A, B) {
+    return A.map((r, i) => r.map((v, j) => (v + B[i][j]) % fieldMod));
+  }
+
+  function matrixSub(A, B) {
+    return A.map((r, i) => r.map((v, j) => (v - B[i][j] + fieldMod) % fieldMod));
+  }
+
+  function matrixMult(A, B) {
+    const n = A.length;
+    const C = Array.from({ length: n }, () => Array(n).fill(0));
+    for (let i = 0; i < n; i++)
+      for (let j = 0; j < n; j++)
+        for (let k = 0; k < n; k++)
+          C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % fieldMod;
+    return C;
+  }
+
+  function matrixScalarMult(scalar, A) {
+    scalar = ((scalar % fieldMod) + fieldMod) % fieldMod;
+    return A.map(row => row.map(v => (v * scalar) % fieldMod));
+  }
+
+  function matrixInverse(A) {
+    const n = A.length;
+    let M = A.map((r, i) => [...r, ...Array.from({ length: n }, (_, j) => i === j ? 1 : 0)]);
+    for (let i = 0; i < n; i++) {
+      let pivot = -1;
+      for (let j = i; j < n; j++) if (M[j][i] !== 0) { pivot = j; break; }
+      if (pivot === -1) return null;
+      [M[i], M[pivot]] = [M[pivot], M[i]];
+      const inv = modInv(M[i][i]);
+      if (inv === null) return null;
+      M[i] = M[i].map(x => (x * inv) % fieldMod);
+      for (let j = 0; j < n; j++) {
+        if (j !== i) {
+          const factor = M[j][i];
+          for (let k = 0; k < 2 * n; k++) {
+            M[j][k] = (M[j][k] - factor * M[i][k]) % fieldMod;
+            if (M[j][k] < 0) M[j][k] += fieldMod;
+          }
+        }
+      }
+    }
+    return M.map(r => r.slice(n));
+  }
+
+  function matrixPower(A, k) {
+    const n = A.length;
+    if (k === 0) {
+      return Array.from({ length: n }, (_, i) =>
+        Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))
+      );
+    }
+    let R = A.map(row => row.slice());
+    for (let i = 1; i < k; i++) {
+      R = matrixMult(R, A);
+    }
+    return R;
+  }
+
+  function matrixDet(A) {
+    const n = A.length;
+    if (n === 1) return A[0][0] % fieldMod;
+    let det = 0;
+    for (let j = 0; j < n; j++) {
+      const subMatrix = A.slice(1).map(row => row.filter((_, k) => k !== j));
+      const cofactor = ((j % 2 === 0 ? 1 : -1) * A[0][j]) % fieldMod;
+      det = (det + cofactor * matrixDet(subMatrix)) % fieldMod;
+    }
+    return (det + fieldMod) % fieldMod;
+  }
+
+  function matrixTranspose(A) {
+    const n = A.length;
+    const m = A[0].length;
+    const T = Array.from({ length: m }, () => Array(n).fill(0));
+    for (let i = 0; i < n; i++)
+      for (let j = 0; j < m; j++)
+        T[j][i] = A[i][j];
+    return T;
+  }
+
+  function parseExpression(expr, mats) {
+    const tokenRegex = /det|\d+|[A-D]|\^T|\^-1|\^\d+|[+\-*()]|\s+/g;
+    let rawTokens = [];
+    let m;
+    while ((m = tokenRegex.exec(expr)) !== null) {
+      if (m[0].trim() !== '') rawTokens.push(m[0]);
+    }
+
+    const precedence = { '+': 1, '-': 1, '*': 2 };
+    const output = [];
+    const ops = [];
+
+    function applyOp() {
+      const op = ops.pop();
+      if (op === '^T') {
+        const val = output.pop();
+        if (typeof val === 'number') throw 'Không thể chuyển vị số';
+        output.push(matrixTranspose(val));
+      } else if (op === '^-1') {
+        const val = output.pop();
+        if (typeof val === 'number') throw 'Không thể nghịch đảo số';
+        const inv = matrixInverse(val);
+        if (!inv) throw 'Ma trận không khả nghịch';
+        output.push(inv);
+      } else if (op.startsWith('^')) {
+        const k = parseInt(op.slice(1));
+        const val = output.pop();
+        if (typeof val === 'number') output.push(Math.pow(val, k) % fieldMod);
+        else output.push(matrixPower(val, k));
+      } else {
+        const b = output.pop();
+        const a = output.pop();
+        if (typeof a === 'number' && typeof b === 'number') {
+          if (op === '+') output.push((a + b) % fieldMod);
+          else if (op === '-') output.push((a - b + fieldMod) % fieldMod);
+          else if (op === '*') output.push((a * b) % fieldMod);
+        } else if (typeof a === 'number' && Array.isArray(b)) {
+          if (op === '*') output.push(matrixScalarMult(a, b));
+          else throw 'Không hợp lệ giữa số và ma trận';
+        } else if (Array.isArray(a) && typeof b === 'number') {
+          if (op === '*') output.push(matrixScalarMult(b, a));
+          else throw 'Không hợp lệ giữa ma trận và số';
+        } else if (Array.isArray(a) && Array.isArray(b)) {
+          if (op === '+') output.push(matrixAdd(a, b));
+          else if (op === '-') output.push(matrixSub(a, b));
+          else if (op === '*') output.push(matrixMult(a, b));
+        } else {
+          throw `Không hợp lệ với toán tử '${op}'`;
+        }
+      }
+    }
+
+    for (let i = 0; i < rawTokens.length; i++) {
+      const t = rawTokens[i];
+      if (/^\d+$/.test(t)) {
+        output.push(parseInt(t));
+      } else if (/^[A-D]$/.test(t)) {
+        output.push(mats[t.charCodeAt(0) - 65]);
+      } else if (t === 'det') {
+        if (rawTokens[i + 1] === '(' && /^[A-D]$/.test(rawTokens[i + 2]) && rawTokens[i + 3] === ')') {
+          const mat = mats[rawTokens[i + 2].charCodeAt(0) - 65];
+          output.push(matrixDet(mat));
+          i += 3;
+        } else throw 'Cú pháp det(A) không hợp lệ';
+      } else if (t === '(') {
+        ops.push(t);
+      } else if (t === ')') {
+        while (ops.length && ops[ops.length - 1] !== '(') applyOp();
+        if (ops.length === 0) throw 'Dấu ngoặc không khớp';
+        ops.pop();
+      } else if (['+', '-', '*'].includes(t)) {
+        while (ops.length && ops[ops.length - 1] !== '(' &&
+               precedence[ops[ops.length - 1]] >= precedence[t]) applyOp();
+        ops.push(t);
+      } else if (/^\^T$|^\^-1$|^\^\d+$/.test(t)) {
+        ops.push(t);
+        applyOp(); // áp dụng ngay lập tức cho toán tử hậu tố
+      } else {
+        throw `Ký tự không hợp lệ: ${t}`;
+      }
+    }
+
+    while (ops.length) {
+      if (ops[ops.length - 1] === '(' || ops[ops.length - 1] === ')') throw 'Dấu ngoặc không khớp';
+      applyOp();
+    }
+
+    if (output.length !== 1) throw 'Biểu thức không hợp lệ';
+    return output[0];
+  } 
+
+
+  function renderMatrix(M) {
+    if (!M) return 'Không khả nghịch';
+    return '<table>' + M.map(r => '<tr>' + r.map(v => `<td>${v}</td>`).join('') + '</tr>').join('') + '</table>';
+  }
+
+  function evaluateExpression() {
+    const size = +document.getElementById('matrix-size').value;
+    const count = Math.max(1, Math.min(4, +document.getElementById('matrix-count').value));
+    const mats = Array.from({ length: count }, (_, i) => getMatrix(i, size));
+    const expr = document.getElementById('expression').value;
+    try {
+      const result = parseExpression(expr, mats);
+      if (typeof result === 'number') {
+        document.getElementById('result').innerText = `Kết quả scalar: ${result % fieldMod}`;
+      } else {
+        document.getElementById('result').innerHTML = renderMatrix(result);
+        MathJax.typeset();
+      }
+    } catch (e) {
+      document.getElementById('result').innerText = 'Lỗi trong biểu thức: ' + e;
+    }
+  }
+</script>
+</body>
+</html>
