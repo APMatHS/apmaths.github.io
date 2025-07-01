@@ -187,3 +187,9 @@ footer {
     padding-left: 30px;
   }
 }
+
+.container {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 5px 0 5px; /* Điều chỉnh margin-top của container */
+        }
