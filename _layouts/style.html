@@ -7,11 +7,13 @@
    {% include header.html %}
 
 <nav>
-         {% include menu.html %}
+         {% include nav.html %}
     </nav>
 
    <div class="container">
-        <div class="column left">
+  {{ content }}
+    <!--
+    <div class="column left">
             <h2>Left Column</h2>
             <p>This is the left column content.</p>
         </div>
@@ -24,6 +26,7 @@
             <h2>Right Column</h2>
             <p>This is the right column content.</p>
         </div>
+    -->
     </div>
 
   
