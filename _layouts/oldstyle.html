@@ -1,178 +1,26 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-   <title>{{ page.title }}</title>
-  <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-    
- 
-
-   <!--Mathtype-->
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
-</script>
-
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8WD3BYKLNK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-8WD3BYKLNK');
-</script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6155223739977688"
-     crossorigin="anonymous"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0;
-}
-
-.topnav {
-  overflow: hidden;
-  background-color: #333;
-  width: 100%;
-  position: sticky;
-  top: 0;
-  z-index: 999;
-}
-
-.topnav a {
-  float: left;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 17px;
-}
-
-.topnav a:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-.topnav a.active {
-  background-color: #04AA6D;
-  color: white;
-}
-
-/* Create two columns/boxes that floats next to each other */
-nav {
-  float: left;
-  width: 22%;
-  height: 100%; /* only for demonstration, should be removed */
-  background: #ccc;
-  padding: 20px;
-}
-
-/* Style the list inside the menu */
-nav ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.rnav {
-  float: right;
-  width: 22%;
-  height: 100%; /* only for demonstration, should be removed */
-  background: #ccc;
-  padding: 20px;
-}
-
-/* Style the list inside the menu */
-.rnav ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.main {
-  float: left;
-  padding: 20px;
-  width: 56%;
-  background-color: #f1f1f1;
-  height: 100%; /* only for demonstration, should be removed */
-}
-
-/* Clear floats after the columns */
-section::after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* Style the footer */
-footer {
-  background-color: #777;
-  padding: 10px;
-  text-align: center;
-  color: white;
-  margin-bottom: 0;
- text-decoration: none;
-}
-footer ul { padding: 0px; list-style: none; font-weight: bold; }
-footer ul li { display: inline; margin-right: 20px; }
-
-   
-
-/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
-@media (max-width: 800px) {
-  nav {
-    width: 25%;
-    height: auto;
-  }
-  .main {
-    width: 75%;
-    height: auto;
-  }
-  .rnav {display: none;}
- 
-}
-@media (max-width: 600px) {
-   .main {
-    width: 100%;
-    height: auto;
-  }
-nav,  .rnav {display: none;}
- 
-}
-</style>
-</head>
+ {% include head.html %}
 <body>
 
-{% include topnav.html %}
+   {% include header.html %}
 
-<section>
-  <nav>
-    <ul>
-      <li><a href="#">London</a></li>
-      <li><a href="#">Paris</a></li>
-      <li><a href="#">Tokyo</a></li>
-    </ul>
-  </nav>
-  
-  <div class="main">
-    <div class="container">
+<nav>
+         {% include menu.html %}
+    </nav>
 
-           {{ content }}
-         
-      </div>
-  </div>
-  
-  
-  <div class="rnav">
-  <p>London is the capital city of England. It is the most populous city in the  United Kingdom, with a metropolitan area of over 13 million inhabitants.</p>
-  </div>
-</section>
+                       {{ content }}
+     
 
-{% include footer.html %}
+  {% include footer.html %}
+
 
 </body>
 </html>
 
+
+
+
+  
+  
