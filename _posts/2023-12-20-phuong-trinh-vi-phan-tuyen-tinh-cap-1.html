@@ -10,15 +10,15 @@ date: 2023-12-20
 
 <p>$$y'+p(x)y=q(x)(*)$$</p>
 
-<p>Trường hợp $q(x)=0$, ta có thể đưa phương trình trở về dạng phương trình vi phân tách biến và giải quyết nó.</p>
+<p>Trường hợp \(q(x)=0\), ta có thể đưa phương trình trở về dạng phương trình vi phân tách biến và giải quyết nó.</p>
 <!--more-->
-<p>Trường hợp $q(x)\neq 0$, ta có thể giải phương trình này bằng phương pháp sau</p>
+<p>Trường hợp\(q(x)\neq 0\), ta có thể giải phương trình này bằng phương pháp sau</p>
 
 <h3>Phương pháp giải thừa số tích phân</h3>
-<p>Đối với phương pháp này ta phải nhớ nhân tử tích phân $I(x)=e^{\int{p(x)dx}}$ </p>
-<p>Ta nhân hai vế của $(*)$ với nhân tử tích phân $I(x)$, ta được</p>
+<p>Đối với phương pháp này ta phải nhớ nhân tử tích phân\(I(x)=e^{\int{p(x)dx}}\) </p>
+<p>Ta nhân hai vế của\((*)\) với nhân tử tích phân\(I(x)\), ta được</p>
 <p>$$y' e^{\int{p(x)dx}}+p(x)e^{\int{p(x)dx}}=q(x)e^{\int{p(x)dx}}$$</p>
-<p>Dễ thấy vế trái sẽ là $\left( ye^{\int{p(x)dx}} \right)'$, nghĩa là ta có</p>
+<p>Dễ thấy vế trái sẽ là\(\left( ye^{\int{p(x)dx}} \right)'\), nghĩa là ta có</p>
 <p>$$\left( ye^{\int{p(x)dx}} \right)'=q(x)e^{\int{p(x)dx}}$$</p>
 <p>Tới đây ta chỉ cần lấy tích phân hai vế là xong. Tức là </p>
 <p>$$y=\displaystyle \frac{1}{I(x)}\int{q(x)I(x)dx}$$</p>
@@ -26,20 +26,20 @@ date: 2023-12-20
 <h2>Ví dụ</h2>
 <p>Ta sẽ đi qua phần ví dụ để nắm rõ cách làm này</p>
 
-<p><b>Ví dụ 1.</b> Giải phương trình $y'=x-2xy$</p>
+<p><b>Ví dụ 1.</b> Giải phương trình\(y'=x-2xy\)</p>
 
 <p><b>Giải</b></p>
 <p>Bằng một phép biến đổi đơn giản ta đưa phương trình về thành</p>
-<p>$$y'+2xy=x(1)$$</p>
-<p>Rõ ràng đây là phương trình vi phân tuyến tính cấp 1 với  $p(x)=2x$ và $q(x)=x$</p>
-<p>OK, ta đi tìm thằng đệ thừa số tích phân $e^{\int{p(x)dx}}$ chính là $e^{\int{2xdx}}=e^{x^2}$</p>
-<p>Ta nhân hai vế của phương trình $(1)$ cho $e^{x^2}$, ta được</p>
-<p>$\displaystyle y'e^{x^2}+2xye^{x^2}=xe^{x^2}$</p>
-<p>$\displaystyle \Rightarrow \left( ye^{x^2} \right)'=xe^{x^2}$</p>
+<p>$$y'+2xy=x(1)$\)</p>
+<p>Rõ ràng đây là phương trình vi phân tuyến tính cấp 1 với \(p(x)=2x\) và\(q(x)=x\)</p>
+<p>OK, ta đi tìm thằng đệ thừa số tích phân\(e^{\int{p(x)dx}}\) chính là\(e^{\int{2xdx}}=e^{x^2}\)</p>
+<p>Ta nhân hai vế của phương trình\((1)\) cho\(e^{x^2}\), ta được</p>
+<p>$\displaystyle y'e^{x^2}+2xye^{x^2}=xe^{x^2}\)</p>
+<p>$\displaystyle \Rightarrow \left( ye^{x^2} \right)'=xe^{x^2}\)</p>
 <p>Tới đây ta lấy tính phân hai vế, khi đó ta được</p>
-<p>$\displaystyle y e^{x^2}=\int{xe^{x^2}dx}$</p>
-<p>$\displaystyle \Rightarrow ye^{x^2}=\frac{1}{2}e^{x^2}+C$</p>
-<p>Hay $\displaystyle y=\frac{1}{2}+Ce^{-x^2}$</p>
+<p>$\displaystyle y e^{x^2}=\int{xe^{x^2}dx}\)</p>
+<p>$\displaystyle \Rightarrow ye^{x^2}=\frac{1}{2}e^{x^2}+C\)</p>
+<p>Hay \(\displaystyle y=\frac{1}{2}+Ce^{-x^2}\)</p>
 <p>Giờ thì mọi thứ đã sáng tỏ đúng không nào</p>
 <hr>
   <p><b>CÁC BÀI VIẾT LIÊN QUAN VỀ PHƯƠNG TRÌNH VI PHÂN</b></p>
