@@ -1,4 +1,3 @@
-<script>
     document.querySelectorAll('.toggle-subnav').forEach(toggle => {
       toggle.addEventListener('click', function (e) {
         e.stopPropagation(); // Ngăn click lan ra ngoài
@@ -18,4 +17,4 @@
         sub.classList.remove('show-submenu');
       });
     });
-  </script>
+
