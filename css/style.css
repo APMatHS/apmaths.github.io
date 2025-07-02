@@ -1,10 +1,24 @@
+{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
  body {
-      font-family: Arial, sans-serif;
-      margin: 40px auto;
-      width: 75%;
+      font-family: 'Helvetica', 'Arial', 'Sans-Serif';
+      margin: 0;
+      width: 100%;
+
       background-color: #f9f9f9;
       color: #333;
     }
+
+main {
+      font-family: 'Helvetica', 'Arial', 'Sans-Serif';
+      margin: 10%;
+      width: 80%;
+      background-color: #f9f9f9;
+      color: #333;}
 
  nav ul {
       list-style: none;
@@ -12,8 +26,8 @@
       margin: 0;
       display: flex;
       background: #eaeaea;
-      border-radius: 8px;
-      padding: 10px 20px;
+      border-radius: 0px;
+      padding: 10px 10px;
       gap: 05px;
     }
 
@@ -67,10 +81,18 @@
       display: block;
     }
 
-footer ul { font-size: 1em; font-family: 'Helvetica', 'Arial', 'Sans-Serif'; padding: 0px; list-style: none; font-weight: bold; }
-footer ul li { display: inline; margin-right: 20px; }
+header {  text-align: center;
+}
 
-footer { border-top: 1px solid #d5d5d5; font-size: .8em; }
+
+footer ul { font-size: 1em; font-family: 'Helvetica', 'Arial', 'Sans-Serif'; padding: 0px; list-style: none; font-weight: bold; }
+footer ul li { display: inline; margin-left: 20px;}
+
+footer { border-top: 2px solid #d5d5d5;
+      width: 100%; text-align: center;
+background-color: lightgray;
+  color: white;
+ font-size: .8em; }
 
 /* Blog */
 ul.posts { margin: 20px auto 40px; font-size: 1.5em; }
