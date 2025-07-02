@@ -1,55 +1,21 @@
-const navItems = document.querySelectorAll('.nav-item');
+<script>
+    document.querySelectorAll('.toggle-subnav').forEach(toggle => {
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation(); // Ngăn click lan ra ngoài
+        const menu = this.nextElementSibling;
+        menu.classList.toggle('show-submenu');
 
-navItems.forEach(item => {
-  const link = item.querySelector('.nav-link');
-  const arrow = item.querySelector('.arrow-btn');
-  const svg = arrow.querySelector('.arrow-icon');
+        // Đóng các submenu khác
+        document.querySelectorAll('.sub-menu').forEach(sub => {
+          if (sub !== menu) sub.classList.remove('show-submenu');
+        });
+      });
+    });
 
-  // Hover vào chữ
-  link.addEventListener('mouseenter', () => {
-    link.style.backgroundColor = 'var(--color1)';
-    arrow.style.backgroundColor = 'var(--color2)';
-  });
-
-  link.addEventListener('mouseleave', () => {
-    if (!item.classList.contains('active')) {
-      link.style.backgroundColor = '#333';
-      arrow.style.backgroundColor = '#333';
-    }
-  });
-
-  // Hover vào mũi tên
-  arrow.addEventListener('mouseenter', () => {
-    link.style.backgroundColor = 'var(--color2)';
-    arrow.style.backgroundColor = 'var(--color1)';
-  });
-
-  arrow.addEventListener('mouseleave', () => {
-    if (!item.classList.contains('active')) {
-      link.style.backgroundColor = '#333';
-      arrow.style.backgroundColor = '#333';
-    }
-  });
-
-  // Click mũi tên mở subnav + xoay
-  arrow.addEventListener('click', (e) => {
-    e.preventDefault();
-    item.classList.toggle('active');
-    svg.classList.toggle('rotated');
-
-    if (item.classList.contains('active')) {
-      link.style.backgroundColor = 'var(--color1)';
-      arrow.style.backgroundColor = 'var(--color2)';
-    } else {
-      link.style.backgroundColor = '#333';
-      arrow.style.backgroundColor = '#333';
-    }
-  });
-});
-
-function toggleMenu() {
-  const nav = document.getElementById("navItems");
-  const btn = document.querySelector(".menu-toggle");
-  nav.classList.toggle("active");
-  btn.textContent = nav.classList.contains("active") ? "✖" : "☰";
-}
+    // Đóng submenu khi click bên ngoài
+    document.addEventListener('click', function () {
+      document.querySelectorAll('.sub-menu').forEach(sub => {
+        sub.classList.remove('show-submenu');
+      });
+    });
+  </script>
