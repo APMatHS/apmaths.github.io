@@ -1,20 +1,9 @@
-
-
 <!DOCTYPE html>
-<html lang="en">
- <head>
-
-<meta charset="utf-8">
+<html>
+<head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <title>Apmaths</title>
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
-
-.container {
-      font-family: 'Helvetica', 'Arial', 'Sans-Serif';
-      background-color: #f9f9f9;
-      color: #333;}
 body {margin:0;font-family:Arial}
 
 .topnav {
@@ -120,59 +109,42 @@ body {margin:0;font-family:Arial}
   }
 }
 </style>
-  
-  
-    <!--Viết toán mới -->
-     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
- 
-        
 </head>
-
 <body>
 
 <div class="topnav" id="myTopnav">
-<a href="#home" class="active">Home</a>
-
- <div class="dropdown">
-    <button class="dropbtn">Courses 
+  <a href="#home" class="active">Home</a>
+  <div class="dropdown">
+    <button class="dropbtn">Dropdown1 
       <i class="fa fa-caret-down"></i>
     </button>
     <div class="dropdown-content">
-      <a href="#">Algebra</a>
-      <a href="#">Calculus</a>
-      <a href="#">Statistic</a>
+      <a href="#">Link 1</a>
+      <a href="#">Link 2</a>
+      <a href="#">Link 3</a>
     </div>
   </div> 
+  
 
-  <div class="dropdown">
-    <button class="dropbtn">Blog 
+<div class="dropdown">
+    <button class="dropbtn">Dropdown2
       <i class="fa fa-caret-down"></i>
     </button>
     <div class="dropdown-content">
-      <a href="/tags">Tags</a>
-      <a href="/categories">Categories</a>
-    </div>
-  </div>
-
-  <div class="dropdown">
-    <button class="dropbtn">Other 
-      <i class="fa fa-caret-down"></i>
-    </button>
-    <div class="dropdown-content">
-      <a href="/tools">Tool</a>
-      <a href="/people">People</a>
-      <a href="/html-code">Code-HTML</a>
+      <a href="#">Link 1</a>
+      <a href="#">Link 2</a>
+      <a href="#">Link 3</a>
     </div>
   </div> 
+  <a href="#about">About</a>
+  <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
 </div>
 
-<div class="container">
-   {{content}}
+<div style="padding-left:16px">
+  {{content}}
 </div>
 
-  <footer class="footer" >
+<footer class="footer" >
       <ul>
    <li><a href="mailto:hoangnam.sp101@gmail.com">Email</a></li>
    <li><a href="https://apmaths.github.io">Github.io</a></li>
@@ -181,15 +153,16 @@ body {margin:0;font-family:Arial}
    </ul>
 </footer>
 
-
-<script src="/js/script.js"></script>
+<script>
+function myFunction() {
+  var x = document.getElementById("myTopnav");
+  if (x.className === "topnav") {
+    x.className += " responsive";
+  } else {
+    x.className = "topnav";
+  }
+}
+</script>
 
 </body>
 </html>
-
-
-
-
-  
-  
-
