@@ -1,97 +1,68 @@
 body {
-      margin: 60px auto;
+      font-family: Arial, sans-serif;
+      margin: 40px auto;
       width: 75%;
-      font-family: 'Helvetica', 'Arial', sans-serif;
-      color: #333;
       background-color: #f9f9f9;
-    }
-
-    header {
-      margin-bottom: 40px;
-      text-align: center;
-    }
-
-    a {
-      text-decoration: none;
-      color: #555;
-    }
-
-    a:hover {
-      text-decoration: underline;
-      color: #000;
+      color: #333;
     }
 
     nav ul {
-      padding: 0;
       list-style: none;
+      padding: 0;
+      margin: 0;
       display: flex;
-      gap: 20px;
-      font-weight: bold;
-      background-color: #eaeaea;
-      padding: 10px 20px;
+      background: #eaeaea;
       border-radius: 8px;
+      padding: 10px 20px;
+      gap: 20px;
     }
 
-    nav ul li {
+    nav li {
       position: relative;
     }
 
-    nav ul li ul.sub-menu {
+    .nav-link {
+      font-weight: bold;
+      color: #333;
+      text-decoration: none;
+      padding: 6px 8px;
+    }
+
+    .toggle-subnav {
+      cursor: pointer;
+      font-size: 12px;
+      padding-left: 5px;
+      color: #444;
+      user-select: none;
+    }
+
+    .sub-menu {
       display: none;
       position: absolute;
-      top: 35px;
+      top: 100%;
       left: 0;
       background: #fff;
       border: 1px solid #ccc;
       padding: 10px;
-      list-style: none;
+      border-radius: 6px;
+      min-width: 200px;
       z-index: 1000;
-      border-radius: 5px;
+      white-space: nowrap;
     }
 
-    nav ul li:hover ul.sub-menu {
+    .sub-menu a {
       display: block;
+      padding: 6px 10px;
+      text-decoration: none;
+      color: #333;
+      background: #fff;
+      border-radius: 4px;
     }
 
-    h1, h2, h3 {
-      font-weight: 600;
+    .sub-menu a:hover {
+      background: #f0f0f0;
     }
 
-    h1 { font-size: 2em; }
-    h2 { font-size: 1.5em; margin-top: 1em; }
-    h3 { font-size: 1.3em; }
-
-    p, ul {
-      font-size: 1.1em;
-      line-height: 1.6em;
-    }
-
-    .contacts {
-      padding-left: 20px;
-    }
-
-    .contacts li {
-      margin-bottom: 5px;
-    }
-
-    .vfill {
-      margin-top: 40px;
-      text-align: center;
-      color: #999;
-    }
-
-    footer {
-      margin-top: 60px;
-      border-top: 1px solid #d5d5d5;
-      padding-top: 20px;
-      font-size: 0.9em;
-      text-align: center;
-    }
-
-    footer ul {
-      padding: 0;
-      list-style: none;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
+    .show-submenu {
+      display: block;
     }
