@@ -13,7 +13,13 @@
       color: #333;
     }
 
-page, post {
+page {
+      font-family: 'Helvetica', 'Arial', 'Sans-Serif';
+      margin: 10%;
+      width: 75%;
+      background-color: #f9f9f9;
+      color: #333;}
+post {
       font-family: 'Helvetica', 'Arial', 'Sans-Serif';
       margin: 10%;
       width: 75%;
