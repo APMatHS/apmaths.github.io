@@ -19,13 +19,13 @@
       background-color: #f9f9f9;
       color: #333;}
 
-page {
+.page {
       font-family: 'Helvetica', 'Arial', 'Sans-Serif';
       margin: 10%;
       width: 75%;
       background-color: #f9f9f9;
       color: #333;}
-post {
+.post {
       font-family: 'Helvetica', 'Arial', 'Sans-Serif';
       margin: 10%;
       width: 75%;
@@ -113,9 +113,10 @@ ul.posts li { list-style: none; }
 
 /*Hiển thị trên điện thoại  */
 @media screen and (max-width: 600px) {
-  .container, page, post  {
+  .container, .page, .post  {
     font-family: 'Helvetica', 'Arial', 'Sans-Serif';
-      width: 90%;
+      margin-left: 5%;
+      margin-right: 5%;
       background-color: #f9f9f9;
       color: #333;}
   }
