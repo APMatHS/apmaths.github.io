@@ -3,18 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Trộn đề - Demo (TXT & DOCX)</title>
+  <title>Trộn đề - Demo (TXT & DOCX) - Fixed Parser</title>
   <link rel="stylesheet" href="/other/quiz/style.css" />
-  <!-- Libraries from CDN -->
+  <!-- Libraries -->
   <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <!-- docx library -->
   <script src="https://unpkg.com/docx@7.2.0/build/index.js"></script>
 </head>
 <body>
   <main class="container">
-    <h1>Trộn đề (TXT + DOCX) — Demo</h1>
+    <h1>Trộn đề (TXT + DOCX) — Phiên bản đã sửa parser</h1>
 
     <section class="card">
       <label class="file-row">
@@ -42,14 +41,14 @@
     <section class="card preview" id="previewCard" hidden>
       <h2>Preview — Câu đã nhận dạng</h2>
       <div id="previewList"></div>
-      <p class="note">Gợi ý: nếu file không đánh dấu đáp án, bạn có thể chỉnh thủ công bằng cách kích vào phương án để chọn đáp án đúng trước khi sinh mã đề.</p>
+      <p class="note">Click vào một phương án để đánh dấu đáp án đúng (màu sẽ đổi).</p>
     </section>
 
     <footer>
-      <small>Demo tạo bởi bạn + ChatGPT — chạy hoàn toàn trên trình duyệt. Triển khai lên GitHub Pages: push 3 file lên repo và bật Pages.</small>
+      <small>Demo tạo bởi bạn + ChatGPT — xử lý hoàn toàn trên trình duyệt. Đưa lên GitHub Pages: push 3 file và bật Pages.</small>
     </footer>
   </main>
 
-  <script src="script.js"></script>
+  <script src="/other/quiz/script.js"></script>
 </body>
 </html>
