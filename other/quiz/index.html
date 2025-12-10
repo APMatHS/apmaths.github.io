@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Trộn đề - Demo (TXT & DOCX) - Fixed Parser</title>
+  <title>Trộn đề - Lite (generate only)</title>
   <link rel="stylesheet" href="style.css" />
   <!-- Libraries -->
   <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
@@ -13,7 +13,7 @@
 </head>
 <body>
   <main class="container">
-    <h1>Trộn đề (TXT + DOCX) — Phiên bản đã sửa parser</h1>
+    <h1>Trộn đề - Tạo file (DOCX + đáp án DOCX)</h1>
 
     <section class="card">
       <label class="file-row">
@@ -27,25 +27,18 @@
         </label>
 
         <label><input id="shuffleQuestions" type="checkbox" checked /> Xáo câu</label>
-        <label><input id="shuffleOptions" type="checkbox" checked /> Xáo đáp án trong mỗi câu</label>
+        <label><input id="shuffleOptions" type="checkbox" checked /> Xáo đáp án</label>
       </div>
 
       <div class="actions">
-        <button id="parseBtn" class="btn">Đọc & Phân tích đề</button>
-        <button id="generateBtn" class="btn primary" disabled> Sinh mã đề & Tải về (ZIP)</button>
+        <button id="generateBtn" class="btn">Generate & Download ZIP</button>
       </div>
 
       <div id="messages" class="messages"></div>
     </section>
 
-    <section class="card preview" id="previewCard" hidden>
-      <h2>Preview — Câu đã nhận dạng</h2>
-      <div id="previewList"></div>
-      <p class="note">Click vào một phương án để đánh dấu đáp án đúng (màu sẽ đổi).</p>
-    </section>
-
     <footer>
-      <small>Demo tạo bởi bạn + ChatGPT — xử lý hoàn toàn trên trình duyệt. Đưa lên GitHub Pages: push 3 file và bật Pages.</small>
+      <small>Client-side only. Files processed in browser, không gửi server.</small>
     </footer>
   </main>
 
