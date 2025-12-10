@@ -16,7 +16,7 @@ body{
   margin:36px auto;
   padding:18px;
 }
-h1{margin:0 0 12px;font-size:1.6rem}
+h1{margin:0 0 12px;font-size:1.3rem}
 .card{
   background:var(--card);
   border-radius:10px;
@@ -43,16 +43,4 @@ h1{margin:0 0 12px;font-size:1.6rem}
 }
 .btn:disabled{opacity:0.5;cursor:not-allowed}
 .messages{margin-top:10px;color:var(--muted)}
-.preview h2{margin-top:0}
-.preview .question{
-  padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:8px;
-}
-.q-header{display:flex;justify-content:space-between;align-items:center}
-.options{margin-top:6px;display:flex;flex-direction:column;gap:6px}
-.option{
-  padding:6px 8px;border-radius:6px;border:1px solid #f0f0f0;
-  cursor:pointer;
-}
-.option.correct{background: #e4f0ff;border-color:#cfe4ff}
-.note{font-size:0.9rem;color:var(--muted);margin-top:8px}
 footer{margin-top:16px;text-align:center;color:var(--muted)}
