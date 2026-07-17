@@ -1,6 +1,6 @@
 // ============================================
 // score.js
-// Version 5.1 - Safe Detail Object
+// Version 5.4 - Polished & Edge-Case Robust CLO Adjustment Logic
 // ============================================
 
 export function calculateAllScores(answerData, untData, maxScores) {
@@ -49,7 +49,7 @@ export function calculateStudentScore(student, answerData, maxScores) {
     }
 
     // 3. Hiệu chỉnh
-    adjustDetailScore(detail, gpa, maxScores, cloStatistic);
+    adjustDetailScore(detail, gpa, maxScores);
 
     // 4. Lưu kết quả mà KHÔNG đè lên questionDetail
     student.result = {
@@ -77,30 +77,74 @@ function calculateDetailScore(correctQuestion, totalQuestion, maxScore) {
     return Math.round((correctQuestion * maxScore / totalQuestion) * 10) / 10;
 }
 
-function adjustDetailScore(detail, gpa, maxScores, cloStatistic) {
-    let total = 0;
+function adjustDetailScore(detail, gpa, maxScores) {
     const clos = Object.keys(detail);
 
-    for (const clo of clos) {
-        total += detail[clo].score;
-    }
+    // Vòng lặp liên tục điều chỉnh từng nấc 0.1 cho đến khi delta === 0 hoặc không còn CLO nào hợp lệ
+    while (true) {
 
-    let delta = Number((gpa - total).toFixed(1));
-    if (delta === 0) return;
-
-    for (let i = clos.length - 1; i >= 0; i--) {
-        const clo = clos[i];
-        const current = detail[clo].score;
-        const max = Number(maxScores[clo]);
-
-        if (delta > 0 && current < max) {
-            detail[clo].score = Number((current + 0.1).toFixed(1));
-            return;
+        // 1. Tính tổng điểm CLO hiện tại
+        let total = 0;
+        for (const clo of clos) {
+            total += detail[clo].score;
         }
 
-        if (delta < 0 && current > 0) {
-            detail[clo].score = Number((current - 0.1).toFixed(1));
-            return;
+        // Làm tròn delta về 1 chữ số thập phân để tránh lỗi số thực (floating point issue)
+        let delta = Number((gpa - total).toFixed(1));
+
+        // Nếu tổng CLO đã bằng GPA thì hoàn tất
+        if (delta === 0) return;
+
+        let changed = false;
+
+        // ==========================
+        // TH1: Cần cộng thêm (delta > 0)
+        // ==========================
+        if (delta > 0) {
+
+            // Duyệt từ CLO_n về CLO_1
+            for (let i = clos.length - 1; i >= 0; i--) {
+
+                const clo = clos[i];
+                const current = detail[clo].score;
+                const max = Number(maxScores[clo]);
+
+                // CLO <= 0 thì KHÔNG được cộng (chặn an toàn tuyệt đối sai số số thực)
+                if (current <= 0) continue;
+
+                // CLO đã đạt điểm tối đa thì KHÔNG được cộng
+                if (current >= max) continue;
+
+                // Cộng thêm 0.1
+                detail[clo].score = Number((current + 0.1).toFixed(1));
+                changed = true;
+                break; // Thoát vòng lặp duyệt để tính lại delta cho bước tiếp theo
+            }
         }
+
+        // ==========================
+        // TH2: Cần trừ bớt (delta < 0)
+        // ==========================
+        else {
+
+            // Duyệt từ CLO_n về CLO_1
+            for (let i = clos.length - 1; i >= 0; i--) {
+
+                const clo = clos[i];
+                const current = detail[clo].score;
+
+                // Chỉ cần current > 0 là ĐƯỢC PHÉP TRỪ (kể cả khi đang ở maxScore)
+                if (current <= 0) continue;
+
+                // Trừ đi 0.1
+                detail[clo].score = Number((current - 0.1).toFixed(1));
+                changed = true;
+                break; // Thoát vòng lặp duyệt để tính lại delta cho bước tiếp theo
+            }
+        }
+
+        // Nếu qua cả 2 nhánh mà không có CLO nào thay đổi được nữa (ví dụ bị giới hạn)
+        // thì dừng để tránh vòng lặp vô tận
+        if (!changed) return;
     }
 }
