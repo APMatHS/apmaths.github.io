@@ -1,201 +1,119 @@
 // =========================================
 // excel.js
-// Phiên bản 2.0.1
-// Đọc và xử lý file Excel
+// Version 3.1 - Native ES Module (SheetJS for Reading)
+// Đọc và phân tích file đáp án
 // =========================================
 
+import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 
-//------------------------------------------
-// Đọc file Excel
-//------------------------------------------
-function readExcel(file) {
-
-    return new Promise((resolve, reject) => {
-
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-
-            try {
-
-                const workbook = XLSX.read(e.target.result, {
-                    type: "binary"
-                });
-
-                resolve(workbook);
-
-            } catch (err) {
-
-                reject(err);
-
-            }
-
-        };
-
-        reader.onerror = reject;
-
-        reader.readAsBinaryString(file);
-
-    });
-
+/**
+ * Đọc File/Blob Excel thành SheetJS Workbook
+ * @param {File|Blob} file File excel người dùng upload
+ * @returns {Promise<Object>} SheetJS Workbook object
+ */
+export async function readExcel(file) {
+    const arrayBuffer = await file.arrayBuffer();
+    return XLSX.read(arrayBuffer, { type: "array" });
 }
 
-
-
-//------------------------------------------
-// Chuyển sheet thành mảng
-//------------------------------------------
-function sheetToArray(workbook, sheetName) {
-
-    const sheet = workbook.Sheets[sheetName];
+/**
+ * Chuyển một Worksheet thành mảng 2D (Array of Arrays)
+ * @param {Object} workbook SheetJS Workbook object
+ * @param {string} [sheetName] Tên sheet (mặc định lấy sheet đầu tiên)
+ * @returns {Array<Array<any>>} Mảng 2D dữ liệu
+ */
+export function sheetToArray(workbook, sheetName) {
+    const targetSheetName = sheetName || workbook.SheetNames[0];
+    const sheet = workbook.Sheets[targetSheetName];
 
     if (!sheet) {
-
-        throw new Error("Không tìm thấy sheet: " + sheetName);
-
+        throw new Error("Không tìm thấy sheet: " + targetSheetName);
     }
 
+    // Chuyển sheet sang mảng 2D với header dạng index
     return XLSX.utils.sheet_to_json(sheet, {
-
         header: 1,
-
         defval: ""
-
     });
-
 }
 
-
-
-//------------------------------------------
-// Đọc file đáp án
-//------------------------------------------
-function readAnswerWorkbook(workbook) {
-
+/**
+ * Phân tích Workbook đáp án thành Object answerData
+ * @param {Object} workbook SheetJS Workbook object
+ * @returns {Object} answerData chứa thông tin các mã đề, đáp án từng câu và đếm CLO
+ */
+export function readAnswerWorkbook(workbook) {
     const sheetName = workbook.SheetNames[0];
-
     const data = sheetToArray(workbook, sheetName);
 
     if (data.length < 2) {
-
-        throw new Error("File đáp án không có dữ liệu.");
-
+        throw new Error("File đáp án không chứa đủ dòng dữ liệu.");
     }
 
-    //--------------------------------------------------
-    // Tiêu đề
-    //--------------------------------------------------
-
+    // 1. Đọc dòng Tiêu Đề (Header) để xác định các mã đề và lưu vị trí cột tạm thời
     const header = data[0];
-
     const exams = {};
-
-    //--------------------------------------------------
-    // Tìm các mã đề
-    //--------------------------------------------------
+    const columnMap = {}; // Lưu tạm chỉ số cột để parse, không đưa vào output cuối
 
     for (let c = 1; c < header.length; c += 2) {
-
-        let examCode = String(header[c]).trim();
-
+        let examCode = String(header[c] ?? "").trim();
         if (examCode === "") continue;
 
+        // Chuẩn hóa mã đề thành 3 chữ số (ví dụ: 1 -> "001")
         if (!isNaN(examCode)) {
-
             examCode = examCode.padStart(3, "0");
-
         }
 
+        // Lưu thông tin mã đề thuần túy (Không chứa answerColumn / cloColumn)
         exams[examCode] = {
-
-            answerColumn: c,
-
-            cloColumn: c + 1,
-
             totalQuestion: 0,
-
             cloCount: {},
-
-            // ***************
-            // MỚI
-            // ***************
-
             questions: {}
-
         };
 
+        // Lưu mapping vị trí cột riêng biệt
+        columnMap[examCode] = {
+            answerColumn: c,
+            cloColumn: c + 1
+        };
     }
 
-    //--------------------------------------------------
-    // Đọc từng câu
-    //--------------------------------------------------
-
+    // 2. Đọc từng câu hỏi và đáp án
     for (let r = 1; r < data.length; r++) {
-
-        const question = Number(data[r][0]);
-
-        if (!question) continue;
+        const questionNum = Number(data[r][0]);
+        if (!questionNum || isNaN(questionNum)) continue;
 
         for (const code in exams) {
-
             const info = exams[code];
+            const cols = columnMap[code];
 
-            const answer = String(
-                data[r][info.answerColumn]
-            ).trim().toUpperCase();
+            const answer = String(data[r][cols.answerColumn] ?? "")
+                .trim()
+                .toUpperCase();
 
-            const clo = String(
-                data[r][info.cloColumn]
-            ).trim();
-
-            //------------------------------------------------
+            const clo = String(data[r][cols.cloColumn] ?? "").trim();
 
             if (answer === "") continue;
 
-            //------------------------------------------------
-
             info.totalQuestion++;
 
-            //------------------------------------------------
-
             if (clo !== "") {
-
                 if (!info.cloCount[clo]) {
-
                     info.cloCount[clo] = 0;
-
                 }
-
                 info.cloCount[clo]++;
-
             }
 
-            //------------------------------------------------
-            // MỚI
-            //------------------------------------------------
-
-            info.questions[question] = {
-
+            info.questions[questionNum] = {
                 answer: answer,
-
                 clo: clo
-
             };
-
         }
-
     }
 
-    //--------------------------------------------------
-
+    // Trả về Object thuần túy gọn nhẹ
     return {
-
         sheetName: sheetName,
-
-        data: data,
-
         exams: exams
-
     };
-
 }

@@ -1,408 +1,206 @@
 // ============================================
 // exportMark.js
-// Version 4.0
-// Part 1 / 3
+// Version 7.1 - Native ES Module (GitHub Pages)
 // ============================================
 
+// Import ExcelJS ESM từ jsDelivr
+import ExcelJS from "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/+esm";
 
+// Import formatter
+import { formatWorksheet } from "./formatter.js";
 
-//------------------------------------------------
-// Xuất bảng Marks
-//------------------------------------------------
+/**
+ * Xuất file Excel bảng điểm (Marks)
+ * @param {Object} answerData Dữ liệu đáp án & CLO
+ * @param {Object} untData Dữ liệu bài làm sinh viên
+ */
+export async function exportMark(answerData, untData) {
 
-function exportMark(answerData,
-                    untData){
+    // Workbook
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Marks");
 
-    //--------------------------------------------
+    // Danh sách CLO
+    const cloList = getCLOList(answerData);
 
-    const workbook =
+    // Tạo cột
+    setupWorksheetColumns(worksheet, cloList);
 
-        XLSX.utils.book_new();
+    // Ghi dữ liệu
+    createMarkData(worksheet, untData, cloList);
 
-    //--------------------------------------------
+    // Định dạng
+    formatWorksheet(worksheet);
 
-    const rows = [];
-
-    //--------------------------------------------
-
-    createMarkHeader(
-
-        rows,
-
-        answerData
-
-    );
-
-    //--------------------------------------------
-
-    createMarkData(
-
-        rows,
-
-        untData,
-
-        answerData
-
-    );
-
-    //--------------------------------------------
-
-    const worksheet =
-
-        XLSX.utils.aoa_to_sheet(
-
-            rows
-
-        );
-
-    //--------------------------------------------
-
-    formatMarkSheet(
-
-        worksheet,
-
-        rows
-
-    );
-
-    //--------------------------------------------
-
-    XLSX.utils.book_append_sheet(
-
-        workbook,
-
-        worksheet,
-
-        "Marks"
-
-    );
-
-    //--------------------------------------------
-
-    XLSX.writeFile(
-
-        workbook,
-
-        "Marks.xlsx"
-
-    );
-
+    // Xuất file
+    await saveWorkbook(workbook, "Marks.xlsx");
 }
 
+//------------------------------------------------
+// Lấy danh sách CLO
+//------------------------------------------------
+function getCLOList(answerData) {
 
-// ============================================
-// exportMark.js
-// Version 4.0
-// Part 2 / 3
-// ============================================
+    const exams = Object.keys(answerData?.exams || {});
 
+    if (exams.length === 0) return [];
 
+    const exam = answerData.exams[exams[0]];
+
+    return Object.keys(exam?.cloCount || {});
+}
 
 //------------------------------------------------
-// Tiêu đề
+// Khai báo cột
 //------------------------------------------------
+function setupWorksheetColumns(worksheet, cloList) {
 
-function createMarkHeader(rows,
-                          answerData){
+    worksheet.columns = [
 
-    const header = [
+        {
+            header: "STT",
+            key: "stt"
+        },
 
-        "STT",
+        {
+            header: "SBD",
+            key: "sbd"
+        },
 
-        "SBD"
+        ...cloList.map(clo => ({
+            header: "CLO" + clo,
+            key: "clo_" + clo
+        })),
+
+        {
+            header: "GPA",
+            key: "gpa"
+        },
+
+        {
+            header: "GPA (Chữ)",
+            key: "gpaWord"
+        },
+
+        {
+            header: "Tổng đúng",
+            key: "correct"
+        }
 
     ];
 
-    //----------------------------------------
-
-    const exams =
-
-        Object.keys(
-
-            answerData.exams
-
-        );
-
-    //----------------------------------------
-
-    if(exams.length > 0){
-
-        const exam =
-
-            answerData.exams[
-
-                exams[0]
-
-            ];
-
-        //------------------------------------
-
-        for(const clo in exam.cloCount){
-
-            header.push("CLO" + clo);
-
-        }
-
-    }
-
-    //----------------------------------------
-
-    header.push(
-
-        "GPA"
-
-    );
-
-    header.push(
-
-        "GPA (Chữ)"
-
-    );
-
-    header.push(
-
-        "Tổng đúng"
-
-    );
-
-    //----------------------------------------
-
-    rows.push(header);
-
 }
 
-
-
 //------------------------------------------------
-// Dữ liệu
+// Ghi dữ liệu
 //------------------------------------------------
-
-function createMarkData(rows,
-                        untData,
-                        answerData){
+function createMarkData(worksheet, untData, cloList) {
 
     let stt = 1;
 
-    //----------------------------------------
+    for (const student of untData?.students || []) {
 
-    const exams =
+        if (!student.result) continue;
 
-        Object.keys(
+        const row = {
 
-            answerData.exams
+            stt: stt++,
 
-        );
+            sbd: student.sbd,
 
-    //----------------------------------------
+            gpa: student.result.marks?.GPA,
 
-    let cloList = [];
+            gpaWord: numberToVietnamese(student.result.marks?.GPA),
 
-    if(exams.length > 0){
+            correct: student.result.correct
 
-        cloList =
+        };
 
-            Object.keys(
+        for (const clo of cloList) {
 
-                answerData.exams[
-
-                    exams[0]
-
-                ].cloCount
-
-            );
-
-    }
-
-    //----------------------------------------
-
-    for(const student of untData.students){
-
-        if(!student.result){
-
-            continue;
+            row["clo_" + clo] = student.result.marks?.[clo];
 
         }
 
-        //------------------------------------
-
-        const row = [];
-
-        row.push(stt++);
-
-        row.push(student.sbd);
-
-        //------------------------------------
-
-        for(const clo of cloList){
-
-            row.push(
-
-                student.result.marks[clo]
-
-            );
-
-        }
-
-        //------------------------------------
-
-        row.push(
-
-            student.result.marks.GPA
-
-        );
-
-        //------------------------------------
-
-        row.push(
-
-            numberToVietnamese(
-
-                student.result.marks.GPA
-
-            )
-
-        );
-
-        //------------------------------------
-
-        row.push(
-
-            student.result.correct
-
-        );
-
-        //------------------------------------
-
-        rows.push(row);
+        worksheet.addRow(row);
 
     }
 
 }
 
-
-// ============================================
-// exportMark.js
-// Version 4.0
-// Part 3 / 3
-// ============================================
-
-
-
 //------------------------------------------------
-// Định dạng Sheet
+// Điểm thành chữ
 //------------------------------------------------
+function numberToVietnamese(score) {
 
-function formatMarkSheet(worksheet,
-                         rows){
-
-    //--------------------------------------------
-
-    const range =
-
-        XLSX.utils.decode_range(
-
-            worksheet["!ref"]
-
-        );
-
-    //--------------------------------------------
-
-    const cols = [];
-
-    for(let c = range.s.c;
-        c <= range.e.c;
-        c++){
-
-        cols.push({
-
-            wch: 12
-
-        });
-
-    }
-
-    //--------------------------------------------
-
-    cols[0].wch = 8;      // STT
-    cols[1].wch = 12;     // SBD
-
-    cols[cols.length-3].wch = 10; // GPA
-    cols[cols.length-2].wch = 20; // GPA chữ
-    cols[cols.length-1].wch = 12; // Tổng đúng
-
-    worksheet["!cols"] = cols;
-
-}
-
-
-
-//------------------------------------------------
-// Chuyển điểm sang chữ
-//------------------------------------------------
-
-function numberToVietnamese(score){
+    if (score == null || isNaN(score)) return "";
 
     score = Number(score).toFixed(1);
 
-    const parts = score.split(".");
-
-    const integerPart = Number(parts[0]);
-
-    const decimalPart = Number(parts[1]);
+    const [a, b] = score.split(".");
 
     const words = [
 
         "Không",
-
         "Một",
-
         "Hai",
-
         "Ba",
-
         "Bốn",
-
         "Năm",
-
         "Sáu",
-
         "Bảy",
-
         "Tám",
-
         "Chín",
-
         "Mười"
 
     ];
 
-    let result = "";
+    let text = Number(a) <= 10
 
-    if(integerPart <= 10){
+        ? words[Number(a)]
 
-        result = words[integerPart];
+        : a;
 
-    }else{
+    text += " phẩy ";
 
-        result = integerPart.toString();
+    text += Number(b) <= 9
 
-    }
+        ? words[Number(b)].toLowerCase()
 
-    result += " phẩy ";
+        : b;
 
-    if(decimalPart <= 9){
-
-        result += words[decimalPart].toLowerCase();
-
-    }else{
-
-        result += decimalPart.toString();
-
-    }
-
-    return result;
+    return text;
 
 }
 
+//------------------------------------------------
+// Xuất Workbook
+//------------------------------------------------
+async function saveWorkbook(workbook, filename) {
 
+    const buffer = await workbook.xlsx.writeBuffer();
 
+    const blob = new Blob(
+        [buffer],
+        {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+
+    a.href = url;
+
+    a.download = filename;
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+
+}
