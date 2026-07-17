@@ -1,89 +1,72 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Chấm thi CLO</title>
 
-<title>Chấm thi CLO</title>
-
-<link rel="stylesheet" href="css/style.css">
-
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-<h1>CHẤM THI CLO</h1>
+        <h1>CHẤM THI CLO</h1>
 
-<div class="card">
+        <div class="card">
+            <h3>File UnT</h3>
+            <input type="file" id="untFile" accept=".xlsx,.xls">
+        </div>
 
-<h3>File UnT</h3>
+        <div class="card">
+            <h3>File Đáp án + CLO</h3>
 
-<input type="file" id="untFile" accept=".xlsx,.xls">
+            <p>
+                <a href="https://drive.google.com/drive/folders/1hNHQZvQrZ_qdh298rmvVCmSOTkexID-6?usp=sharing"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Xem và tải file đáp án mẫu
+                </a>
+            </p>
 
-</div>
+            <input type="file" id="answerFile" accept=".xlsx,.xls">
+        </div>
 
-<div class="card">
+        <button id="btnProcess">
+            Đọc dữ liệu và chấm bài
+        </button>
 
-<h3>File Đáp án + CLO</h3>
+        <hr>
 
-<p> <a href="https://drive.google.com/drive/folders/1hNHQZvQrZ_qdh298rmvVCmSOTkexID-6?usp=sharing" target="_blank">Xem và tải file đáp án mẫu</a> </p>
+        <div id="result"></div>
 
-<input type="file" id="answerFile" accept=".xlsx,.xls">
+    </div>
 
-</div>
+    <div style="text-align:center; margin-top:20px;">
 
+        <button id="btnExportMark" disabled>
+            Xuất bảng điểm
+        </button>
 
+        <button id="btnExportDetail" disabled>
+            Xuất bảng chi tiết
+        </button>
 
+    </div>
 
+    <!-- Entry Point duy nhất cho Native ES Module -->
+    <script type="module" src="js/app.js"></script>
 
-
-
-
-<button id="btnProcess">
-
-Đọc dữ liệu và chấm bài
-
-</button>
-
-<hr>
-
-<div id="result"></div>
-
-</div>
-
-<script src="libs/xlsx.full.min.js"></script>
-<script src="libs/exceljs.min.js"></script>
-<script src="libs/FileSaver.min.js"></script>
-
-
-<div style="text-align:center; margin-top:20px;">
-
-    <button id="btnExportMark" disabled>
-        Xuất bảng điểm
-    </button>
-
-    <button id="btnExportDetail" disabled>
-        Xuất bảng chi tiết
-    </button>
-
-</div>
-
-
-<script src="js/excel.js"></script>
-<script src="js/parser.js"></script>
-<script src="js/grader.js"></script>
-<script src="js/score.js"></script>
-<script src="js/exportMark.js"></script>
-<script src="js/exportDetail.js"></script>
-
-<script src="js/app.js"></script>
-
-
-<footer class="footer">
-   <a href="about.html">About</a> | EXAM-CLO | Phiên bản V1.0 - 16/07/2026 | Phát triển bởi Phan Hoàng Nam.
-</footer>
+    <footer class="footer">
+        <a href="about.html">About</a> |
+        EXAM-CLO |
+        Version 1.0.0 |
+        Phát triển bởi Phan Hoàng Nam.
+    </footer>
 
 </body>
+
 </html>
