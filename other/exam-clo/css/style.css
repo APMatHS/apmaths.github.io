@@ -1,34 +1,35 @@
+/* ==========================================================
+   1. CẤU HÌNH CHUNG & BỐ CỤC KHUNG CHÍNH (CONTAINER)
+   ========================================================== */
 body {
     font-family: Arial, sans-serif;
     background: #f5f5f5;
     margin: 0;
     padding: 0;
-    
-    /* BỔ SUNG THÊM 2 DÒNG NÀY */
     width: 100%;
-    overflow-x: hidden; /* Ngăn chặn toàn bộ trang sinh ra thanh cuộn ngang đáng ghét */
+    overflow-x: hidden; /* Ngăn chặn toàn bộ trang sinh ra thanh cuộn ngang */
 }
 
 .container {
-    width: 850px; /* Tăng nhẹ chiều rộng để 2 card đứng cạnh nhau thoải mái */
+    max-width: 850px; /* SỬA quan trọng nhất: Đổi thành max-width và width 100% để tự co giãn */
+    width: 100%;
     margin: 40px auto 0 auto;
+    box-sizing: border-box;
 }
 
-
-
-/* --- 1. LÀM TIÊU ĐỀ NỔI BẬT HƠN --- */
+/* --- TIÊU ĐỀ NỔI BẬT --- */
 h1 {
     text-align: center;
     font-size: 32px;
     font-weight: 800;
-    color: #1e3c72; /* Đổi sang màu xanh công nghệ */
+    color: #1e3c72; /* Xanh công nghệ */
     letter-spacing: 1.5px;
     margin-bottom: 35px;
     position: relative;
     padding-bottom: 15px;
 }
 
-/* Đường gạch dưới trang trí tiêu đề cho chuyên nghiệp */
+/* Đường gạch dưới trang trí tiêu đề */
 h1::after {
     content: '';
     position: absolute;
@@ -48,7 +49,9 @@ h3 {
     font-size: 18px;
 }
 
-/* --- 2. ĐƯA 2 CARD LÊN CÙNG MỘT DÒNG --- */
+/* ==========================================================
+   2. KHU VỰC NẠP FILE (UPLOAD GRID & CARDS)
+   ========================================================== */
 .upload-grid {
     display: flex;
     gap: 20px; /* Khoảng cách giữa 2 card */
@@ -59,24 +62,25 @@ h3 {
     flex: 1; /* Hai card có độ rộng bằng nhau */
     background: white;
     padding: 25px 20px;
-    border-radius: 12px; /* Bo góc mịn hơn */
+    border-radius: 12px; /* Bo góc mịn */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     
-    /* Canh giữa tất cả mọi thứ bên trong card (kể cả nút chọn tệp) */
+    /* Canh giữa tất cả mọi thứ bên trong card */
     display: flex;
     flex-direction: column;
     align-items: center; 
     text-align: center;
+    box-sizing: border-box; /* Ngăn padding làm phình card */
 }
 
-/* Định dạng lại input file để nó tự căn giữa mượt mà */
+/* Định dạng input file */
 input[type="file"] {
     max-width: 100%;
     font-size: 14px;
     margin-top: 10px;
 }
 
-/* --- 3. HIỆU ỨNG LINK XÓA GẠCH CHÂN --- */
+/* --- HIỆU ỨNG LINK TẢI MẪU / TÀI LIỆU --- */
 a { 
     display: inline-block;
     margin: 5px auto 15px auto;
@@ -110,7 +114,10 @@ a:hover::after {
     transform: scaleX(1);
 }
 
-/* --- TRANG TRÍ NÚT "ĐỌC DỮ LIỆU VÀ CHẤM BÀI" --- */
+/* ==========================================================
+   3. HỆ THỐNG NÚT BẤM (BUTTONS)
+   ========================================================== */
+/* Nút chính: Đọc dữ liệu và chấm bài */
 #btnProcess {
     display: block;
     margin: 35px auto;
@@ -137,15 +144,7 @@ a:hover::after {
     box-shadow: 0 2px 10px rgba(42, 82, 152, 0.3);
 }
 
-/* --- CÁC NÚT XUẤT FILE --- */
-button:disabled {
-    background: #e0e0e0;
-    color: #999;
-    cursor: not-allowed;
-    box-shadow: none;
-    border: 1px solid #ccc;
-}
-
+/* Định dạng chung cho tất cả các nút bấm phụ/xuất file */
 button {
     padding: 12px 25px;
     font-size: 16px;
@@ -163,24 +162,23 @@ button:not(:disabled):hover {
     color: #fff;
 }
 
-/* --- BẢNG VÀ PHẦN KHÁC --- */
-table {
-    border-collapse: collapse;
-    margin-top: 20px;
-    width: 100%;
+button:disabled {
+    background: #e0e0e0;
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+    border: 1px solid #ccc;
 }
 
-td, th {
-    border: 1px solid #ddd;
-    padding: 10px;
+/* Khối bao quanh các nút xuất file */
+.export-actions {
     text-align: center;
+    margin-top: 20px;
 }
 
-th {
-    background-color: #f8f9fa;
-    color: #333;
-}
-
+/* ==========================================================
+   4. HIỂN THỊ KẾT QUẢ, BẢNG DỮ LIỆU & SPINNING
+   ========================================================== */
 hr {
     border: 0;
     height: 1px;
@@ -188,14 +186,61 @@ hr {
     margin: 30px 0;
 }
 
-.footer {
-    margin-top: 60px; /* Tăng khoảng cách phía trên để tách biệt với nội dung chính */
-    padding: 20px 0;
+/* Khung bọc bảng hỗ trợ cuộn ngang mượt mà */
+.table-wrapper {
+    overflow-x: auto; 
+    margin-top: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background: #fff;
+}
+
+th, td {
+    border: 1px solid #eee;
+    padding: 12px 10px;
     text-align: center;
-    font-size: 13px; /* Cỡ chữ nhỏ cho tinh tế */
-    color: #888; /* Màu chữ nhẹ hơn */
-    border-top: 1px solid #eaeaea;
-    line-height: 1.4; /* GIẢM line-height để các dòng khít lại gần nhau */
+}
+
+th {
+    background-color: #1e3c72; /* Đồng bộ màu header bảng */
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+td {
+    color: #444;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Hiệu ứng nổi bật dòng khi di chuột qua */
+tbody tr:hover {
+    background-color: #f1f5f9;
+    transition: background-color 0.2s ease;
+}
+
+/* Định dạng màu sắc cho trạng thái Đạt / Không đạt của CLO */
+.status-pass {
+    color: #2e7d32;
+    background: #e8f5e9;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+}
+.status-fail {
+    color: #c62828;
+    background: #ffebee;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
 }
 
 /* Khối giả lập Loading khi đang chấm bài */
@@ -248,142 +293,99 @@ hr {
     color: #333;
 }
 
-/* Tối ưu lại giao diện Bảng hiển thị kết quả chi tiết */
-.table-wrapper {
-    overflow-x: auto; /* Bật cuộn ngang nếu bảng quá rộng trên màn hình nhỏ */
-    margin-top: 20px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
+/* ==========================================================
+   5. CHÂN TRANG (FOOTER) - ĐÃ CĂN CHỈNH KHOẢNG CÁCH
+   ========================================================== */
+.footer {
+    margin-top: 60px;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 13px;
+    color: #888;
+    border-top: 1px solid #eaeaea;
+    line-height: 1.4;
 }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-    background: #fff;
-}
-
-th {
-    background-color: #1e3c72;
-    color: #ffffff;
-    font-weight: 600;
-    padding: 12px 10px;
-    font-size: 15px;
-}
-
-td {
-    border-bottom: 1px solid #eee;
-    padding: 12px 10px;
-    color: #444;
-    font-size: 14px;
-}
-
-/* Hiệu ứng nổi bật dòng khi di chuột qua */
-tbody tr:hover {
-    background-color: #f1f5f9;
-    transition: background-color 0.2s ease;
-}
-
-/* Định dạng màu sắc cho trạng thái Đạt / Không đạt của CLO */
-.status-pass {
-    color: #2e7d32;
-    background: #e8f5e9;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 12px;
-}
-.status-fail {
-    color: #c62828;
-    background: #ffebee;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 12px;
-}
-
-/* Xử lý khoảng cách mặc định của các div con bên trong footer */
 .footer div {
-    margin: 0; /* Xóa margin để các dòng không bị xa nhau */
+    margin: 0;
     padding: 0;
 }
 
-/* --- Xử lý riêng cho link "About" --- */
 .footer a {
-    display: inline-block; /* Chỉ chiếm chiều rộng của chữ */
-    margin: 0 0 5px 0; /* Tạo khoảng cách mỏng phía dưới với dòng EXAM-CLO */
+    display: inline-block;
+    margin: 0 0 5px 0;
     padding: 0;
-    font-weight: 600; /* Làm chữ đậm lên một chút cho nổi bật */
+    font-weight: 600;
     color: #0066cc;
-    text-decoration: none; /* GIẢM gạch chân mặc định */
-    position: relative; /* Chuẩn bị cho hiệu ứng gạch chạy ::after */
+    text-decoration: none;
+    position: relative;
 }
 
-/* Đảm bảo link About chỉ dùng gạch chạy mượt mà, KHÔNG gạch default */
 .footer a:hover {
-    text-decoration: none; /* Giữ nguyên khi hover để không bị 2 gạch */
+    text-decoration: none;
     color: #0025cc;
 }
 
-/* Giữ lại hiệu ứng gạch chạy tinh tế từ giữa ra khi hover cho About */
 .footer a::after {
     content: '';
     position: absolute;
     width: 100%;
-    transform: scaleX(0); /* Bắt đầu với chiều rộng bằng 0 */
+    transform: scaleX(0);
     height: 2px;
-    bottom: -2px; /* Đặt dưới chữ 2px */
+    bottom: -2px;
     left: 0;
     background-color: #0025cc;
     transform-origin: bottom center;
-    transition: transform 0.2s ease-out; /* Thời gian chuyển động nhanh mượt */
+    transition: transform 0.2s ease-out;
 }
 
 .footer a:hover::after {
-    transform: scaleX(1); /* Mở rộng chiều rộng tối đa */
+    transform: scaleX(1);
 }
 
-/* Trang trí dòng EXAM-CLO và Tác giả cho khít nhau */
 .footer-info, .footer-copyright {
-    margin-bottom: 2px; /* Khoảng cách rất mỏng giữa các dòng */
+    margin-bottom: 2px;
 }
 
 /* ==========================================================
-   CSS RESPONSIVE: ĐỒNG BỘ TRÊN ĐIỆN THOẠI
+   6. HỆ THỐNG ĐÁP ỨNG DI ĐỘNG (MEDIA QUERIES) & THU NHỎ TAB
    ========================================================== */
 @media (max-width: 768px) {
-    /* 1. Thêm lề trái/phải cho toàn bộ trang chính và footer */
-    .container, 
-    .footer {
+    /* Thêm lề trái/phải thống nhất và ngăn chặn container tràn viền */
+    .container {
         padding-left: 20px !important;
         padding-right: 20px !important;
+        width: 100% !important;
+        max-width: 100% !important;
         box-sizing: border-box;
     }
 
-    /* 2. Chuyển 2 card nạp file từ cùng hàng thành dọc */
+    /* Đẩy 2 khối nạp file thành hàng dọc */
     .upload-grid {
         flex-direction: column;
-        gap: 15px; 
+        gap: 15px;
         width: 100%;
     }
 
-    /* Đảm bảo các card con tận dụng hết không gian bên trong lề */
-    .upload-card {
+    /* Đảm bảo các card con co giãn 100% theo lề của container */
+    .card {
         width: 100% !important;
         box-sizing: border-box;
     }
 
-    /* 3. Đảm bảo các nút bấm co giãn vừa vặn, không bị tràn viền */
-    .action-btn, 
-    .export-btn {
-        width: 100%; 
+    /* Ép nút xử lý chính và các nút xuất file co giãn theo chiều ngang màn hình */
+    #btnProcess,
+    .export-actions button {
+        width: 100% !important;
         box-sizing: border-box;
+        margin: 8px 0 !important; /* Xếp dọc các nút để không chồng lấn chữ */
     }
 
-    /* 4. Thu gọn khu vực xuất kết quả */
+    /* Khung kết quả co giãn thông minh không tràn viền */
     #result {
         width: 100%;
         max-width: 100%;
-        overflow-x: auto; 
+        overflow-x: auto;
         box-sizing: border-box;
     }
 }
