@@ -1,17 +1,30 @@
-name: Nam
+title: APMaths
+name: APMaths
+author: 
+  name: Nam Hoang
+description: >
+  Tài liệu, bài giảng, công cụ học Toán và các bài viết về
+  Giải tích, Đại số, Phương trình vi phân, Xác suất thống kê.
+
+url: https://apmaths.github.io
+baseurl: ""
+
+lang: vi
+timezone: Asia/Ho_Chi_Minh
+
 markdown: kramdown
-permalink: /blog/:title
-paginate: 5 # amount of posts to show
-paginate_path: /blog/page/:num/
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 
+permalink: /blog/:title
+
+paginate: 10
+paginate_path: /blog/page/:num/
+
 # Conversion
-markdown: kramdown
 highlighter: rouge
 lsi: false
 excerpt_separator: <!--more-->
 incremental: false
-
 
 # Markdown Processing
 kramdown:
@@ -40,3 +53,21 @@ plugins:
         - Piston
         - Rolling contacts
         - Thrust bearings
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+
+future: false
+encoding: utf-8

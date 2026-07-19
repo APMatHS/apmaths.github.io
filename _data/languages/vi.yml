@@ -1,0 +1,101 @@
+# ==========================================
+# Website
+# ==========================================
+site:
+  title: "APMaths"
+  tagline: "Kiến thức • Công cụ • Tài nguyên Toán học"
+
+# ==========================================
+# Navigation
+# ==========================================
+nav:
+  home: "Trang chủ"
+  knowledge: "Kiến thức"
+  blog: "Blog"
+  tools: "Công cụ"
+  resources: "Tài nguyên"
+  about: "Giới thiệu"
+
+# ==========================================
+# Homepage
+# ==========================================
+home:
+  welcome: "Chào mừng đến với APMaths"
+  description: "Website chia sẻ kiến thức, công cụ và tài nguyên Toán học."
+
+# ==========================================
+# Buttons
+# ==========================================
+button:
+  read_more: "Xem thêm"
+  download: "Tải xuống"
+  search: "Tìm kiếm"
+  back: "Quay lại"
+
+# ==========================================
+# Search
+# ==========================================
+search:
+  placeholder: "Nhập từ khóa..."
+  no_result: "Không tìm thấy kết quả."
+
+# ==========================================
+# Footer
+# ==========================================
+footer:
+  copyright: "© 2026 APMaths"
+  privacy: "Chính sách bảo mật"
+  contact: "Liên hệ"
+
+# ==========================================
+# Sidebar
+# ==========================================
+sidebar:
+  categories: "Chuyên mục"
+  recent_posts: "Bài viết mới"
+  tags: "Thẻ"
+
+# ==========================================
+# Knowledge
+# ==========================================
+knowledge:
+  calculus: "Giải tích"
+  algebra: "Đại số"
+  linear_algebra: "Đại số tuyến tính"
+  differential_equations: "Phương trình vi phân"
+  probability: "Xác suất thống kê"
+  discrete_math: "Toán rời rạc"
+
+# ==========================================
+# Resources
+# ==========================================
+resources:
+  exams: "Đề thi"
+  slides: "Slide"
+  books: "Giáo trình"
+  pdf: "PDF"
+  downloads: "Tải xuống"
+
+
+# ==========================================
+# Menu
+# ==========================================
+nav:
+  home: "Trang chủ"
+  knowledge: "Kiến thức"
+  blog: "Blog"
+  tools: "Công cụ"
+  resources: "Tài nguyên"
+  about: "Giới thiệu"
+
+submenu:
+  calculus: "Giải tích"
+  algebra: "Đại số"
+  statistics: "Xác suất thống kê"
+
+  tags: "Thẻ"
+  categories: "Chuyên mục"
+
+  people: "Thành viên"
+  cv: "CV"
+  html_code: "Mã HTML"

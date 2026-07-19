@@ -1,31 +1,37 @@
-  <ul>
-      <li>
-        <a class="nav-link" href="/"><i class="fa fa-home"></i></a>
-      </li>
-      <li>
-        <a class="nav-link" href="/courses">Courses</a>
-        <span class="toggle-subnav">&#9660;</span>
-        <ul class="sub-menu">
-          <li><a href="/courses/algebra">Algebra</a></li>
-          <li><a href="/courses/calculus">Calculus</a></li>
-          <li><a href="/courses/statistics">Statistics</a></li>
-        </ul>
-      </li>
-      <li>
-        <a class="nav-link" href="/blog">Blog</a>
-        <span class="toggle-subnav">&#9660;</span>
-        <ul class="sub-menu">
-          <li><a href="/tags">#Tags</a></li>
-          <li><a href="/categories">#Categories</a></li>
-        </ul>
-      </li>
-      <li>
-        <a class="nav-link" href="#">Other</a>
-        <span class="toggle-subnav">&#9660;</span>
-        <ul class="sub-menu">
-          <li><a href="/other/people">People</a></li>
-          <li><a href="/cv">CV</a></li>
-          <li><a href="/other/html-code">Code HTML</a></li>
-        </ul>
-      </li>
+<ul>
+  <li>
+    <a class="nav-link" href="/"><i class="fa fa-home"></i></a>
+  </li>
+
+  <li>
+    <a class="nav-link" href="/courses">{{ include.t.nav.knowledge }}</a>
+    <span class="toggle-subnav">&#9660;</span>
+
+    <ul class="sub-menu">
+      <li><a href="/courses/algebra">{{ include.t.submenu.algebra }}</a></li>
+      <li><a href="/courses/calculus">{{ include.t.submenu.calculus }}</a></li>
+      <li><a href="/courses/statistics">{{ include.t.submenu.statistics }}</a></li>
     </ul>
+  </li>
+
+  <li>
+    <a class="nav-link" href="/blog">{{ include.t.nav.blog }}</a>
+    <span class="toggle-subnav">&#9660;</span>
+
+    <ul class="sub-menu">
+      <li><a href="/tags">#{{ include.t.submenu.tags }}</a></li>
+      <li><a href="/categories">#{{ include.t.submenu.categories }}</a></li>
+    </ul>
+  </li>
+
+  <li>
+    <a class="nav-link" href="#">{{ include.t.nav.tools }}</a>
+    <span class="toggle-subnav">&#9660;</span>
+
+    <ul class="sub-menu">
+      <li><a href="/other/people">{{ include.t.submenu.people }}</a></li>
+      <li><a href="/cv">{{ include.t.submenu.cv }}</a></li>
+      <li><a href="/other/html-code">{{ include.t.submenu.html_code }}</a></li>
+    </ul>
+  </li>
+</ul>

@@ -1,0 +1,26 @@
+{% assign lang = page.lang | default: "vi" %}
+{% assign t = site.data.languages[lang] %}
+
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+
+{% include head.html t=t %}
+
+<body>
+
+    {% include header.html t=t %}
+
+    <nav>
+        {% include menu.html t=t %}
+    </nav>
+
+    <div class="container">
+        {{ content }}
+    </div>
+
+    {% include footer.html t=t %}
+
+    <script src="/js/script.js"></script>
+
+</body>
+</html>

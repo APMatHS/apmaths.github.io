@@ -1,0 +1,70 @@
+site:
+  title: "APMaths"
+  tagline: "Mathematics Knowledge • Tools • Resources"
+
+nav:
+  home: "Home"
+  knowledge: "Knowledge"
+  blog: "Blog"
+  tools: "Tools"
+  resources: "Resources"
+  about: "About"
+
+home:
+  welcome: "Welcome to APMaths"
+  description: "A website for mathematics knowledge, tools and resources."
+
+button:
+  read_more: "Read More"
+  download: "Download"
+  search: "Search"
+  back: "Back"
+
+search:
+  placeholder: "Enter keywords..."
+  no_result: "No results found."
+
+footer:
+  copyright: "© 2026 APMaths"
+  privacy: "Privacy Policy"
+  contact: "Contact"
+
+sidebar:
+  categories: "Categories"
+  recent_posts: "Recent Posts"
+  tags: "Tags"
+
+knowledge:
+  calculus: "Calculus"
+  algebra: "Algebra"
+  linear_algebra: "Linear Algebra"
+  differential_equations: "Differential Equations"
+  probability: "Probability and Statistics"
+  discrete_math: "Discrete Mathematics"
+
+resources:
+  exams: "Exams"
+  slides: "Slides"
+  books: "Textbooks"
+  pdf: "PDF"
+  downloads: "Downloads"
+
+nav:
+  home: "Home"
+  knowledge: "Knowledge"
+  blog: "Blog"
+  tools: "Tools"
+  resources: "Resources"
+  about: "About"
+
+submenu:
+  calculus: "Calculus"
+  algebra: "Algebra"
+  statistics: "Statistics"
+
+  tags: "Tags"
+  categories: "Categories"
+
+  people: "People"
+  cv: "CV"
+  html_code: "HTML Code"
