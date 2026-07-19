@@ -1,72 +1,65 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Chấm thi CLO</title>
-
     <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-
     <div class="container">
-
         <h1>CHẤM THI CLO</h1>
-
-        <div class="card">
-            <h3>File UnT</h3>
-            <input type="file" id="untFile" accept=".xlsx,.xls">
+        
+        <!-- Khối chứa 2 card nằm cùng một dòng -->
+        <div class="upload-grid">
+            <div class="card">
+                <h3>File UnT</h3>
+                <input type="file" id="untFile" accept=".xlsx,.xls">
+            </div>
+            
+            <div class="card">
+                <h3>File Đáp án + CLO</h3>
+                <input type="file" id="answerFile" accept=".xlsx,.xls">
+                <p>
+                    <a href="https://drive.google.com/drive/folders/1hNHQZvQrZ_qdh298rmvVCmSOTkexID-6?usp=sharing"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        Xem và tải file đáp án mẫu
+                    </a>
+                </p>
+                
+            </div>
         </div>
-
-        <div class="card">
-            <h3>File Đáp án + CLO</h3>
-
-            <p>
-                <a href="https://drive.google.com/drive/folders/1hNHQZvQrZ_qdh298rmvVCmSOTkexID-6?usp=sharing"
-                   target="_blank"
-                   rel="noopener noreferrer">
-                    Xem và tải file đáp án mẫu
-                </a>
-            </p>
-
-            <input type="file" id="answerFile" accept=".xlsx,.xls">
-        </div>
-
-        <button id="btnProcess">
-            Đọc dữ liệu và chấm bài
-        </button>
-
+        
+        <!-- Nút xử lý chính được thiết kế đặc biệt -->
+        <button id="btnProcess">Đọc dữ liệu và chấm bài</button>
+        
         <hr>
-
+        
+        <!-- Nơi hiển thị kết quả chấm bài -->
         <div id="result"></div>
-
     </div>
-
-    <div style="text-align:center; margin-top:20px;">
-
-        <button id="btnExportMark" disabled>
-            Xuất bảng điểm
-        </button>
-
-        <button id="btnExportDetail" disabled>
-            Xuất bảng chi tiết
-        </button>
-
+    
+    <!-- Các nút xuất dữ liệu sau khi chấm -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button id="btnExportMark" disabled>Xuất bảng điểm</button>
+        <button id="btnExportDetail" disabled>Xuất bảng chi tiết</button>
     </div>
-
+    
     <!-- Entry Point duy nhất cho Native ES Module -->
     <script type="module" src="js/app.js"></script>
-
+    
+    <!-- Footer đã được giữ lại đầy đủ và an toàn -->
     <footer class="footer">
-        <a href="about.html">About</a> |
-        EXAM-CLO |
-        Version 1.0.0 |
-        Phát triển bởi Phan Hoàng Nam.
-    </footer>
-
+    <div class="footer-links">
+        <a href="about.html">About</a>
+    </div>
+    <div class="footer-info">
+        <strong>EXAM-CLO</strong> • Phiên bản 1.0.0
+    </div>
+    <div class="footer-copyright">
+        &copy; 2026 Phát triển bởi Phan Hoàng Nam.
+    </div>
+</footer>
 </body>
-
 </html>
