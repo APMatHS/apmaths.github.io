@@ -1,0 +1,57 @@
+---
+layout: default
+title: Giải tích Toán học
+permalink: /knowledge/calculus/
+---
+
+<div class="calculus-container" style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  
+  <!-- PHẦN ĐẦU TRANG: Giới thiệu chuyên mục (Tối ưu từ khóa SEO) -->
+  <header style="margin-bottom: 40px; border-bottom: 2px solid #f1f3f4; padding-bottom: 20px;">
+    <h1 style="font-size: 2.2rem; color: #1a73e8; margin-bottom: 15px;">{{ page.title }} (Calculus & Analysis)</h1>
+    <p style="color: #3c4043; font-size: 1.1rem; line-height: 1.6; margin: 0;">
+      Hệ thống bài giảng, chuyên đề nghiên cứu và bài tập mẫu về <strong>Giải tích toán học</strong>. Nội dung bao gồm các lý thuyết nền tảng từ giới hạn, hàm số liên tục, vi tích phân sơ cấp đến các cấu trúc nâng cao trên trường số thực và số phức.
+    </p>
+  </header>
+
+  <!-- PHẦN THÂN TRANG: Tự động lọc và hiển thị bài viết thuộc chuyên mục Calculus -->
+  <main class="calculus-posts">
+    <h2 style="font-size: 1.4rem; color: #202124; margin-bottom: 20px; border-left: 4px solid #1a73e8; padding-left: 10px;">
+      Danh sách bài học & Chuyên đề
+    </h2>
+
+    {% assign calculus_posts = site.categories['calculus'] | default: site.tags['calculus'] %}
+    
+    {% if calculus_posts.size > 0 %}
+      <div class="posts-grid" style="display: flex; flex-direction: column; gap: 20px;">
+        {% for post in calculus_posts %}
+          <article style="background: #ffffff; border: 1px solid #dadce0; border-radius: 8px; padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 1.3rem;">
+              <a href="{{ post.url | relative_url }}" style="color: #1a73e8; text-decoration: none; font-weight: 600;">
+                {{ post.title }}
+              </a>
+            </h3>
+            <div style="color: #70757a; font-size: 0.85rem; margin-bottom: 12px;">
+              <i class="fa fa-calendar" aria-hidden="true"></i> {{ post.date | date: "%B %-d, %Y" }}
+            </div>
+            <p style="color: #3c4043; line-height: 1.5; margin: 0; font-size: 0.95rem;">
+              {{ post.excerpt | strip_html | truncatewords: 40 }}
+            </p>
+            <div style="text-align: right; margin-top: 10px;">
+              <a href="{{ post.url | relative_url }}" style="color: #1a73e8; text-decoration: none; font-weight: bold; font-size: 0.9rem;">
+                Chi tiết bài học &raquo;
+              </a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- Trạng thái trống khi chưa có bài viết nào -->
+      <div style="text-align: center; padding: 40px; border: 1px dashed #dadce0; border-radius: 8px; color: #70757a;">
+        <i class="fa fa-folder-open-o" aria-hidden="true" style="font-size: 2.5rem; margin-bottom: 10px; color: #bdc1c6;"></i>
+        <p style="margin: 0;">Hiện tại chưa có bài viết nào trong chuyên mục này. Các bài giảng đang được biên soạn và sẽ cập nhật sớm nhất.</p>
+      </div>
+    {% endif %}
+  </main>
+
+</div>
