@@ -1,75 +1,220 @@
 ---
 layout: default
 title: Kiến thức Toán học | APMaths
-description: Tổng hợp kiến thức Toán học từ cơ bản đến nâng cao, bao gồm Đại số tuyến tính, Giải tích, Xác suất thống kê và các ứng dụng trong kinh tế, kỹ thuật và khoa học dữ liệu.
+description: Hệ thống hóa tài liệu học thuật 3 bộ môn nền tảng cốt lõi gồm Đại số tuyến tính, Giải tích toán học và Xác suất thống kê ứng dụng.
 permalink: /knowledge/
 ---
 
-<h1>Kiến thức Toán học</h1>
+<style>
+    .knowledge-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+    .knowledge-intro {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 50px auto;
+        line-height: 1.6;
+    }
+    .knowledge-intro h1 {
+        font-size: 2.6rem;
+        color: #1a202c;
+        margin-bottom: 15px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .knowledge-intro p {
+        color: #4a5568;
+        font-size: 1.1rem;
+    }
+    
+    /* Bố cục Grid 3 cột cho 3 môn chính */
+    .knowledge-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        margin-bottom: 60px;
+    }
+    .category-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+        border-color: #3182ce;
+    }
+    .category-badge {
+        align-self: flex-start;
+        background: #ebf8ff;
+        color: #2b6cb0;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        margin-bottom: 18px;
+        letter-spacing: 0.5px;
+    }
+    .category-card h2 {
+        font-size: 1.5rem;
+        color: #1a202c;
+        margin-bottom: 12px;
+        font-weight: 700;
+    }
+    .category-card p {
+        color: #4a5568;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        flex: 1;
+    }
+    .topics-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 25px;
+        border-top: 1px solid #edf2f7;
+        padding-top: 15px;
+    }
+    .topics-list li {
+        font-size: 0.9rem;
+        color: #4a5568;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+    .topics-list li::before {
+        content: "→";
+        color: #3182ce;
+        font-weight: bold;
+        display: inline-block;
+        width: 1.2em;
+    }
+    .category-link {
+        display: inline-flex;
+        align-items: center;
+        color: #3182ce;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .category-link span {
+        margin-left: 5px;
+        transition: transform 0.2s;
+    }
+    .category-card:hover .category-link span {
+        transform: translateX(5px);
+    }
+    
+    .mission-statement {
+        background: #f7fafc;
+        border-left: 4px solid #3182ce;
+        padding: 30px;
+        border-radius: 0 12px 12px 0;
+    }
+    .mission-statement h3 {
+        font-size: 1.3rem;
+        color: #1a202c;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+    .mission-statement p {
+        color: #4a5568;
+        line-height: 1.6;
+    }
+    
+    /* Responsive cho máy tính bảng và mobile */
+    @media (max-width: 992px) {
+        .knowledge-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .knowledge-intro h1 { font-size: 2.1rem; }
+        .knowledge-grid { grid-template-columns: 1fr; }
+    }
+</style>
 
-<p>
-    Chuyên mục <strong>Kiến thức</strong> tổng hợp các bài viết, tài liệu và hướng dẫn
-    về nhiều lĩnh vực của Toán học. Nội dung được biên soạn nhằm phục vụ sinh viên,
-    giảng viên, nghiên    cứu sinh và những người yêu thích Toán học.
-</p>
+<div class="knowledge-container">
+    
+    <!-- Tiêu đề & Giới thiệu -->
+    <header class="knowledge-intro">
+        <h1>Kiến Thức Toán Học Cốt Lõi</h1>
+        <p>
+            Hệ thống hóa nền tảng lý thuyết và mô hình ứng dụng của 3 bộ môn toán học chính cấu thành nên tư duy phân tích hiện đại.
+        </p>
+    </header>
 
-<section>
+    <!-- Khối 3 môn chính -->
+    <div class="knowledge-grid">
+        
+        <!-- Môn 1: Giải tích -->
+        <article class="category-card">
+            <div class="category-badge">Cột trụ I</div>
+            <h2>Giải tích</h2>
+            <p>
+                Nghiên cứu về sự thay đổi liên tục thông qua giới hạn, phép tính vi phân và tích phân. Cung cấp bộ công cụ tối ưu hóa hàm nhiều biến và mô hình hóa động học hệ thống.
+            </p>
+            <ul class="topics-list">
+                <li>Phép tính vi phân hàm một biến & Nhiều biến</li>
+                <li>Tích phân bội & Các định lý tích phân vector</li>
+                <li>Phương trình vi phân & Chuỗi hàm số</li>
+                <li>Ứng dụng tối ưu hóa trong mô hình kinh tế</li>
+            </ul>
+            <a href="/knowledge/calculus/" class="category-link">
+                Xem chuyên mục Giải tích <span>→</span>
+            </a>
+        </article>
 
-    <h2>Đại số tuyến tính</h2>
+        <!-- Môn 2: Đại số -->
+        <article class="category-card">
+            <div class="category-badge">Cột trụ II</div>
+            <h2>Đại số tuyến tính</h2>
+            <p>
+                Trọng tâm vào không gian vector, cấu trúc ma trận và các phép biến đổi. Đây là ngôn ngữ tính toán cốt lõi của hình học đối xứng, hệ thống tuyến tính và các thuật toán dữ liệu lớn.
+            </p>
+            <ul class="topics-list">
+                <li>Không gian vector & Không gian con</li>
+                <li>Ma trận, Định thức & Hệ phương trình</li>
+                <li>Trị riêng, Vector riêng & Dạng toàn phương</li>
+                <li>Phân tích ma trận & Hình học Symplectic nâng cao</li>
+            </ul>
+            <a href="/knowledge/algebra/" class="category-link">
+                Xem chuyên mục Đại số <span>→</span>
+            </a>
+        </article>
 
-    <p>
-        Bao gồm không gian vectơ, ma trận, định thức, ánh xạ tuyến tính,
-        trị riêng, vectơ riêng, dạng toàn phương và các chủ đề nâng cao.
-    </p>
+        <!-- Môn 3: Xác suất thống kê -->
+        <article class="category-card">
+            <div class="category-badge">Cột trụ III</div>
+            <h2>Xác suất thống kê</h2>
+            <p>
+                Nghiên cứu tính ngẫu nhiên và phương pháp suy diễn từ dữ liệu thực tế. Nền tảng không thể thiếu để đánh giá rủi ro, kiểm định giả thuyết khoa học và xây dựng thuật toán học máy.
+            </p>
+            <ul class="topics-list">
+                <li>Biến ngẫu nhiên & Các luật phân phối chuẩn</li>
+                <li>Lý thuyết ước lượng & Kiểm định giả thuyết</li>
+                <li>Mô hình hồi quy & Phân tích tương quan</li>
+                <li>Thống kê ứng dụng & Khoa học dữ liệu</li>
+            </ul>
+            <a href="/knowledge/statistics/" class="category-link">
+                Xem chuyên mục Thống kê <span>→</span>
+            </a>
+        </article>
 
-    <p>
-        <a href="/knowledge/algebra/">
-            Xem chuyên mục Đại số tuyến tính →
-        </a>
-    </p>
+    </div>
 
-</section>
+    <!-- Tầm nhìn học thuật -->
+    <section class="mission-statement">
+        <h3>Mục tiêu của APMaths</h3>
+        <p>
+            Chúng tôi hướng tới xây dựng một không gian học thuật mở, chuẩn hóa tài liệu miễn phí chất lượng cao. Bằng cách kết nối chặt chẽ lý thuyết toán học thuần túy với các bài toán ứng dụng thực tế, APMaths hỗ trợ người học chuyển đổi kiến thức nền tảng thành công cụ giải quyết vấn đề hiệu quả.
+        </p>
+    </section>
 
-<section>
-
-    <h2>Toán cao cấp ứng dụng</h2>
-
-    <p>
-        Giới thiệu các kiến thức Giải tích và Toán cao cấp được ứng dụng
-        trong kinh tế, tài chính, khoa học xã hội, y học và kỹ thuật.
-    </p>
-
-    <p>
-        <a href="/knowledge/calculus/">
-            Xem chuyên mục Toán cao cấp →
-        </a>
-    </p>
-
-</section>
-
-<section>
-
-    <h2>Thống kê ứng dụng</h2>
-
-    <p>
-        Bao gồm xác suất, thống kê mô tả, suy diễn thống kê,
-        hồi quy, kiểm định giả thuyết và phân tích dữ liệu.
-    </p>
-
-    <p>
-        <a href="/knowledge/statistics/">
-            Xem chuyên mục Thống kê →
-        </a>
-    </p>
-
-</section>
-
-<hr>
-
-<h2>Mục tiêu của APMaths</h2>
-
-<p>
-    APMaths hướng tới xây dựng một thư viện kiến thức Toán học trực tuyến miễn phí,
-    cung cấp các bài viết chất lượng, ví dụ minh họa, tài liệu tham khảo và công cụ
-    hỗ trợ học tập cho cộng đồng.
-</p>
+</div>
