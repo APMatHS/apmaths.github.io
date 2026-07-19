@@ -145,6 +145,7 @@
                 <button class="btn"><i class="fa-solid fa-download"></i> Xuất bản <i class="fa-solid fa-chevron-down" style="font-size:0.7rem"></i></button>
                 <div class="dropdown-content">
                     <button onclick="downloadFile('tex')">Tải file .tex</button>
+                    <button onclick="downloadFile('md')">Tải file .md (Markdown)</button>
                     <button onclick="downloadFile('txt')">Tải file .txt</button>
                     <button onclick="downloadFile('html')">Tải file .html (Full Render)</button>
                 </div>
@@ -160,6 +161,10 @@
             <button class="btn btn-sm" onclick="createNewDocument()" title="Tạo tài liệu mới"><i class="fa-solid fa-plus"></i></button>
             <button class="btn btn-sm" onclick="deleteCurrentDocument()" title="Xóa tài liệu hiện tại" style="color:#c5221f;"><i class="fa-solid fa-trash"></i></button>
         </div>
+
+       
+        <!-- Nút Bắt đầu nhanh được thêm vào ngay trước Ma trận -->
+        <button class="btn btn-sm btn-primary" onclick="insertAtCursor('quickstart')" style="background-color: #34a853;"><i class="fa-solid fa-rocket"></i> Bắt đầu nhanh</button>
 
         <div class="dropdown">
             <button class="btn btn-sm">Ma trận <i class="fa-solid fa-table-cells"></i></button>
@@ -305,9 +310,23 @@
         function renderLaTeX() {
             const text = editor.getValue();
             saveCurrentData();
-            output.innerHTML = escapeHTML(text).replace(/\n/g, '<br>');
             
-            let hasError = false;
+            // Xử lý lọc bỏ các cấu trúc khai báo hệ thống LaTeX để vùng Preview hiển thị sạch sẽ
+            let cleanText = text
+                .replace(/\\documentclass\[[\s\S]*?\]\{.*?\}/g, '')
+                .replace(/\\usepackage\[[\s\S]*?\]\{.*?\}/g, '')
+                .replace(/\\usepackage\{.*?\}/g, '')
+                .replace(/\\newtheorem\{.*?\}.*?/g, '')
+                .replace(/\\title\{.*?\}/g, '')
+                .replace(/\\author\[.*?\]\{.*?\}/g, '')
+                .replace(/\\affil\[.*?\]\{.*?\}/g, '')
+                .replace(/\\date\{.*?\}/g, '')
+                .replace(/\\begin\{document\}/g, '')
+                .replace(/\\end\{document\}/g, '')
+                .replace(/\\maketitle/g, '');
+
+            output.innerHTML = escapeHTML(cleanText).replace(/\n/g, '<br>');
+            
             try {
                 renderMathInElement(output, {
                     delimiters: [
@@ -320,10 +339,9 @@
                     errorColor: '#c5221f'
                 });
                 
-                // Quét nhanh tìm phần tử lỗi ẩn cấu trúc của KaTeX để báo ra ngoài giao diện
                 const errors = output.querySelectorAll('.katex-error');
                 if (errors.length > 0) {
-                    errorBox.innerText = `Phát hiện ${errors.length} công thức lỗi cú pháp LaTeX (đang hiển thị màu đỏ).`;
+                    errorBox.innerText = `Phát hiện ${errors.length} công thức lỗi cú pháp LaTeX trong nội dung.`;
                     errorBox.style.display = 'block';
                 } else {
                     errorBox.style.display = 'none';
@@ -353,6 +371,59 @@
 
         // Xử lý chèn mẫu nhanh
         const templates = {
+            quickstart: `\\documentclass[12pt,a4paper]{article}
+\\usepackage[letterpaper,top=3cm,bottom=3cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\\usepackage[utf8]{vietnam}
+\\usepackage{authblk}
+\\usepackage{url}
+\\usepackage[skip=10pt plus1pt, indent=20pt]{parskip}
+
+% Useful packages
+\\usepackage{amsmath}
+\\usepackage{graphicx}
+\\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\\usepackage{amsmath}
+\\usepackage{amsthm,amssymb}
+\\usepackage{amssymb}
+\\usepackage{graphicx}
+\\usepackage[utf8]{vietnam}
+\\usepackage{hyperref}
+\\usepackage{indentfirst}
+\\usepackage{refcheck}
+\\usepackage{xcolor}
+
+\\newtheorem{theorem}{Định lý}[section]
+\\newtheorem{proposition}[theorem]{Mệnh đề}
+\\newtheorem{lemma}[theorem]{Bổ đề}
+\\newtheorem{corollary}[theorem]{Hệ quả}
+\\newtheorem{conjecture}[theorem]{Phỏng đoán}
+\\newtheorem{remark}[theorem]{Nhận xét}
+
+\\newtheorem{definition}[theorem]{Định nghĩa}
+
+\\title{A note on...}
+
+\\author[1,2]{Author}
+\\affil[1]{\\small Faculty of Mathematics and Computer Science, University of Science, Ho Chi Minh City, Vietnam}
+\\affil[2]{Vietnam National University, Ho Chi Minh City, Vietnam}
+\\date{}
+
+\\begin{document}
+\\maketitle
+
+\\begin{abstract}
+Something...
+\\end{abstract}
+\\section{Introduction}
+
+Nội dung bài viết hoặc công thức toán của bạn ở đây. Ví dụ: $M^T J M = J$
+
+%\\bibliographystyle{plain}
+\\begin{thebibliography}{}
+\\bibitem{Rosaa}
+K. L. D. Rosaa and J. P. C. Santos,\\textit{ On commutators of unipotent matrices of index 2}, http://arxiv.org/abs/2409.13339v1
+\\end{thebibliography}
+\\end{document}`,
             matrix2: `\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}`,
             matrix3: `\\begin{pmatrix} a & b & c \\\\ d & e & f \\\\ g & h & i \\end{pmatrix}`,
             bmatrix: `\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}`,
@@ -373,12 +444,12 @@
 
         // Tính năng Tải tệp tin sửa lỗi rò rỉ bộ nhớ bằng revokeObjectURL
         function downloadFile(ext) {
-            let content = editor.getValue();
-            let mimeType = 'text/plain';
-            
-            if(ext === 'html') {
-                // Đóng gói cấu trúc HTML đầy đủ CSS/JS của KaTeX để mở độc lập ngoại tuyến vẫn render tốt
-                content = `<!DOCTYPE html>
+    let content = editor.getValue();
+    let mimeType = 'text/plain';
+    
+    if (ext === 'html') {
+        // Đóng gói cấu trúc HTML đầy đủ CSS/JS của KaTeX
+        content = `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -404,20 +475,30 @@
     <\/script>
 </body>
 </html>`;
-                mimeType = 'text/html';
-            }
-            
-            const blob = new Blob([content], {type: mimeType + ';charset=utf-8;'});
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.href = url;
-            link.download = `${documents[currentDocId].title.toLowerCase().replace(/\s+/g, '_')}.${ext}`;
-            link.click();
-            
-            // Giải phóng bộ nhớ ngay sau khi tải
-            URL.revokeObjectURL(url);
-            showToast(`Đã xuất file .${ext} thành công!`);
+        mimeType = 'text/html';
+    } else if (ext === 'md') {
+        // Định dạng MIME Type tối ưu cho file Markdown
+        mimeType = 'text/markdown';
+        
+        // Tùy chọn: Tự động chèn Front Matter của Jekyll vào đầu file nếu nội dung hiện tại chưa có
+        if (!content.trim().startsWith('---')) {
+            const cleanTitle = documents[currentDocId].title;
+            const permalinkName = cleanTitle.toLowerCase().replace(/\s+/g, '-');
+            content = `---\nlayout: page\npermalink: /tools/${permalinkName}/\ntitle: ${cleanTitle}\n---\n\n` + content;
         }
+    }
+    
+    const blob = new Blob([content], {type: mimeType + ';charset=utf-8;'});
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = `${documents[currentDocId].title.toLowerCase().replace(/\s+/g, '_')}.${ext}`;
+    link.click();
+    
+    // Giải phóng bộ nhớ ngay sau khi tải nhằm tối ưu hiệu năng
+    URL.revokeObjectURL(url);
+    showToast(`Đã xuất file .${ext} thành công!`);
+}
 
         // Split View Kéo thả thay đổi tỷ lệ
         const resizer = document.getElementById('drag-bar');
