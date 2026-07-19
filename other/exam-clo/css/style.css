@@ -2,7 +2,7 @@
    1. CẤU HÌNH CHUNG & BỐ CỤC KHUNG CHÍNH (CONTAINER)
    ========================================================== */
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Times New Roman", Times, serif; /* ĐỔI FONT: Sang phong cách học thuật, trang trọng */
     background: #f5f5f5;
     margin: 0;
     padding: 0;
@@ -78,6 +78,7 @@ input[type="file"] {
     max-width: 100%;
     font-size: 14px;
     margin-top: 10px;
+    font-family: inherit; /* Kế thừa font Times New Roman */
 }
 
 /* --- HIỆU ỨNG LINK TẢI MẪU / TÀI LIỆU --- */
@@ -117,13 +118,15 @@ a:hover::after {
 /* ==========================================================
    3. HỆ THỐNG NÚT BẤM (BUTTONS)
    ========================================================== */
-/* Nút chính: Đọc dữ liệu và chấm bài */
+/* Nút chính: Đọc dữ liệu và chấm bài (Độ rộng cố định) */
 #btnProcess {
     display: block;
     margin: 35px auto;
-    padding: 14px 40px;
+    width: 260px; /* SỬA: Đặt độ rộng cố định tinh tế trên Desktop */
+    padding: 14px 0; /* Padding dọc, ngang bằng 0 vì width đã cố định */
     font-size: 18px;
     font-weight: bold;
+    font-family: inherit;
     color: #fff;
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     border: none;
@@ -131,6 +134,7 @@ a:hover::after {
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
     transition: all 0.3s ease;
+    text-align: center;
 }
 
 #btnProcess:hover {
@@ -148,6 +152,7 @@ a:hover::after {
 button {
     padding: 12px 25px;
     font-size: 16px;
+    font-family: inherit;
     border-radius: 6px;
     border: 1px solid #1e3c72;
     background: #fff;
@@ -181,7 +186,7 @@ button:disabled {
 .export-actions button {
     width: 180px; /* Chiều rộng cố định hoàn hảo trên Desktop */
     padding: 12px 0; /* Đặt padding ngang bằng 0 vì width đã cố định */
-    margin: 0; /* Xóa margin cũ để dùng gap của flexbox */
+    margin: 0; 
     box-sizing: border-box;
     text-align: center;
 }
@@ -384,11 +389,12 @@ tbody tr:hover {
         box-sizing: border-box;
     }
 
-    /* Ép nút xử lý chính co giãn theo chiều ngang màn hình */
+    /* Nút xử lý chính: Co giãn linh hoạt hơn trên mobile nhưng giới hạn max-width để không bị phình to */
     #btnProcess {
         width: 100% !important;
+        max-width: 280px; /* Khống chế không cho nút quá dài trên màn hình di động lớn */
         box-sizing: border-box;
-        margin: 8px 0 !important;
+        margin: 8px auto !important;
     }
 
     /* 2 Nút xuất dữ liệu: Ép giữ nguyên hàng ngang và giữ độ rộng cố định tinh tế */
@@ -399,8 +405,8 @@ tbody tr:hover {
     }
 
     .export-actions button {
-        width: 165px !important; /* Độ rộng hoàn hảo cho mobile, không bị phình to */
-        font-size: 14px; /* Thu nhỏ chữ 1px để không bị xuống dòng */
+        width: 145px !important; /* Co nhẹ để vừa khít cả các dòng điện thoại màn hình hẹp */
+        font-size: 14px; /* Thu nhỏ chữ 1px để không bị rớt dòng chữ trong nút */
         margin: 0 !important;
     }
 
