@@ -79,7 +79,6 @@
             align-items: center;
         }
         
-        /* Document Manager UI */
         .doc-select-container { display: flex; align-items: center; gap: 6px; margin-right: 12px; border-right: 1px solid var(--border-color); padding-right: 12px; }
         select { padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-color); font-size: 0.85rem; outline: none; }
 
@@ -120,7 +119,6 @@
         }
         [data-theme="dark"] .error-box { background-color: #3b1e1e; color: #ff6b6b; border-left-color: #ff6b6b; }
 
-        /* Toast Styles */
         #toast-container {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             z-index: 9999; display: flex; flex-direction: column; gap: 8px;
@@ -145,7 +143,7 @@
                 <button class="btn"><i class="fa-solid fa-download"></i> Xuất bản <i class="fa-solid fa-chevron-down" style="font-size:0.7rem"></i></button>
                 <div class="dropdown-content">
                     <button onclick="downloadFile('tex')">Tải file .tex</button>
-                    <button onclick="downloadFile('md')">Tải file .md (Markdown)</button>
+                    <button onclick="downloadFile('md')">Tải file .md (Markdown)</button> <!-- Hỗ trợ tải file .md -->
                     <button onclick="downloadFile('txt')">Tải file .txt</button>
                     <button onclick="downloadFile('html')">Tải file .html (Full Render)</button>
                 </div>
@@ -155,17 +153,13 @@
     </header>
 
     <div class="toolbar">
-        <!-- Quản lý Đa Tài Liệu -->
         <div class="doc-select-container">
             <select id="doc-selector" onchange="switchDocument()"></select>
             <button class="btn btn-sm" onclick="createNewDocument()" title="Tạo tài liệu mới"><i class="fa-solid fa-plus"></i></button>
             <button class="btn btn-sm" onclick="deleteCurrentDocument()" title="Xóa tài liệu hiện tại" style="color:#c5221f;"><i class="fa-solid fa-trash"></i></button>
         </div>
 
-       
-        <!-- Nút Bắt đầu nhanh được thêm vào ngay trước Ma trận -->
-        <button class="btn btn-sm btn-primary" onclick="insertAtCursor('quickstart')" style="background-color: #34a853;"><i class="fa-solid fa-rocket"></i> Bắt đầu nhanh</button>
-
+        <!-- Bắt đầu trực tiếp từ nút Ma trận theo yêu cầu -->
         <div class="dropdown">
             <button class="btn btn-sm">Ma trận <i class="fa-solid fa-table-cells"></i></button>
             <div class="dropdown-content">
@@ -215,7 +209,6 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
     <script>
-        // Hệ thống Toast Notification thay thế alert thô sơ
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -226,7 +219,6 @@
             setTimeout(() => { toast.remove(); }, 2500);
         }
 
-        // Khởi tạo Trình biên tập CodeMirror 5
         const editor = CodeMirror.fromTextArea(document.getElementById('latex-input'), {
             mode: 'stex',
             lineNumbers: true,
@@ -239,9 +231,8 @@
         const errorBox = document.getElementById('error-message');
         const docSelector = document.getElementById('doc-selector');
 
-        // Hệ thống quản lý đa tài liệu qua LocalStorage
         let documents = JSON.parse(localStorage.getItem('apmaths_docs')) || {
-            'doc_1': { title: 'Tài liệu mẫu 1', content: `% Tài liệu toán đại số tuyến tính chuyên sâu\nXét ma trận symplectic $M \\in Sp(2n, \\mathbb{R})$ thỏa mãn:\n$$ M^T J M = J $$` }
+            'doc_1': { title: 'Tài liệu mẫu 1', content: `% Soạn thảo tài liệu toán đại số tuyến tính chuyên sâu tại đây\nXét ma trận khối symplectic $M \\in Sp(2n, \\mathbb{R})$ thỏa mãn điều kiện ổn định biến đổi:\n$$ M^T J M = J $$\n\nTrong đó cấu trúc ma trận khối tuần hoàn được xác định:\n$$ J = \\begin{pmatrix} 0 & I_n \\\\ -I_n & 0 \\end{pmatrix} $$` }
         };
         let currentDocId = localStorage.getItem('apmaths_current_doc') || 'doc_1';
         if (!documents[currentDocId]) currentDocId = Object.keys(documents)[0];
@@ -269,7 +260,7 @@
             const title = prompt("Nhập tên tài liệu mới:", "Tài liệu mới " + (Object.keys(documents).length + 1));
             if (!title) return;
             const newId = 'doc_' + Date.now();
-            documents[newId] = { title: title, content: '% Bắt đầu soạn thảo tài liệu mới tại đây...' };
+            documents[newId] = { title: title, content: '% Bắt đầu soạn thảo...' };
             localStorage.setItem('apmaths_docs', JSON.stringify(documents));
             currentDocId = newId;
             localStorage.setItem('apmaths_current_doc', currentDocId);
@@ -294,7 +285,6 @@
             showToast("Đã xóa tài liệu!");
         }
 
-        // Đồng bộ hóa dữ liệu tài liệu hiện tại khi có thay đổi
         function saveCurrentData() {
             if (documents[currentDocId]) {
                 documents[currentDocId].content = editor.getValue();
@@ -306,26 +296,10 @@
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // Render toán học: tắt throwOnError để tài liệu dài không bị ngắt quãng giữa chừng
         function renderLaTeX() {
             const text = editor.getValue();
             saveCurrentData();
-            
-            // Xử lý lọc bỏ các cấu trúc khai báo hệ thống LaTeX để vùng Preview hiển thị sạch sẽ
-            let cleanText = text
-                .replace(/\\documentclass\[[\s\S]*?\]\{.*?\}/g, '')
-                .replace(/\\usepackage\[[\s\S]*?\]\{.*?\}/g, '')
-                .replace(/\\usepackage\{.*?\}/g, '')
-                .replace(/\\newtheorem\{.*?\}.*?/g, '')
-                .replace(/\\title\{.*?\}/g, '')
-                .replace(/\\author\[.*?\]\{.*?\}/g, '')
-                .replace(/\\affil\[.*?\]\{.*?\}/g, '')
-                .replace(/\\date\{.*?\}/g, '')
-                .replace(/\\begin\{document\}/g, '')
-                .replace(/\\end\{document\}/g, '')
-                .replace(/\\maketitle/g, '');
-
-            output.innerHTML = escapeHTML(cleanText).replace(/\n/g, '<br>');
+            output.innerHTML = escapeHTML(text).replace(/\n/g, '<br>');
             
             try {
                 renderMathInElement(output, {
@@ -341,7 +315,7 @@
                 
                 const errors = output.querySelectorAll('.katex-error');
                 if (errors.length > 0) {
-                    errorBox.innerText = `Phát hiện ${errors.length} công thức lỗi cú pháp LaTeX trong nội dung.`;
+                    errorBox.innerText = `Phát hiện ${errors.length} công thức lỗi cú pháp LaTeX (hiển thị màu đỏ ở Preview).`;
                     errorBox.style.display = 'block';
                 } else {
                     errorBox.style.display = 'none';
@@ -352,14 +326,12 @@
             }
         }
 
-        // Debounce 250ms giảm tải hiệu năng render
         let debounceTimer;
         editor.on('change', () => {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(renderLaTeX, 250);
         });
 
-        // Navigator Clipboard API kèm Toast
         document.getElementById('copy-btn').addEventListener('click', async () => {
             try {
                 await navigator.clipboard.writeText(editor.getValue());
@@ -369,61 +341,7 @@
             }
         });
 
-        // Xử lý chèn mẫu nhanh
         const templates = {
-            quickstart: `\\documentclass[12pt,a4paper]{article}
-\\usepackage[letterpaper,top=3cm,bottom=3cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
-\\usepackage[utf8]{vietnam}
-\\usepackage{authblk}
-\\usepackage{url}
-\\usepackage[skip=10pt plus1pt, indent=20pt]{parskip}
-
-% Useful packages
-\\usepackage{amsmath}
-\\usepackage{graphicx}
-\\usepackage[colorlinks=true, allcolors=blue]{hyperref}
-\\usepackage{amsmath}
-\\usepackage{amsthm,amssymb}
-\\usepackage{amssymb}
-\\usepackage{graphicx}
-\\usepackage[utf8]{vietnam}
-\\usepackage{hyperref}
-\\usepackage{indentfirst}
-\\usepackage{refcheck}
-\\usepackage{xcolor}
-
-\\newtheorem{theorem}{Định lý}[section]
-\\newtheorem{proposition}[theorem]{Mệnh đề}
-\\newtheorem{lemma}[theorem]{Bổ đề}
-\\newtheorem{corollary}[theorem]{Hệ quả}
-\\newtheorem{conjecture}[theorem]{Phỏng đoán}
-\\newtheorem{remark}[theorem]{Nhận xét}
-
-\\newtheorem{definition}[theorem]{Định nghĩa}
-
-\\title{A note on...}
-
-\\author[1,2]{Author}
-\\affil[1]{\\small Faculty of Mathematics and Computer Science, University of Science, Ho Chi Minh City, Vietnam}
-\\affil[2]{Vietnam National University, Ho Chi Minh City, Vietnam}
-\\date{}
-
-\\begin{document}
-\\maketitle
-
-\\begin{abstract}
-Something...
-\\end{abstract}
-\\section{Introduction}
-
-Nội dung bài viết hoặc công thức toán của bạn ở đây. Ví dụ: $M^T J M = J$
-
-%\\bibliographystyle{plain}
-\\begin{thebibliography}{}
-\\bibitem{Rosaa}
-K. L. D. Rosaa and J. P. C. Santos,\\textit{ On commutators of unipotent matrices of index 2}, http://arxiv.org/abs/2409.13339v1
-\\end{thebibliography}
-\\end{document}`,
             matrix2: `\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}`,
             matrix3: `\\begin{pmatrix} a & b & c \\\\ d & e & f \\\\ g & h & i \\end{pmatrix}`,
             bmatrix: `\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}`,
@@ -442,14 +360,12 @@ K. L. D. Rosaa and J. P. C. Santos,\\textit{ On commutators of unipotent matrice
             editor.focus();
         }
 
-        // Tính năng Tải tệp tin sửa lỗi rò rỉ bộ nhớ bằng revokeObjectURL
         function downloadFile(ext) {
-    let content = editor.getValue();
-    let mimeType = 'text/plain';
-    
-    if (ext === 'html') {
-        // Đóng gói cấu trúc HTML đầy đủ CSS/JS của KaTeX
-        content = `<!DOCTYPE html>
+            let content = editor.getValue();
+            let mimeType = 'text/plain';
+            
+            if(ext === 'html') {
+                content = `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -475,32 +391,28 @@ K. L. D. Rosaa and J. P. C. Santos,\\textit{ On commutators of unipotent matrice
     <\/script>
 </body>
 </html>`;
-        mimeType = 'text/html';
-    } else if (ext === 'md') {
-        // Định dạng MIME Type tối ưu cho file Markdown
-        mimeType = 'text/markdown';
-        
-        // Tùy chọn: Tự động chèn Front Matter của Jekyll vào đầu file nếu nội dung hiện tại chưa có
-        if (!content.trim().startsWith('---')) {
-            const cleanTitle = documents[currentDocId].title;
-            const permalinkName = cleanTitle.toLowerCase().replace(/\s+/g, '-');
-            content = `---\nlayout: page\npermalink: /tools/${permalinkName}/\ntitle: ${cleanTitle}\n---\n\n` + content;
+                mimeType = 'text/html';
+            } else if (ext === 'md') {
+                mimeType = 'text/markdown';
+                // Tự động chèn Front Matter nếu chưa tồn tại trong text[cite: 1]
+                if (!content.trim().startsWith('---')) {
+                    const cleanTitle = documents[currentDocId].title;
+                    const permalinkName = cleanTitle.toLowerCase().replace(/\s+/g, '-');
+                    content = `---\nlayout: page\npermalink: /tools/${permalinkName}/\ntitle: ${cleanTitle}\n---\n\n` + content;
+                }
+            }
+            
+            const blob = new Blob([content], {type: mimeType + ';charset=utf-8;'});
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = `${documents[currentDocId].title.toLowerCase().replace(/\s+/g, '_')}.${ext}`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showToast(`Đã xuất file .${ext} thành công!`);
         }
-    }
-    
-    const blob = new Blob([content], {type: mimeType + ';charset=utf-8;'});
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.download = `${documents[currentDocId].title.toLowerCase().replace(/\s+/g, '_')}.${ext}`;
-    link.click();
-    
-    // Giải phóng bộ nhớ ngay sau khi tải nhằm tối ưu hiệu năng
-    URL.revokeObjectURL(url);
-    showToast(`Đã xuất file .${ext} thành công!`);
-}
 
-        // Split View Kéo thả thay đổi tỷ lệ
         const resizer = document.getElementById('drag-bar');
         const editorCont = document.getElementById('editor-container');
         
@@ -520,7 +432,6 @@ K. L. D. Rosaa and J. P. C. Santos,\\textit{ On commutators of unipotent matrice
             }
         }
 
-        // Dark/Light Mode
         const themeToggle = document.getElementById('theme-toggle');
         themeToggle.addEventListener('click', () => {
             const currentTheme = document.body.getAttribute('data-theme');
@@ -535,7 +446,6 @@ K. L. D. Rosaa and J. P. C. Santos,\\textit{ On commutators of unipotent matrice
             }
         });
 
-        // Khởi động toàn bộ ứng dụng
         updateDocSelector();
         editor.setValue(documents[currentDocId].content);
         renderLaTeX();
