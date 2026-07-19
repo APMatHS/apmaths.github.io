@@ -1,23 +1,29 @@
 ---
-layout: style
+layout: page
 permalink: /categories/
 title: Categories
 ---
 
 <div id="archives">
   {% for category in site.categories %}
-    <div class="archive-group">
-    <i class="fa fa-book" aria-hidden="true"></i> {% capture category_name %}{{ category | first }}{% endcapture %}
-      <div id="#{{ category_name | slugize }}"></div>
-      <h3 class="category-head">{{ category_name }}</h3>
-      <a name="{{ category_name | slugize }}"></a>
-      {% for post in site.categories[category_name] %}
-      <article class="archive-item">
-        <h4>
-            <a href="{{ site.baseurl }}{{ post.url }}">{{post.title}}</a>
-        </h4>
-      </article>
-      {% endfor %}
+    <div class="archive-group" style="margin-bottom: 30px;">
+      <!-- Khai báo tên category chính xác -->
+      {% capture category_name %}{{ category | first }}{% endcapture %}
+      
+      <h3 class="category-head" id="{{ category_name | slugify }}" style="color: #1a73e8; border-bottom: 1.5px solid #dadce0; padding-bottom: 5px;">
+        <i class="fa fa-book" aria-hidden="true"></i> &nbsp;{{ category_name }}
+      </h3>
+      
+      <div class="post-list" style="padding-left: 15px;">
+        {% for post in site.categories[category_name] %}
+          <article class="archive-item" style="margin: 10px 0;">
+            <h4 style="margin: 0; font-weight: normal;">
+              <!-- Sử dụng relative_url để tối ưu đường dẫn tĩnh -->
+              <a href="{{ post.url | relative_url }}" style="text-decoration: none; color: #3c4043;">{{ post.title }}</a>
+            </h4>
+          </article>
+        {% endfor %}
+      </div>
     </div>
   {% endfor %}
 </div>
