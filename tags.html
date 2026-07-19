@@ -31,8 +31,7 @@ title: 'Tag Index'
                     <time datetime="{{- post.date | date_to_xmlschema -}}">{{- post.date | date: date_format -}}</time>
                 </div>
             </div>
-        {%- endfor -%}
-
+        {%- endfor -%} <!-- Sửa lỗi: Thêm thẻ đóng này cho danh sách bài viết -->
+    </div> <!-- Thêm đóng thẻ div của post-list cho chuẩn cấu trúc -->
 {%- endfor -%}
 </div>
-     </div>
