@@ -14,7 +14,7 @@ Chào mừng bạn đến với chuyên mục **APMaths Tools**. Nhằm hỗ tr�
 <div class="tool-section" style="margin-bottom: 2.5rem;">
     <h3 style="color: #1a73e8; margin-bottom: 0.5rem;">📝 Quản lý & Thiết kế đề thi</h3>
     <div class="tool-item" style="background: #f8f9fa; padding: 1rem 1.25rem; border-left: 4px solid #1a73e8; border-radius: 4px;">
-        <strong style="font-size: 1.1rem;"><a href="https://apmaths.github.io/tools/exam-clo/index.html" style="color: #1557b0; text-decoration: none;">Công cụ Cài đặt Chuẩn đầu ra Đề thi (Exam CLO Mapper)</a></strong>
+        <strong style="font-size: 1.1rem;"><a href="https://apmaths.github.io/tools/exam-clo/index.html" style="color: #1557b0; text-decoration: none;" target="_blank" rel="noopener noreferrer">Công cụ Cài đặt Chuẩn đầu ra Đề thi (Exam CLO Mapper)</a></strong>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #5f6368;">
             Hỗ trợ giảng viên chuẩn hóa cấu trúc đề thi theo Chuẩn đầu ra môn học (Course Learning Outcomes - CLO). Tự động ma trận hóa điểm số và tối ưu hóa quy trình kiểm tra đánh giá.
         </p>
