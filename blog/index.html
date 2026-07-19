@@ -1,38 +1,78 @@
 ---
 layout: default
+permalink: /blog/
 title: Blog
 ---
-<div class="page">
-<h1>{{ page.title }}</h1>
+<div class="page" style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  
+  <!-- PHẦN ĐẦU TRANG: Giới thiệu chuyên mục (Tối ưu SEO) -->
+  <header style="margin-bottom: 40px; border-bottom: 2px solid #f1f3f4; padding-bottom: 20px;">
+    <h1 style="font-size: 2.2rem; color: #202124; margin-bottom: 10px;">{{ page.title }}</h1>
+    <p style="color: #5f6368; font-size: 1.1rem; line-height: 1.6; margin: 0;">
+      Nơi tổng hợp các bài viết chuyên sâu về Toán học cao cấp, thủ thuật lập trình Python, biên soạn LaTeX và các giải pháp tự động hóa tài liệu học thuật.
+    </p>
+  </header>
 
-<!-- This loops through the paginated posts -->
-{% for post in paginator.posts %}
-  <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
-  <p class="author">
-    <span class="date">{{ post.date | date_to_string  }}</span>
-  </p>
-  {{ post.excerpt }}
-  <a href="{{ post.url }}" style="text-align:right;"><span> Read more &raquo; </span></a>
-{% endfor %}
+  <!-- PHẦN THÂN TRANG: Danh sách bài viết -->
+  <main class="posts-list">
+    {% for post in paginator.posts %}
+      <article style="background: #ffffff; border: 1px solid #dadce0; border-radius: 8px; padding: 24px; margin-bottom: 25px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;">
+        
+        <!-- Tiêu đề bài viết -->
+        <h2 style="margin-top: 0; margin-bottom: 10px; font-size: 1.5rem;">
+          <a href="{{ post.url | relative_url }}" style="color: #1a73e8; text-decoration: none; font-weight: 600;">{{ post.title }}</a>
+        </h2>
+        
+        <!-- Ngày đăng bài -->
+        <p class="author" style="margin-top: 0; margin-bottom: 15px; color: #70757a; font-size: 0.9rem;">
+          <span class="date"><i class="fa fa-calendar" aria-hidden="true"></i> {{ post.date | date: "%B %-d, %Y" }}</span>
+        </p>
+        
+        <!-- Đoạn trích nội dung -->
+        <div class="post-excerpt" style="color: #3c4043; line-height: 1.6; margin-bottom: 15px;">
+          {{ post.excerpt | strip_html | truncatewords: 50 }}
+        </div>
+        
+        <!-- Nút Đọc tiếp -->
+        <div style="text-align: right;">
+          <a href="{{ post.url | relative_url }}" style="color: #1a73e8; text-decoration: none; font-weight: bold; font-size: 0.95rem; display: inline-block;">
+            Đọc thêm &raquo;
+          </a>
+        </div>
+        
+      </article>
+    {% endfor %}
+  </main>
 
+  <!-- PHẦN CUỐI TRANG: Thanh phân trang (Pagination) -->
+  <nav class="pagination" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #dadce0; padding-top: 20px; margin-top: 40px; font-size: 0.95rem;">
+    
+    <!-- Nút Trang trước -->
+    <div class="prev-page">
+      {% if paginator.previous_page %}
+        <a href="{{ paginator.previous_page_path | relative_url }}" style="padding: 8px 16px; background-color: #f1f3f4; color: #3c4043; text-decoration: none; border-radius: 4px; font-weight: 500;">
+          &larr; Trang trước
+        </a>
+      {% else %}
+        <span class="previous" style="padding: 8px 16px; color: #c4c7c5; cursor: not-allowed;">&larr; Trang trước</span>
+      {% endif %}
+    </div>
 
-<!-- Pagination links -->
-<div class="pagination">
-  {% if paginator.previous_page %}
-    <a href="{{ paginator.previous_page_path }}" class="previous">
-      Previous
-    </a>
-  {% else %}
-    <span class="previous">Previous</span>
-  {% endif %}
-  <span class="page_number ">
-    Page: {{ paginator.page }} of {{ paginator.total_pages }}
-  </span>
-  {% if paginator.next_page %}
-    <a href="{{ paginator.next_page_path }}" class="next">Next</a>
-  {% else %}
-    <span class="next ">Next</span>
-  {% endif %}
+    <!-- Số trang hiện tại -->
+    <div class="page_number" style="color: #5f6368; font-weight: 500;">
+      Trang {{ paginator.page }} / {{ paginator.total_pages }}
+    </div>
+
+    <!-- Nút Trang sau -->
+    <div class="next-page">
+      {% if paginator.next_page %}
+        <a href="{{ paginator.next_page_path | relative_url }}" style="padding: 8px 16px; background-color: #f1f3f4; color: #3c4043; text-decoration: none; border-radius: 4px; font-weight: 500;">
+          Trang sau &rarr;
+        </a>
+      {% else %}
+        <span class="next" style="padding: 8px 16px; color: #c4c7c5; cursor: not-allowed;">Trang sau &rarr;</span>
+      {% endif %}
+    </div>
+    
+  </nav>
 </div>
-
-   </div>
