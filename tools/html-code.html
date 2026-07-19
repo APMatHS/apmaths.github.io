@@ -1,1160 +1,351 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="vi">
 <head>
-<title>HTML Editor</title>
-<meta name="viewport" content="width=device-width">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<meta property="og:description" content="HTML editor allows you to edit code and view the result in your browser">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APMaths HTML Editor</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --panel-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #cccccc;
+            --header-bg: #2c3e50;
+            --header-text: #ffffff;
+            --btn-bg: #34495e;
+            --btn-hover: #415b76;
+            --accent: #3498db;
+        }
 
-<link rel="icon" href="/">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        [data-theme="dark"] {
+            --bg-color: #1e1e1e;
+            --panel-bg: #1e1e1e;
+            --text-color: #d4d4d4;
+            --border-color: #3c3c3c;
+            --header-bg: #0d1117;
+            --header-text: #c9d1d9;
+            --btn-bg: #21262d;
+            --btn-hover: #30363d;
+            --accent: #58a6ff;
+        }
 
-
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#04aa6d">
-<meta name="msapplication-TileColor" content="#00a300">
-<meta name="theme-color" content="#ffffff">
-
-<script src='https://w3shools.com/lib/codemirror.js'></script>
-<script src='https://w3shools.com/lib/codemirror_jsx.js'></script>
-
-<script data-cfasync="false" type="text/javascript">
-    window.snigelPubConf = {
-    "adengine": {
-
-      "activeAdUnits": ["try_it_leaderboard"]
-
-  }
-}
-uic_r_a()
-</script>
-<script async data-cfasync="false" src="/assets/js/loader.js" type="text/javascript"></script>
-<script>
-if (window.addEventListener) {              
-    window.addEventListener("resize", browserResize);
-} else if (window.attachEvent) {                 
-    window.attachEvent("onresize", browserResize);
-}
-var xbeforeResize = window.innerWidth;
-
-function browserResize() {
-    var afterResize = window.innerWidth;
-    if ((xbeforeResize < (970) && afterResize >= (970)) || (xbeforeResize >= (970) && afterResize < (970)) ||
-        (xbeforeResize < (728) && afterResize >= (728)) || (xbeforeResize >= (728) && afterResize < (728)) ||
-        (xbeforeResize < (468) && afterResize >= (468)) ||(xbeforeResize >= (468) && afterResize < (468))) {
-        xbeforeResize = afterResize;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        if (document.getElementById("adngin-try_it_leaderboard-0")) {
-                adngin.queue.push(function(){  adngin.cmd.startAuction(["try_it_leaderboard"]); });
-              }
-         
-    }
-    if (window.screen.availWidth <= 768) {
-      restack(window.innerHeight > window.innerWidth);
-    }
-    fixDragBtn();
-    showFrameSize();  
-  
-      
-}
-var fileID = "";
-</script>
-<style>
-* {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-body {
-  color:#000000;
-  margin:0px;
-  font-size:100%;
-}
-.trytopnav {
-  height:48px;
-  overflow:hidden;
-  min-width:380px;
-  position:absolute;
-  width:100%;
-  top:0px;
-top:0px;
-  background-color:#E7E9EB;
-}
-.topnav-icons {
-  margin-right:8px;
-}
-.trytopnav a,.trytopnav button {
-  color:#999999;
-	text-decoration: none;
-}
-.w3-bar .w3-bar-item:hover {
-  color:#757575 !important;
-}
-a.w3schoolslink {
-  padding:0 !important;
-  display:inline !important;
-}
-a.w3schoolslink:hover,a.w3schoolslink:active {
-  text-decoration:underline !important;
-  background-color:transparent !important;
-}
-#dragbar{
-  position:absolute;
-  cursor: col-resize;
-  z-index:3;
-  padding:5px;
-}
-#shield {
-  display:none;
-  top:0;
-  left:0;
-  width:100%;
-  position:absolute;
-  height:100%;
-  z-index:4;
-}
-#framesize {
-  font-family: 'Montserrat', 'Source Sans Pro', sans-serif;
-  font-size: 14px;
-}
-#container {
-  background-color:#E7E9EB;
-  width:100%;
-  overflow:auto;
-  position:absolute;
-  top:50px;
-top:50px;
-  bottom:0;
-  height:auto;
-}
-#textareacontainer, #iframecontainer {
-  float:left;
-  height:100%;
-  width:50%;
-}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+        }
 
-#textarea, #textarea2, #iframe {
-  height:100%;
-  width:100%;
-  padding-bottom:10px;
-  padding-top:1px;
-}
-#textarea {
-  padding-left:10px;
-  padding-right:5px;  
-}
-#iframe {
-  padding-left:5px;
-  padding-right:10px;  
-  position:relative;  
-  
-}
-#textareawrapper {
-  width:100%;
-  height:100%;
-  
-  overflow:auto;
-  
-  background-color: #ffffff;
-  position:relative;
-  
-    box-shadow:0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  
-}
-#iframewrapper {
-  width:100%;
-  height:100%;
-  -webkit-overflow-scrolling: touch;
-  background-color: #ffffff;
-  
-    box-shadow:0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  
-}
-#textareaCode, #textareaCode2 {
-  background-color: #ffffff;
-  font-family: consolas,Menlo,"courier new",monospace;
-  font-size:15px;
-  height:100%;
-  width:100%;
-  padding:8px;
-  resize: none;
-  border:none;
-  line-height:normal;    
-}
-/*
-  .localhostcontainer {
-    position:absolute;
-    width:auto;
-    right:0;
-    left:0;
-    z-index:2;
-    padding:4px 12px;
-    border-bottom:1px solid #d9d9d9;
-    background-color:#E7E9EB;
-  }
-  .localhostdiv {
-    overflow:hidden;
-    font-family:arial;
-    border:1px solid #d9d9d9;
-    background-color:#fff;
-    font-size:14px;
-    padding-left:10px;
-  }
-*/
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            height: 55px;
+            z-index: 10;
+        }
+        .logo { font-weight: 700; font-size: 1.1rem; min-width: 170px; }
+        .logo span { color: var(--accent); }
+        .controls { display: flex; gap: 6px; align-items: center; }
+        
+        button, select {
+            background-color: var(--btn-bg);
+            color: var(--header-text);
+            border: 1px solid var(--border-color);
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            outline: none;
+        }
+        button:hover { background-color: var(--btn-hover); }
+        select option { background-color: var(--panel-bg); color: var(--text-color); }
+        
+        #run-btn { background-color: #27ae60; border-color: #27ae60; font-weight: 600; }
+        #run-btn:hover { background-color: #2ecc71; }
+        #reset-btn { background-color: #c0392b; border-color: #c0392b; }
+        #reset-btn:hover { background-color: #e74c3c; }
 
-.localhostoutercontainer {
-  position: absolute;
-  width: auto;
-  left:5px;
-  right:10px;
-  background-color: #E7E9EB;
-  height: 30px;
-  z-index: 9;
-}
-.localhostoutercontainer.horizontal {
-  left:10px;
-}
-.localhostcontainer {
-  position:relative;
-  width:auto;
-  right:0;
-  left:0;
-  z-index:2;
-  xpadding:6px 12px;
-  xxborder-bottom:1px solid #d9d9d9;
-  background-color:#F1F1F1;
-  background-color:#38444d;
-  border-top-right-radius:10px;
-  border-top-left-radius:10px;
-  overflow:hidden;
-  padding-top:4px;
-}
-.localhostdiv {
-  overflow:hidden;
-  font-family:arial;
-  color:#000;
-  background-color:#fff;
-  font-size:15px;
-  padding-left:10px;
-  border-radius:20px;
-  width:60%;
-  float:left;
-  font-family: consolas,Menlo,"courier new",monospace;  
-}
-.localhostbuttoncontainer {
-  width:20%;
-  min-width:100px;
-  color:#ffc107;
-  float:left;  
-  font-size:16px;
-  overflow:auto;
-  margin-left: 5px;
-}
-div.localhostbuttoncontainer span{
-  display:inline-block;
-  color:#ffc107;
-  position:relative;
-  padding-bottom:4px;
-  padding-left:2px;  
-}
+        .opt-label { display: flex; align-items: center; gap: 4px; font-size: 0.8rem; cursor: pointer; }
+        .addon-group { display: flex; gap: 4px; border-right: 1px solid var(--border-color); padding-right: 6px; }
 
-div.localhostbuttoncontainer span:first-child{
-  color:#dc3545;
-  padding-left:12px;
+        .workspace {
+            display: flex;
+            flex: 1;
+            position: relative;
+            height: calc(100dvh - 55px);
+            overflow: hidden;
+        }
 
-}
-div.localhostbuttoncontainer span:last-child{
-  color:#04AA6D;
-  padding-left:2px;    
-}
+        .panel { display: flex; flex-direction: column; background: var(--panel-bg); height: 100%; overflow: hidden; }
+        #editor-panel { width: 50%; }
+        #preview-panel { width: 50%; }
 
-body.darktheme .localhostoutercontainer {
-  background-color: #38444d;
-}
-body.darktheme .localhostcontainer {
-  background-color:rgb(21,32,43)
-}
+        .panel-header {
+            background-color: var(--bg-color);
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* 5. TRẠNG THÁI LƯU TRỮ */
+        .status-indicator { font-size: 0.75rem; transition: color 0.2s; font-weight: normal; text-transform: none; }
+        .status-saved { color: #27ae60; }
+        .status-unsaved { color: #e67e22; }
 
-body.darktheme .localhostdiv {
-  border:1px solid #595959;
-  background-color:#ffffff;
-}
+        textarea {
+            width: 100%;
+            flex: 1;
+            border: none;
+            resize: none;
+            outline: none;
+            font-family: "Fira Code", Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 15px;
+            background-color: var(--panel-bg);
+            color: var(--text-color);
+        }
 
-/**/
+        iframe { width: 100%; flex: 1; border: none; background: #ffffff; }
 
+        .resizer { width: 6px; background-color: var(--border-color); cursor: col-resize; z-index: 5; touch-action: none; }
+        .resizer:hover, .resizer.dragging { background-color: var(--accent); }
 
-  #filenamecontainer {
-    position:absolute;
-    text-align:center;
-    z-index:4;
-    width:100%;
-  }
-  #filenamecontainer span {
-    opacity:0.9;
-    padding:1px 6px;
-    font-family:Consolas;
-    background-color:#E7E9EB;
-    font-size:16px;
-  }
-  body.darktheme #filenamecontainer span {
-    background-color:#555555;
-    color:#E7E9EB;
-  }
-
-.CodeMirror.cm-s-default {
-  line-height:normal;
-  padding: 4px;
-  
-  height:100%;
-  width:100%;
-}
-
-#iframeResult, #iframeSource {
-  background-color: #ffffff;
-  
-  
-  height:100%;
-  width:100%;  
-}
-
-#stackV {background-color:#999999;}
-#stackV:hover {background-color:#BBBBBB !important;}
-#stackV.horizontal {background-color:transparent;}
-#stackV.horizontal:hover {background-color:#BBBBBB !important;}
-#stackH.horizontal {background-color:#999999;}
-#stackH.horizontal:hover {background-color:#999999 !important;}
-#textareacontainer.horizontal,#iframecontainer.horizontal{
-  height:50%;
-  float:none;
-  width:100%;
-}
-
-
-#textarea.horizontal{
-  height:100%;
-  padding-left:10px;
-  padding-right:10px;
-}
-#iframe.horizontal{
-  height:100%;
-  padding-right:10px;
-  padding-bottom:10px;
-  padding-left:10px;  
-}
-#container.horizontal{
-  min-height:200px;
-  margin-left:0;
-}
-#tryitLeaderboard {
-  overflow:hidden;
-  text-align:center;
-  margin-top:5px;
-  height:60px;
-}
-.w3-dropdown-content {width:350px}
-
-#breadcrumb ul {
-  font-family:'Montserrat', 'Source Sans Pro', sans-serif;
-  list-style: none;
-  display: inline-table;
-  padding-inline-start: 1px;
-  font-size: 12px;
-  margin-block-start: 6px;
-  margin-block-end: 6px;	
-}
-#breadcrumb li {
-  display: inline;
-}
-#breadcrumb a {
-  float: left;
-  background: #E7E9EB;
-  padding: 3px 10px 3px 20px;
-  position: relative;
-  margin: 0 5px 0 0; 
-  text-decoration: none;
-  color: #555;
-}
-#breadcrumb a:after {
-  content: "";  
-  border-top: 12px solid transparent;
-  border-bottom: 12px solid transparent;
-  border-left: 12px solid #E7E9EB;
-  position: absolute; 
-  right: -12px;
-  top: 0;
-  z-index: 1;
-}
-#breadcrumb a:before {
-  content: "";  
-  border-top: 12px solid transparent;
-  border-bottom: 12px solid transparent;
-  border-left: 12px solid #fff;
-  position: absolute; 
-  left: 0; 
-  top: 0;
-}
-#breadcrumb ul li:first-child a:before {
-  display: none; 
-}
-#breadcrumb ul:last-child li{
-  padding-right: 5px;
-}
-#breadcrumb ul li a:hover {
-  background: #04AA6D;
-  color:#fff;
-}
-#breadcrumb ul li a:hover:after {
-  border-left-color: #04AA6D;
-  color:#fff;
-}
-#breadcrumb li:last-child {
-  display: inline-block!important;
-  margin-top: 3px!important;
-}
-#runbtn {
-  background-color:#04AA6D;
-  color:white;
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size:18px;
-  padding:6px 25px;
-  margin-top:4px;
-  border-radius:5px;
-  word-spacing:10px;
-}
-#runbtn:hover {
-  background-color: #059862 !important;
-  color:white!important;
-}
-#getwebsitebtn {
-  background-color:#04AA6D;
-  font-family: 'Source Sans Pro', sans-serif;  
-  color: white;
-  font-size: 18px;
-  padding:6px 15px;
-  margin-top:4px;
-  margin-right: 10px;
-  display: block;
-  float: right;
-  border-radius: 5px;
-}
-#getwebsitebtn:hover {
-  background-color: #059862 !important;
-  color:white!important;
-}
-
-#tryhome {
-  display:none;
-}
-
-@media screen and (max-width: 727px) {
-  .trytopnav {top:70px;}
-  #container {top:116px;}
- 
-  #tryhome  {display:block;}
-}
-@media screen and (max-width: 467px) {
-  .trytopnav {top:60px;}
-  #container {top:106px;}
-  .w3-dropdown-content {width:100%}
-}
-@media only screen and (max-device-width: 768px) {
-  #iframewrapper {overflow: auto;}
-  #container     {min-width:310px;}
-  .stack         {display:none;}
-  #tryhome       {display:block;}
-  .trytopnav     {min-width:310px;}  
-}
-
-#iframewrapper {
-	
-}
-
-/*
-  .tabs-container {
-  height:100%;
-  overflow:auto;
-  }
-  .tabs {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    background-color:#E7E9EB;
-    
-  }
-  .tab {
-    padding: 5px 10px;
-    background: #ddd;
-    width: fit-content;
-    display: inline-block;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;            
-  
-    }
-  .tab.active {
-    background: #fff;
-  }
-  
-  .tab-pane {
-    display: none;
-  }
-  .tab-pane.active { 
-    display: block;
-  }
-*/
-
-.tabitem, #resttab {
-  position:absolute;
-  z-index:2;
-  font-family:arial;
-  padding:4px 12px;
-  width:70px;
-  cursor:pointer;
-}
-
-/*  
-#progqcstab {
-  width:120px;
-  left:0;
-}
-#prog2qcstab {
-  width:100px;
-  left:120px;
-}
-#childtemplatetab {
-  width:150px;
-  left:220px;
-}
-*/
-.tabitem {
-  background-color:#38444d;
-  color:#ddd;
-  border-top-left-radius:10px;
-  border-top-right-radius:10px;
-  opacity:0.5;
-}
-#resttab {
-  cursor:default;
-
-  z-index:1;
-  background-color:#E7E9EB;
-  width:100%;
-  left:0px;
-}
-
-
-.tabitem.tabselected{
-  opacity:1;
-}
-
-.darktheme .tabitem {
-  background-color:rgb(21,32,43)
-}
-.darktheme #resttab {
-  background-color:#38444d;
-}
-
-/**/
-.fa {
-  padding: 10px 10px!important;
-}
-a.topnav-icons, a.topnav-icons.fa-home, a.topnav-icons.fa-menu, button.topnav-icons.fa-adjust {
-    font-size: 18px!important;
-}
-.darktheme #breadcrumb li {
-  color:#fff;
-}
-.darktheme #breadcrumb a {
-  background:#616161;
-  background-color:#38444d;  
-  color: #ddd;
-}	
-.darktheme #breadcrumb a:after {
-  border-left: 12px solid #616161;
-  border-left: 12px solid #38444d; 
-}
-.darktheme #breadcrumb a:before {
-  border-left: 12px solid rgb(40, 44, 52);
-  border-left: 12px solid #1d2a35;  
-}
-.darktheme .currentcrumb {
-  color:#ddd;
-}
-
-body.darktheme {
-  background-color:rgb(40, 44, 52);
-  background-color:#1d2a35;
-}
-body.darktheme #tryitLeaderboard{
-  background-color:rgb(40, 44, 52);
-  background-color:#1d2a35;  
-}
-body.darktheme .trytopnav{
-  background-color:#616161;
-  background-color:#38444d;
-  color:#dddddd;
-}
-body.darktheme #container {
-  background-color:#616161;
-  background-color:#38444d;
-}
-body.darktheme .trytopnav a {
-  color:#dddddd;
-}
-body.darktheme #textareaCode {
-  background-color:rgb(40, 44, 52);
-  color:#fff;
-}
-
-body.darktheme #textareawrapper {
-  background-color:rgb(21,32,43);
-}
-body.darktheme .tabs {
-    background-color:#38444d;
-  }
-body.darktheme .tab {
-    background: rgb(21,32,43);
-    color:#fff;
-    opacity:0.5;
-    }
-body.darktheme .tab.active {
-    background: rgb(21,32,43);
-    color:#fff;    
-    opacity:1;
-  }
-
-body.darktheme ::-webkit-scrollbar {width:12px;height:3px;}
-body.darktheme ::-webkit-scrollbar-track-piece {background-color:#000;}
-body.darktheme ::-webkit-scrollbar-thumb {height:50px;background-color: #616161; background-color:#38444d;}
-body.darktheme ::-webkit-scrollbar-thumb:hover {background-color: #aaaaaa;background-color: #4b5b68}
-
-
-/*
-#file1filetab, #resttab {
-  position:absolute;
-  z-index:2;
-  font-family:arial;
-  padding:4px 12px;
-}
-#file1filetab {
-  width:auto;
-  left:0;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;            
-}
-#resttab {
-  z-index:1;
-  background-color:#E7E9EB;
-  width:100%;
-  left:0px;
-}
-.tabitem {
-  background-color:#eaeaea;
-}
-.tabitem.tabselected{ 
-  background-color:#fff;
-}
-.darktheme .tabitem {
-  background-color:#444;
-}
-.darktheme .tabitem.tabselected{
-  background-color:rgb(21,32,43);
-}
-.darktheme #resttab {
-  background-color:#38444d;
-}
-*/
-.darktheme #file1filetab {
-  border-right:1px solid rgb(21,32,43);
-}
-
-</style>
-<!--[if lt IE 8]>
-<style>
-#textareacontainer, #iframecontainer {width:48%;}
-#container {height:500px;}
-#textarea, #iframe {width:90%;height:450px;}
-#textareaCode, #textareaCode2, #iframeResult, .codewindow {height:450px;}
-.stack {display:none;}
-</style>
-<![endif]-->
+        @media (max-width: 900px) {
+            header { height: auto; flex-direction: column; gap: 8px; padding: 10px; }
+            .workspace { height: calc(100dvh - header.getBoundingClientRect().height); }
+            .workspace { flex-direction: column; }
+            #editor-panel, #preview-panel { width: 100% !important; height: 50%; }
+            .resizer { width: 100%; height: 6px; cursor: row-resize; }
+        }
+    </style>
 </head>
 <body>
 
-	<!-- Bỏ
-<div id='tryitLeaderboard'>
-<!-- TryitLeaderboard -->
-  <!--<pre>try_it_leaderboard, all: [320,50][728,90][468,60]</pre>-->
- <!---Bỏ
-	<div id="adngin-try_it_leaderboard-0"></div>
-</div>
--->
-<div class="trytopnav">
-<div class="w3-bar" style="overflow:auto">
+    <header>
+        <div class="logo">APMaths <span>HTML Editor</span></div>
+        <div class="controls">
+            <!-- 6. KHO VÍ DỤ NẠP BÀI HỌC (EXAMPLES) -->
+            <select id="examples-select" title="Chọn mã ví dụ mẫu">
+                <option value="" disabled selected>Chọn ví dụ mẫu ▼</option>
+                <option value="html">Cấu trúc HTML5</option>
+                <option value="css">CSS Cơ bản</option>
+                <option value="flexbox">Bố cục Flexbox</option>
+                <option value="canvas">Đồ họa Canvas</option>
+                <option value="javascript">Xử lý JavaScript</option>
+            </select>
 
-  <a  href="https://apmaths.github.io" target="_blank" title="Back Home" style="margin-top:-2px;"><i class="fa fa-home" aria-hidden="true"></i>
-</a>
- 
-  <a href="javascript:void(0);" onclick="spaceIt.showDialog()" title="Save code" style="margin-top:-2px;"><i class="fa fa-floppy-o" aria-hidden="true"></i>
-</a>
+            <div class="addon-group">
+                <button id="copy-btn" title="Sao chép toàn bộ mã nguồn">Copy</button>
+                <button id="download-btn" title="Tải file HTML về máy (Ctrl+S)">Download</button>
+                <button id="reset-btn" title="Khôi phục mã ban đầu">Reset</button>
+            </div>
+            
+            <label class="opt-label"><input type="checkbox" id="autorun-cb" checked> Auto Run</label>
+            <button id="theme-btn">🌙 Giao diện</button>
+            <button id="run-btn">▶ Run</button>
+        </div>
+    </header>
 
-  <a href="javascript:void(0);" onclick="restack(currentStack)" title="Change Orientation" style="margin-top:-2px;"><i class="fa fa-refresh" aria-hidden="true"></i>
-</a>
-	
-  <a href="javascript:void(0);" onclick="retheme()" title="Change Theme"  style="margin-top:-2px;"><i class="fa fa-adjust" aria-hidden="true"></i>
-</a>
+    <div class="workspace" id="workspace">
+        <div class="panel" id="editor-panel">
+            <div class="panel-header">
+                <span>Source Code</span>
+                <!-- 5. HIỂN THỊ TRẠNG THÁI UX -->
+                <span id="status-text" class="status-indicator status-saved">✔ Saved</span>
+            </div>
+            <textarea id="code-editor" spellcheck="false" placeholder="Nhập mã HTML tại đây..."></textarea>
+        </div>
 
-  <button id="runbtn" class="w3-button w3-bar-item w3-hover-white w3-hover-text-green ga-tryit" onclick="submitTryit(1);uic_r_p();">Run &#10095;</button>
+        <div class="resizer" id="drag-bar"></div>
 
-  
-  <!--<span class="w3-right w3-hide-small xxw3-hide-medium" style="padding:8px 8px 8px 8px;display:block"></span>-->
-  <span class="w3-right w3-hide-small" style="padding:8px 16px 8px 0;display:block;float:right;font-size:16px;margin-top:4px"><span id="framesize"></span></span>
-</div>
-</div>
-
-<div id="shield"></div>
-<a href="javascript:void(0)" id="dragbar"></a>
-
-<div id="container">
- 
-  <div id="menuOverlay" class="w3-overlay w3-transparent" style="cursor:pointer;z-index:4"></div>
-  <div id="textareacontainer">
-    <div id="textarea">
-      <div id="textareawrapper">
-        
-            <textarea autocomplete="off" id="textareaCode" wrap="logical" spellcheck="false"><!DOCTYPE html>
-
-<html lang="en">
-<head>
-<title>CSS Template</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Style the header */
-header {
-  background-color: #666;
-  padding: 30px;
-  text-align: center;
-  font-size: 35px;
-  color: white;
-}
-
-/* Create two columns/boxes that floats next to each other */
-nav {
-  float: left;
-  width: 30%;
-  height: 300px; /* only for demonstration, should be removed */
-  background: #ccc;
-  padding: 20px;
-}
-
-/* Style the list inside the menu */
-nav ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-article {
-  float: left;
-  padding: 20px;
-  width: 70%;
-  background-color: #f1f1f1;
-  height: 300px; /* only for demonstration, should be removed */
-}
-
-/* Clear floats after the columns */
-section::after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* Style the footer */
-footer {
-  background-color: #777;
-  padding: 10px;
-  text-align: center;
-  color: white;
-}
-
-/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
-@media (max-width: 600px) {
-  nav, article {
-    width: 100%;
-    height: auto;
-  }
-}
-</style>
-</head>
-<body>
-
-<h2>CSS Layout Float</h2>
-<p>In this example, we have created a header, two columns/boxes and a footer. On smaller screens, the columns will stack on top of each other.</p>
-<p>Resize the browser window to see the responsive effect (you will learn more about this in our next chapter - HTML Responsive.)</p>
-
-<header>
-  <h2>Cities</h2>
-</header>
-
-<section>
-  <nav>
-    <ul>
-      <li><a href="#">London</a></li>
-      <li><a href="#">Paris</a></li>
-      <li><a href="#">Tokyo</a></li>
-    </ul>
-  </nav>
-  
-  <article>
-    <h1>London</h1>
-    <p>London is the capital city of England. It is the most populous city in the  United Kingdom, with a metropolitan area of over 13 million inhabitants.</p>
-    <p>Standing on the River Thames, London has been a major settlement for two millennia, its history going back to its founding by the Romans, who named it Londinium.</p>
-  </article>
-</section>
-
-<footer>
-  <p>Footer</p>
-</footer>
-
-</body>
-</html>
-
-
-
-
-</textarea>
-            <form id="codeForm" autocomplete="off" style="margin:0px;display:none;">
-              <input type="hidden" name="code" id="code" />
-            </form>
-                  
-       </div>
+        <div class="panel" id="preview-panel">
+            <div class="panel-header">Live Preview</div>
+            <!-- 7. MỞ RỘNG SANDBOX ĐỂ HỖ TRỢ FORM VÀ DOWNLOAD -->
+            <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-downloads"></iframe>
+        </div>
     </div>
-  </div>
-  <div id="iframecontainer">
-    <div id="iframe">
-      
-      
-      <div id="iframewrapper">
-                
-      </div>
-    </div>
-  </div>
-  
-</div>
-<script>
-submitTryit()
-function submitTryit(n) {
-  
-    if (window.editor) {
-      window.editor.save();
-    }
-  
-  var text = document.getElementById("textareaCode").value;
 
-  var ifr = document.createElement("iframe");
-  ifr.setAttribute("frameborder", "0");
-  ifr.setAttribute("id", "iframeResult");
-  ifr.setAttribute("name", "iframeResult");  
+    <script>
+        const editor = document.getElementById('code-editor');
+        const previewFrame = document.getElementById('preview-frame');
+        const runBtn = document.getElementById('run-btn');
+        const themeBtn = document.getElementById('theme-btn');
+        const workspace = document.getElementById('workspace');
+        const editorPanel = document.getElementById('editor-panel');
+        const dragBar = document.getElementById('drag-bar');
+        const downloadBtn = document.getElementById('download-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const autorunCb = document.getElementById('autorun-cb');
+        const examplesSelect = document.getElementById('examples-select');
+        const statusText = document.getElementById('status-text');
 
-  ifr.setAttribute("allowfullscreen", "true");  
+        // --- DỮ LIỆU KHO VÍ DỤ MẪU (EXAMPLES DATA) ---
+        const examples = {
+            html: `<!DOCTYPE html>\n<html>\n<head>\n  <title>Trang Web Của Tôi</title>\n</head>\n<body>\n  <h1>Xin chào thế giới!</h1>\n  <p>Đây là một đoạn văn bản mẫu chuẩn cấu trúc HTML5.</p>\n</body>\n</html>`,
+            css: `<!DOCTYPE html>\n<html>\n<head>\n<style>\n  .box {\n    background-color: #3498db;\n    color: white;\n    padding: 20px;\n    border-radius: 8px;\n    text-align: center;\n    box-shadow: 0 4px 6px rgba(0,0,0,0.1);\n  }\n</style>\n</head>\n<body>\n  <div class="box">Hộp màu tùy chỉnh bằng CSS</div>\n</body>\n</html>`,
+            flexbox: `<!DOCTYPE html>\n<html>\n<head>\n<style>\n  .container {\n    display: flex;\n    gap: 10px;\n    justify-content: space-around;\n    background: #eee; padding: 10px;\n  }\n  .item { background: #2ecc71; color: white; padding: 20px; flex: 1; text-align: center; }\n</style>\n</head>\n<body>\n  <div class="container">\n    <div class="item">Cột 1</div>\n    <div class="item">Cột 2</div>\n    <div class="item">Cột 3</div>\n  </div>\n</body>\n</html>`,
+            canvas: `<!DOCTYPE html>\n<html>\n<body>\n  <canvas id="myCanvas" width="200" height="200" style="border:1px solid #ccc;"></canvas>\n  <script>\n    const c = document.getElementById("myCanvas");\n    const ctx = c.getContext("2d");\n    ctx.fillStyle = "#e74c3c";\n    ctx.fillRect(20, 20, 150, 100);\n  <\/script>\n</body>\n</html>`,
+            javascript: `<!DOCTYPE html>\n<html>\n<body>\n  <h1 id="headline">Hãy bấm nút bên dưới</h1>\n  <button onclick="changeText()">Bấm vào tôi</button>\n  <script>\n    function changeText() {\n      document.getElementById("headline").innerText = "JavaScript đang chạy thành công!";\n    }\n  <\/script>\n</body>\n</html>`
+        };
+        const defaultCode = examples.html;
 
-  document.getElementById("iframewrapper").innerHTML = "";
-  document.getElementById("iframewrapper").appendChild(ifr);
-    
-  var ifrw = (ifr.contentWindow) ? ifr.contentWindow : (ifr.contentDocument.document) ? ifr.contentDocument.document : ifr.contentDocument;
-  ifrw.document.open();
-  ifrw.document.write(text);  
-  ifrw.document.close();
-  //23.02.2016: contentEditable is set to true, to fix text-selection (bug) in firefox.
-  //(and back to false to prevent the content from being editable)
-  //(To reproduce the error: Select text in the result window with, and without, the contentEditable statements below.)  
-  if (ifrw.document.body && !ifrw.document.body.isContentEditable) {
-    ifrw.document.body.contentEditable = true;
-    ifrw.document.body.contentEditable = false;
-  }
-    
-}
+        // --- KHỞI TẠO HỆ THỐNG ---
+        editor.value = localStorage.getItem('apmaths_html_code') || defaultCode;
+        const savedTheme = localStorage.getItem('apmaths_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        autorunCb.checked = localStorage.getItem('apmaths_autorun') !== 'false';
 
-function hideSpinner() {
-  document.getElementById("runloadercontainer").style.display = "none";
-}
-function displaySpinner() {
-  var i, c, w, h, r, top;
-  i = document.getElementById("iframeResult");
-  w = w3_getStyleValue(i, "width");
-  h = w3_getStyleValue(i, "height");
-  c = document.getElementById("runloadercontainer");
-  c.style.width = w;
-  c.style.height = h;
-  c.style.display = "block";
-  w = Number(w.replace("px", "")) / 5;
-  r = document.getElementById("runloader");
-  r.style.width = w + "px";
-  r.style.height = w + "px";
-  h = w3_getStyleValue(r, "height");
-  h = Number(h.replace("px", "")) / 2;
-  top = w3_getStyleValue(c, "height");
-  top = Number(top.replace("px", "")) / 2;
-  top = top - h
-  r.style.top = top + "px";
-}
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
 
-var currentStack=true;
-if ((window.screen.availWidth <= 768 && window.innerHeight > window.innerWidth) || "" == " horizontal") {restack(true);}
-function restack(horizontal) {
-    var tc, ic, t, i, c, f, sv, sh, d, b, height, flt, width;
-    tc = document.getElementById("textareacontainer");
-    ic = document.getElementById("iframecontainer");
-    t = document.getElementById("textarea");
-    i = document.getElementById("iframe");
-    c = document.getElementById("container");    
-    sv = document.getElementById("stackV");
-    sh = document.getElementById("stackH");
-    b = document.getElementsByClassName("localhostoutercontainer");
-    tc.className = tc.className.replace("horizontal", "");
-    ic.className = ic.className.replace("horizontal", "");        
-    t.className = t.className.replace("horizontal", "");        
-    i.className = i.className.replace("horizontal", "");        
-    c.className = c.className.replace("horizontal", "");                        
-    if (b[0]) {b[0].className = b[0].className.replace("horizontal", "")};
-    if (sv) {sv.className = sv.className.replace("horizontal", "")};
-    if (sv) {sh.className = sh.className.replace("horizontal", "")};
-    stack = "";
-    if (horizontal) {
-        tc.className = tc.className + " horizontal";
-        ic.className = ic.className + " horizontal";        
-        t.className = t.className + " horizontal";        
-        i.className = i.className + " horizontal";                
-        c.className = c.className + " horizontal";                
-        if (sv) {sv.className = sv.className + " horizontal"};
-        if (sv) {sh.className = sh.className + " horizontal"};
-        if (b[0]) {b[0].className = b[0].className + " horizontal"};        
-        stack = " horizontal";
-        document.getElementById("textareacontainer").style.height = "50%";
-        document.getElementById("iframecontainer").style.height = "50%";
-        document.getElementById("textareacontainer").style.width = "100%";
-        document.getElementById("iframecontainer").style.width = "100%";
-        currentStack=false;
-    } else {
-        document.getElementById("textareacontainer").style.height = "100%";
-        document.getElementById("iframecontainer").style.height = "100%";
-        document.getElementById("textareacontainer").style.width = "50%";
-        document.getElementById("iframecontainer").style.width = "50%";
-        currentStack=true;        
-    }
-    fixDragBtn();
-    showFrameSize();
-      
-}
-function showFrameSize() {
-  var t;
-  var width, height;
-  width = Number(w3_getStyleValue(document.getElementById("iframeResult"), "width").replace("px", "")).toFixed();
-  height = Number(w3_getStyleValue(document.getElementById("iframeResult"), "height").replace("px", "")).toFixed();
-  document.getElementById("framesize").innerHTML = "Result Size: <span>" + width + " x " + height + "</span>";
-}
-var dragging = false;
-var stack;
-function fixDragBtn() {
-  var textareawidth, leftpadding, dragleft, containertop, buttonwidth
-  var containertop = Number(w3_getStyleValue(document.getElementById("container"), "top").replace("px", ""));
-  if (stack != " horizontal") {
-    document.getElementById("dragbar").style.width = "5px";    
-    textareasize = Number(w3_getStyleValue(document.getElementById("textareawrapper"), "width").replace("px", ""));
-    leftpadding = Number(w3_getStyleValue(document.getElementById("textarea"), "padding-left").replace("px", ""));
-    buttonwidth = Number(w3_getStyleValue(document.getElementById("dragbar"), "width").replace("px", ""));
-    textareaheight = w3_getStyleValue(document.getElementById("textareawrapper"), "height");
-    dragleft = textareasize + leftpadding + (leftpadding / 2) - (buttonwidth / 2);
-    document.getElementById("dragbar").style.top = containertop + "px";
-    document.getElementById("dragbar").style.left = dragleft + "px";
-    document.getElementById("dragbar").style.height = textareaheight;
-    document.getElementById("dragbar").style.cursor = "col-resize";
-    
-  } else {
-    document.getElementById("dragbar").style.height = "5px";
-    if (window.getComputedStyle) {
-        textareawidth = window.getComputedStyle(document.getElementById("textareawrapper"),null).getPropertyValue("height");
-        textareaheight = window.getComputedStyle(document.getElementById("textareawrapper"),null).getPropertyValue("width");
-        leftpadding = window.getComputedStyle(document.getElementById("textarea"),null).getPropertyValue("padding-top");
-        buttonwidth = window.getComputedStyle(document.getElementById("dragbar"),null).getPropertyValue("height");
-    } else {
-        dragleft = document.getElementById("textareawrapper").currentStyle["width"];
-    }
-    textareawidth = Number(textareawidth.replace("px", ""));
-    leftpadding = Number(leftpadding .replace("px", ""));
-    buttonwidth = Number(buttonwidth .replace("px", ""));
-    dragleft = containertop + textareawidth + leftpadding + (leftpadding / 2);
-    document.getElementById("dragbar").style.top = dragleft + "px";
-    document.getElementById("dragbar").style.left = "5px";
-    document.getElementById("dragbar").style.width = textareaheight;
-    document.getElementById("dragbar").style.cursor = "row-resize";        
-  }
-}
-function dragstart(e) {
-  e.preventDefault();
-  dragging = true;
-  var main = document.getElementById("iframecontainer");
-}
-function dragmove(e) {
-  if (dragging) 
-  {
-    document.getElementById("shield").style.display = "block";        
-    if (stack != " horizontal") {
-      var percentage = (e.pageX / window.innerWidth) * 100;
-      if (percentage > 5 && percentage < 98) {
-        var mainPercentage = 100-percentage;
-        document.getElementById("textareacontainer").style.width = percentage + "%";
-        document.getElementById("iframecontainer").style.width = mainPercentage + "%";
-        fixDragBtn();
-      }
-    } else {
-      var containertop = Number(w3_getStyleValue(document.getElementById("container"), "top").replace("px", ""));
-      var percentage = ((e.pageY - containertop + 20) / (window.innerHeight - containertop + 20)) * 100;
-      if (percentage > 5 && percentage < 98) {
-        var mainPercentage = 100-percentage;
-        document.getElementById("textareacontainer").style.height = percentage + "%";
-        document.getElementById("iframecontainer").style.height = mainPercentage + "%";
-        fixDragBtn();
-      }
-    }
-    showFrameSize();  
-  
-      
-  }
-}
-function dragend() {
-  document.getElementById("shield").style.display = "none";
-  dragging = false;
-  var vend = navigator.vendor;
-  if (window.editor && vend.indexOf("Apple") == -1) {
-      window.editor.refresh();
-  }
-}
-if (window.addEventListener) {              
-  document.getElementById("dragbar").addEventListener("mousedown", function(e) {dragstart(e);});
-  document.getElementById("dragbar").addEventListener("touchstart", function(e) {dragstart(e);});
-  window.addEventListener("mousemove", function(e) {dragmove(e);});
-  window.addEventListener("touchmove", function(e) {dragmove(e);});
-  window.addEventListener("mouseup", dragend);
-  window.addEventListener("touchend", dragend);
-  window.addEventListener("load", fixDragBtn);
-  window.addEventListener("load", showFrameSize);
-  
-}
+        // --- HÀM DOWNLOAD BẢO TOÀN (TÁCH BIỆT CHO TRÌNH LẮNG NGHE CHUNG) ---
+        function triggerDownload() {
+            let filename = prompt("Nhập tên file muốn lưu:", "index.html");
+            if (filename === null) return;
+            filename = filename.trim() || "index.html";
+            if (!filename.endsWith('.html')) filename += '.html';
 
-function retheme() {
-  var cc = document.body.className;
-  if (cc.indexOf("darktheme") > -1) {
-    document.body.className = cc.replace("darktheme", "");
-    if (opener) {opener.document.body.className = cc.replace("darktheme", "");}
-    localStorage.setItem("preferredmode", "light");
-  } else {
-    document.body.className += " darktheme";
-    if (opener) {opener.document.body.className += " darktheme";}
-    localStorage.setItem("preferredmode", "dark");
-  }
-}
-(
-function setThemeMode() {
-  var x = localStorage.getItem("preferredmode");
-  if (x == "dark") {
-    document.body.className += " darktheme";
-  }
-})();
-function colorcoding() {
-  var ua = navigator.userAgent;
-  //Opera Mini refreshes the page when trying to edit the textarea.
-  if (ua && ua.toUpperCase().indexOf("OPERA MINI") > -1) { return false; }
-  window.editor = CodeMirror.fromTextArea(document.getElementById("textareaCode"), {
-  mode: "text/html",
-  lineWrapping: true,
-  smartIndent: false,
-  htmlMode: true,
-  autocorrect: false,      
-  addModeClass: true,
+            const blob = new Blob([editor.value], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        }
 
-    
-    //mode: "text/html",
-    //htmlMode: true,
-    //lineWrapping: true,
-    //smartIndent: false,
-    //addModeClass: true
-  
-  });
-//  window.editor.on("change", function () {window.editor.save();});
-}
+        // --- 4. TÍNH NĂNG PHÍM TẮT CTRL + S CHUYÊN NGHIỆP ---
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                triggerDownload();
+            }
+        });
+        downloadBtn.addEventListener('click', triggerDownload);
 
-colorcoding();
+        // --- HÀM CHẠY LIVE PREVIEW ---
+        function runCode() {
+            const code = editor.value;
+            const blob = new Blob([code], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            previewFrame.onload = () => URL.revokeObjectURL(url);
+            previewFrame.src = url;
+        }
 
+        // --- 1 & 5. AUTO SAVE ĐỘC LẬP & CẬP NHẬT TRẠNG THÁI GIAO DIỆN MƯỢT MÀ ---
+        const saveStorage = debounce(() => {
+            localStorage.setItem('apmaths_html_code', editor.value);
+            statusText.textContent = "✔ Saved";
+            statusText.className = "status-indicator status-saved";
+        }, 300);
 
-function clickTab(x) {
-  
-  return false;
-  
-}
+        const handleLivePreview = debounce(() => {
+            if (autorunCb.checked) runCode();
+        }, 500);
 
-function w3_getStyleValue(elmnt,style) {
-    if (window.getComputedStyle) {
-        return window.getComputedStyle(elmnt,null).getPropertyValue(style);
-    } else {
-        return elmnt.currentStyle[style];
-    }
-}
+        editor.addEventListener('input', () => {
+            statusText.textContent = "● Unsaved";
+            statusText.className = "status-indicator status-unsaved";
+            saveStorage();
+            handleLivePreview();
+        });
 
-function openMenu() {
-    var x = document.getElementById("navbarDropMenu");
-    var y = document.getElementById("menuOverlay");
-    var z = document.getElementById("menuButton");
-    if (z.className.indexOf("w3-text-gray") == -1) {
-        z.className += " w3-text-gray";
-    } else { 
-        z.className = z.className.replace(" w3-text-gray", "");
-    }
-    if (z.className.indexOf("w3-gray") == -1) {
-        z.className += " w3-gray";
-    } else { 
-        z.className = z.className.replace(" w3-gray", "");
-    }
-    if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
-    } else { 
-        x.className = x.className.replace(" w3-show", "");
-    }
-    if (y.className.indexOf("w3-show") == -1) {
-        y.className += " w3-show";
-    } else { 
-        y.className = y.className.replace(" w3-show", "");
-    }
+        autorunCb.addEventListener('change', (e) => {
+            localStorage.setItem('apmaths_autorun', e.target.checked);
+            if (e.target.checked) runCode();
+        });
 
-}
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == document.getElementById("menuOverlay")) {
-        openMenu();
-    }
-}
-function setCodewindowHeight() {
-  var i;
-  var txw = document.getElementById("textareawrapper");
-  var txwh = w3_getStyleValue(txw,"height");
-  
-  var qwsa = document.getElementsByClassName("codewindow");
-  for (i = 0; i < qwsa.length; i++) {
-    qwsa[i].style.height = txwh;
-    qwsa[i].style.setProperty("overflow", "auto", "important");
-  }
-}
+        // --- 2. NÚT RESET AN TOÀN ---
+        resetBtn.addEventListener('click', () => {
+            if (confirm("Bạn có chắc chắn muốn khôi phục mã nguồn về trạng thái mặc định ban đầu?")) {
+                editor.value = defaultCode;
+                localStorage.setItem('apmaths_html_code', defaultCode);
+                runCode();
+                examplesSelect.value = "";
+            }
+        });
 
-uic_r_e()
-</script>
+        // --- 3. NÚT COPY SAO CHÉP NHANH ---
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(editor.value).then(() => {
+                const oldText = copyBtn.textContent;
+                copyBtn.textContent = "Copied! ✓";
+                setTimeout(() => copyBtn.textContent = oldText, 2000);
+            });
+        });
 
+        // --- XỬ LÝ SỰ KIỆN KHI CHỌN VÍ DỤ ---
+        examplesSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (examples[val]) {
+                editor.value = examples[val];
+                localStorage.setItem('apmaths_html_code', examples[val]);
+                runCode();
+            }
+        });
+
+        // --- BỘ XỬ LÝ KÉO THẢ CHIA MÀN HÌNH (POINTER EVENTS) ---
+        let isDragging = false;
+        dragBar.addEventListener('pointerdown', (e) => {
+            e.preventDefault(); isDragging = true;
+            dragBar.classList.add('dragging'); previewFrame.style.pointerEvents = 'none';
+            dragBar.setPointerCapture(e.pointerId);
+        });
+
+        document.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            const rect = workspace.getBoundingClientRect();
+            if (window.innerWidth > 900) {
+                let pX = Math.max(rect.width * 0.15, Math.min(e.clientX - rect.left, rect.width * 0.85));
+                editorPanel.style.width = `${(pX / rect.width) * 100}%`;
+                document.getElementById('preview-panel').style.width = `${100 - (pX / rect.width) * 100}%`;
+            } else {
+                let pY = Math.max(rect.height * 0.15, Math.min(e.clientY - rect.top, rect.height * 0.85));
+                editorPanel.style.height = `${(pY / rect.height) * 100}%`;
+                document.getElementById('preview-panel').style.height = `${100 - (pY / rect.height) * 100}%`;
+            }
+        });
+
+        const stopDragging = (e) => {
+            if (isDragging) {
+                isDragging = false; dragBar.classList.remove('dragging');
+                previewFrame.style.pointerEvents = 'auto';
+                try { dragBar.releasePointerCapture(e.pointerId); } catch(err) {}
+            }
+        };
+        document.addEventListener('pointerup', stopDragging);
+        document.addEventListener('pointercancel', stopDragging);
+
+        // ĐỔI THEME & LOAD TRANG BAN ĐẦU
+        themeBtn.addEventListener('click', () => {
+            const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('apmaths_theme', newTheme);
+        });
+        window.addEventListener('load', runCode);
+    </script>
 </body>
 </html>
