@@ -3,6 +3,10 @@ body {
     background: #f5f5f5;
     margin: 0;
     padding: 0;
+    
+    /* BỔ SUNG THÊM 2 DÒNG NÀY */
+    width: 100%;
+    overflow-x: hidden; /* Ngăn chặn toàn bộ trang sinh ra thanh cuộn ngang đáng ghét */
 }
 
 .container {
@@ -347,36 +351,39 @@ tbody tr:hover {
    CSS RESPONSIVE: ĐỒNG BỘ TRÊN ĐIỆN THOẠI
    ========================================================== */
 @media (max-width: 768px) {
-    /* 1. Chuyển 2 card nạp file từ cùng hàng thành dọc */
-    .upload-grid {
-        flex-direction: column;
-        gap: 15px; /* Khoảng cách giữa 2 card khi xếp dọc */
-    }
-
-    /* 2. Đảm bảo các nút bấm co giãn vừa vặn, không bị tràn viền */
-    .action-btn, 
-    .export-btn {
-        width: 100%; /* Nút bấm chiếm hết chiều ngang trên mobile để dễ ấn */
+    /* 1. Thêm lề trái/phải cho toàn bộ trang chính và footer */
+    .container, 
+    .footer {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
         box-sizing: border-box;
     }
 
-    /* 3. Thu gọn khu vực xuất kết quả và bảng dữ liệu */
+    /* 2. Chuyển 2 card nạp file từ cùng hàng thành dọc */
+    .upload-grid {
+        flex-direction: column;
+        gap: 15px; 
+        width: 100%;
+    }
+
+    /* Đảm bảo các card con tận dụng hết không gian bên trong lề */
+    .upload-card {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    /* 3. Đảm bảo các nút bấm co giãn vừa vặn, không bị tràn viền */
+    .action-btn, 
+    .export-btn {
+        width: 100%; 
+        box-sizing: border-box;
+    }
+
+    /* 4. Thu gọn khu vực xuất kết quả */
     #result {
         width: 100%;
         max-width: 100%;
-        overflow-x: auto; /* Bật cuộn ngang riêng cho bảng nếu dữ liệu quá rộng */
+        overflow-x: auto; 
         box-sizing: border-box;
-        padding: 5px; /* Giảm padding để tăng không gian hiển thị */
-    }
-
-    /* Tối ưu thêm cho bảng dữ liệu (nếu sau này cậu có render bảng vào #result) */
-    #result table {
-        width: 100%;
-        font-size: 13px; /* Thu nhỏ chữ một chút trên điện thoại */
-    }
-    
-    #result th, 
-    #result td {
-        padding: 8px 6px; /* Thu hẹp khoảng cách các ô */
     }
 }
