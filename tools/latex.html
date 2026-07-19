@@ -138,59 +138,60 @@
     <header>
         <h1><i class="fa-solid fa-square-root-variable"></i> APMaths LaTeX Pro Editor</h1>
         <div class="header-actions">
+            <!-- Thêm nút chuyển đổi ngôn ngữ ở bên trái nút Dark Mode -->
+            <button class="btn" id="lang-toggle"><i class="fa-solid fa-language"></i> <span>EN</span></button>
             <button class="btn" id="theme-toggle"><i class="fa-solid fa-moon"></i> <span>Dark Mode</span></button>
             <div class="dropdown">
-                <button class="btn"><i class="fa-solid fa-download"></i> Xuất bản <i class="fa-solid fa-chevron-down" style="font-size:0.7rem"></i></button>
+                <button class="btn"><i class="fa-solid fa-download"></i> <span data-i18n="export-btn">Xuất bản</span> <i class="fa-solid fa-chevron-down" style="font-size:0.7rem"></i></button>
                 <div class="dropdown-content">
-                    <button onclick="downloadFile('tex')">Tải file .tex</button>
-                    <button onclick="downloadFile('md')">Tải file .md (Markdown)</button> <!-- Hỗ trợ tải file .md -->
-                    <button onclick="downloadFile('txt')">Tải file .txt</button>
-                    <button onclick="downloadFile('html')">Tải file .html (Full Render)</button>
+                    <button onclick="downloadFile('tex')" data-i18n="download-tex">Tải file .tex</button>
+                    <button onclick="downloadFile('md')" data-i18n="download-md">Tải file .md (Markdown)</button>
+                    <button onclick="downloadFile('txt')" data-i18n="download-txt">Tải file .txt</button>
+                    <button onclick="downloadFile('html')" data-i18n="download-html">Tải file .html (Full Render)</button>
                 </div>
             </div>
-            <button class="btn btn-primary" id="copy-btn"><i class="fa-solid fa-copy"></i> Copy Mã</button>
+            <button class="btn btn-primary" id="copy-btn"><i class="fa-solid fa-copy"></i> <span data-i18n="copy-btn">Copy Mã</span></button>
         </div>
     </header>
 
     <div class="toolbar">
         <div class="doc-select-container">
             <select id="doc-selector" onchange="switchDocument()"></select>
-            <button class="btn btn-sm" onclick="createNewDocument()" title="Tạo tài liệu mới"><i class="fa-solid fa-plus"></i></button>
-            <button class="btn btn-sm" onclick="deleteCurrentDocument()" title="Xóa tài liệu hiện tại" style="color:#c5221f;"><i class="fa-solid fa-trash"></i></button>
+            <button class="btn btn-sm" onclick="createNewDocument()" data-i18n-title="new-doc-title" title="Tạo tài liệu mới"><i class="fa-solid fa-plus"></i></button>
+            <button class="btn btn-sm" onclick="deleteCurrentDocument()" data-i18n-title="delete-doc-title" title="Xóa tài liệu hiện tại" style="color:#c5221f;"><i class="fa-solid fa-trash"></i></button>
         </div>
 
-        <!-- Bắt đầu trực tiếp từ nút Ma trận theo yêu cầu -->
         <div class="dropdown">
-            <button class="btn btn-sm">Ma trận <i class="fa-solid fa-table-cells"></i></button>
+            <button class="btn btn-sm"><span data-i18n="matrix-btn">Ma trận</span> <i class="fa-solid fa-table-cells"></i></button>
             <div class="dropdown-content">
-                <button onclick="insertAtCursor('matrix2')">Ma trận 2x2</button>
-                <button onclick="insertAtCursor('matrix3')">Ma trận 3x3</button>
-                <button onclick="insertAtCursor('bmatrix')">Ma trận bmatrix</button>
+                <button onclick="insertAtCursor('matrix2')" data-i18n="matrix2">Ma trận 2x2</button>
+                <button onclick="insertAtCursor('matrix3')" data-i18n="matrix3">Ma trận 3x3</button>
+                <button onclick="insertAtCursor('bmatrix')" data-i18n="bmatrix">Ma trận bmatrix</button>
             </div>
         </div>
         <div class="dropdown">
-            <button class="btn btn-sm">Môi trường <i class="fa-solid fa-list"></i></button>
+            <button class="btn btn-sm"><span data-i18n="env-btn">Môi trường</span> <i class="fa-solid fa-list"></i></button>
             <div class="dropdown-content">
-                <button onclick="insertAtCursor('align')">Môi trường align</button>
-                <button onclick="insertAtCursor('cases')">Môi trường cases</button>
+                <button onclick="insertAtCursor('align')" data-i18n="env-align">Môi trường align</button>
+                <button onclick="insertAtCursor('cases')" data-i18n="env-cases">Môi trường cases</button>
             </div>
         </div>
-        <button class="btn btn-sm" onclick="insertAtCursor('frac')">Phân số</button>
-        <button class="btn btn-sm" onclick="insertAtCursor('int')">Tích phân</button>
-        <button class="btn btn-sm" onclick="insertAtCursor('limit')">Giới hạn</button>
-        <button class="btn btn-sm" onclick="insertAtCursor('operators')">Toán tử Toán</button>
+        <button class="btn btn-sm" onclick="insertAtCursor('frac')" data-i18n="frac">Phân số</button>
+        <button class="btn btn-sm" onclick="insertAtCursor('int')" data-i18n="int">Tích phân</button>
+        <button class="btn btn-sm" onclick="insertAtCursor('limit')" data-i18n="limit">Giới hạn</button>
+        <button class="btn btn-sm" onclick="insertAtCursor('operators')" data-i18n="operators">Toán tử Toán</button>
     </div>
 
     <div class="main-container">
         <div class="editor-side" id="editor-container" style="width: 50%;">
-            <div class="panel-header">Mã nguồn LaTeX</div>
+            <div class="panel-header" data-i18n="panel-editor">Mã nguồn LaTeX</div>
             <textarea id="latex-input"></textarea>
         </div>
         
         <div class="resizer" id="drag-bar"></div>
         
         <div class="preview-side" id="preview-container" style="flex: 1;">
-            <div class="panel-header">Kết quả trực quan (Real-time Preview)</div>
+            <div class="panel-header" data-i18n="panel-preview">Kết quả trực quan (Real-time Preview)</div>
             <div class="preview-body">
                 <div id="output"></div>
                 <div id="error-message" class="error-box"></div>
@@ -209,6 +210,132 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
     <script>
+        // Hệ thống Đa Ngôn Ngữ (i18n)
+        const translations = {
+            vi: {
+                "export-btn": "Xuất bản",
+                "download-tex": "Tải file .tex",
+                "download-md": "Tải file .md (Markdown)",
+                "download-txt": "Tải file .txt",
+                "download-html": "Tải file .html (Full Render)",
+                "copy-btn": "Copy Mã",
+                "new-doc-title": "Tạo tài liệu mới",
+                "delete-doc-title": "Xóa tài liệu hiện tại",
+                "matrix-btn": "Ma trận",
+                "matrix2": "Ma trận 2x2",
+                "matrix3": "Ma trận 3x3",
+                "bmatrix": "Ma trận bmatrix",
+                "env-btn": "Môi trường",
+                "env-align": "Môi trường align",
+                "env-cases": "Môi trường cases",
+                "frac": "Phân số",
+                "int": "Tích phân",
+                "limit": "Giới hạn",
+                "operators": "Toán tử Toán",
+                "panel-editor": "Mã nguồn LaTeX",
+                "panel-preview": "Kết quả trực quan (Real-time Preview)",
+                // Các thông điệp hệ thống bằng JS
+                "toast-copy-success": "Đã sao chép toàn bộ mã nguồn!",
+                "toast-copy-error": "Lỗi sao chép tự động!",
+                "toast-new-doc": "Đã tạo tài liệu mới!",
+                "toast-delete-error": "Không thể xóa! Bạn phải giữ ít nhất một tài liệu.",
+                "toast-delete-success": "Đã xóa tài liệu!",
+                "toast-export-success": "Đã xuất file .{ext} thành công!",
+                "prompt-new-doc": "Nhập tên tài liệu mới:",
+                "prompt-new-doc-default": "Tài liệu mới ",
+                "confirm-delete": "Bạn có chắc chắn muốn xóa \"{title}\"?",
+                "error-count": "Phát hiện {count} công thức lỗi cú pháp LaTeX (hiển thị màu đỏ ở Preview).",
+                "dark-mode": "Dark Mode",
+                "light-mode": "Light Mode",
+                "default-doc-title": "Tài liệu mẫu 1"
+            },
+            en: {
+                "export-btn": "Export",
+                "download-tex": "Download .tex file",
+                "download-md": "Download .md file (Markdown)",
+                "download-txt": "Download .txt file",
+                "download-html": "Download .html file (Full Render)",
+                "copy-btn": "Copy Code",
+                "new-doc-title": "Create new document",
+                "delete-doc-title": "Delete current document",
+                "matrix-btn": "Matrix",
+                "matrix2": "Matrix 2x2",
+                "matrix3": "Matrix 3x3",
+                "bmatrix": "Matrix bmatrix",
+                "env-btn": "Environment",
+                "env-align": "Align Environment",
+                "env-cases": "Cases Environment",
+                "frac": "Fraction",
+                "int": "Integral",
+                "limit": "Limit",
+                "operators": "Math Operators",
+                "panel-editor": "LaTeX Source Code",
+                "panel-preview": "Real-time Preview",
+                "toast-copy-success": "Source code copied to clipboard!",
+                "toast-copy-error": "Failed to copy code!",
+                "toast-new-doc": "New document created!",
+                "toast-delete-error": "Cannot delete! You must keep at least one document.",
+                "toast-delete-success": "Document deleted successfully!",
+                "toast-export-success": "Exported .{ext} file successfully!",
+                "prompt-new-doc": "Enter new document title:",
+                "prompt-new-doc-default": "New Document ",
+                "confirm-delete": "Are you sure you want to delete \"{title}\"?",
+                "error-count": "Detected {count} LaTeX syntax errors (displayed in red in Preview).",
+                "dark-mode": "Dark Mode",
+                "light-mode": "Light Mode",
+                "default-doc-title": "Sample Document 1"
+            }
+        };
+
+        let currentLang = localStorage.getItem('apmaths_lang') || 'vi';
+
+        function getTranslation(key, variables = {}) {
+            let text = translations[currentLang][key] || translations['vi'][key] || key;
+            for (let varKey in variables) {
+                text = text.replace(`{${varKey}}`, variables[varKey]);
+            }
+            return text;
+        }
+
+        function updateLanguageUI() {
+            // Cập nhật text của các phần tử có data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.textContent = getTranslation(key);
+            });
+            
+            // Cập nhật attribute title cho các nút công cụ
+            document.querySelectorAll('[data-i18n-title]').forEach(el => {
+                const key = el.getAttribute('data-i18n-title');
+                el.setAttribute('title', getTranslation(key));
+            });
+
+            // Cập nhật Text hiển thị trên nút đổi ngôn ngữ (Nút hiển thị ngôn ngữ đích có thể chuyển qua)
+            const langToggle = document.getElementById('lang-toggle');
+            langToggle.querySelector('span').textContent = currentLang === 'vi' ? 'EN' : 'VI';
+
+            // Cập nhật nút theme mode theo ngôn ngữ mới
+            const themeToggle = document.getElementById('theme-toggle');
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                themeToggle.innerHTML = `<i class="fa-solid fa-sun"></i> <span>${getTranslation('light-mode')}</span>`;
+            } else {
+                themeToggle.innerHTML = `<i class="fa-solid fa-moon"></i> <span>${getTranslation('dark-mode')}</span>`;
+            }
+
+            // Render lại selector tài liệu để cập nhật tiêu đề mẫu nếu có
+            updateDocSelector();
+        }
+
+        // Đăng ký sự kiện click nút đổi ngôn ngữ
+        document.getElementById('lang-toggle').addEventListener('click', () => {
+            currentLang = currentLang === 'vi' ? 'en' : 'vi';
+            localStorage.setItem('apmaths_lang', currentLang);
+            updateLanguageUI();
+            renderLaTeX();
+        });
+
+
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -242,7 +369,12 @@
             for (let id in documents) {
                 let opt = document.createElement('option');
                 opt.value = id;
-                opt.innerText = documents[id].title;
+                // Nếu là tài liệu mẫu gốc chưa đổi tên, hỗ trợ dịch tự động tiêu đề mẫu
+                if (id === 'doc_1' && (documents[id].title === 'Tài liệu mẫu 1' || documents[id].title === 'Sample Document 1')) {
+                    opt.innerText = getTranslation('default-doc-title');
+                } else {
+                    opt.innerText = documents[id].title;
+                }
                 if (id === currentDocId) opt.selected = true;
                 docSelector.appendChild(opt);
             }
@@ -257,7 +389,7 @@
         }
 
         function createNewDocument() {
-            const title = prompt("Nhập tên tài liệu mới:", "Tài liệu mới " + (Object.keys(documents).length + 1));
+            const title = prompt(getTranslation('prompt-new-doc'), getTranslation('prompt-new-doc-default') + (Object.keys(documents).length + 1));
             if (!title) return;
             const newId = 'doc_' + Date.now();
             documents[newId] = { title: title, content: '% Bắt đầu soạn thảo...' };
@@ -266,15 +398,15 @@
             localStorage.setItem('apmaths_current_doc', currentDocId);
             updateDocSelector();
             switchDocument();
-            showToast("Đã tạo tài liệu mới!");
+            showToast(getTranslation('toast-new-doc'));
         }
 
         function deleteCurrentDocument() {
             if (Object.keys(documents).length <= 1) {
-                showToast("Không thể xóa! Bạn phải giữ ít nhất một tài liệu.", "error");
+                showToast(getTranslation('toast-delete-error'), "error");
                 return;
             }
-            if (!confirm(`Bạn có chắc chắn muốn xóa "${documents[currentDocId].title}"?`)) return;
+            if (!confirm(getTranslation('confirm-delete', {title: documents[currentDocId].title}))) return;
             
             delete documents[currentDocId];
             localStorage.setItem('apmaths_docs', JSON.stringify(documents));
@@ -282,7 +414,7 @@
             localStorage.setItem('apmaths_current_doc', currentDocId);
             updateDocSelector();
             switchDocument();
-            showToast("Đã xóa tài liệu!");
+            showToast(getTranslation('toast-delete-success'));
         }
 
         function saveCurrentData() {
@@ -315,7 +447,7 @@
                 
                 const errors = output.querySelectorAll('.katex-error');
                 if (errors.length > 0) {
-                    errorBox.innerText = `Phát hiện ${errors.length} công thức lỗi cú pháp LaTeX (hiển thị màu đỏ ở Preview).`;
+                    errorBox.innerText = getTranslation('error-count', {count: errors.length});
                     errorBox.style.display = 'block';
                 } else {
                     errorBox.style.display = 'none';
@@ -335,9 +467,9 @@
         document.getElementById('copy-btn').addEventListener('click', async () => {
             try {
                 await navigator.clipboard.writeText(editor.getValue());
-                showToast("Đã sao chép toàn bộ mã nguồn!");
+                showToast(getTranslation('toast-copy-success'));
             } catch (err) {
-                showToast("Lỗi sao chép tự động!", "error");
+                showToast(getTranslation('toast-copy-error'), "error");
             }
         });
 
@@ -394,7 +526,6 @@
                 mimeType = 'text/html';
             } else if (ext === 'md') {
                 mimeType = 'text/markdown';
-                // Tự động chèn Front Matter nếu chưa tồn tại trong text[cite: 1]
                 if (!content.trim().startsWith('---')) {
                     const cleanTitle = documents[currentDocId].title;
                     const permalinkName = cleanTitle.toLowerCase().replace(/\s+/g, '-');
@@ -410,7 +541,7 @@
             link.click();
             
             URL.revokeObjectURL(url);
-            showToast(`Đã xuất file .${ext} thành công!`);
+            showToast(getTranslation('toast-export-success', {ext: ext}));
         }
 
         const resizer = document.getElementById('drag-bar');
@@ -438,15 +569,16 @@
             if (currentTheme === 'dark') {
                 document.body.removeAttribute('data-theme');
                 editor.setOption('theme', 'default');
-                themeToggle.innerHTML = `<i class="fa-solid fa-moon"></i> <span>Dark Mode</span>`;
+                themeToggle.innerHTML = `<i class="fa-solid fa-moon"></i> <span>${getTranslation('dark-mode')}</span>`;
             } else {
                 document.body.setAttribute('data-theme', 'dark');
                 editor.setOption('theme', 'dracula');
-                themeToggle.innerHTML = `<i class="fa-solid fa-sun"></i> <span>Light Mode</span>`;
+                themeToggle.innerHTML = `<i class="fa-solid fa-sun"></i> <span>${getTranslation('light-mode')}</span>`;
             }
         });
 
-        updateDocSelector();
+        // Khởi tạo ứng dụng
+        updateLanguageUI();
         editor.setValue(documents[currentDocId].content);
         renderLaTeX();
     </script>
