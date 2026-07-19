@@ -31,6 +31,7 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
+        /* CẤU TRÚC LAYOUT CHUẨN FLEXBOX - KHÔNG DÙNG CALC NỮA */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100dvh;
@@ -49,7 +50,7 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
-            height: 55px;
+            flex-shrink: 0; /* Khóa chiều cao cố định cho header, không bị nén */
             z-index: 10;
         }
         .logo { font-weight: 700; font-size: 1.1rem; min-width: 170px; }
@@ -78,15 +79,21 @@
         .opt-label { display: flex; align-items: center; gap: 4px; font-size: 0.8rem; cursor: pointer; }
         .addon-group { display: flex; gap: 4px; border-right: 1px solid var(--border-color); padding-right: 6px; }
 
+        /* VÙNG LÀM VIỆC TỰ ĐỘNG LẤP ĐẦY KHÔNG GIAN CÒN LẠI */
         .workspace {
             display: flex;
             flex: 1;
+            min-height: 0;
             position: relative;
-            height: calc(100dvh - 55px);
-            overflow: hidden;
         }
 
-        .panel { display: flex; flex-direction: column; background: var(--panel-bg); height: 100%; overflow: hidden; }
+        /* KHẮC PHỤC LỖI KHOẢNG TRẮNG BẰNG MIN-HEIGHT: 0 */
+        .panel { 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 0; 
+            background: var(--panel-bg); 
+        }
         #editor-panel { width: 50%; }
         #preview-panel { width: 50%; }
 
@@ -100,17 +107,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
         
-        /* 5. TRẠNG THÁI LƯU TRỮ */
         .status-indicator { font-size: 0.75rem; transition: color 0.2s; font-weight: normal; text-transform: none; }
         .status-saved { color: #27ae60; }
         .status-unsaved { color: #e67e22; }
 
-        textarea {
-            width: 100%;
-            flex: 1;
+        /* TEXTAREA VÀ IFRAME TỰ ĐỘNG GIÃN NỞ KHÔNG BỊ GIỚI HẠN */
+        textarea, iframe { 
+            flex: 1; 
+            min-height: 0; 
+            width: 100%; 
             border: none;
+        }
+
+        textarea {
             resize: none;
             outline: none;
             font-family: "Fira Code", Consolas, monospace;
@@ -121,14 +133,13 @@
             color: var(--text-color);
         }
 
-        iframe { width: 100%; flex: 1; border: none; background: #ffffff; }
+        iframe { background: #ffffff; }
 
         .resizer { width: 6px; background-color: var(--border-color); cursor: col-resize; z-index: 5; touch-action: none; }
         .resizer:hover, .resizer.dragging { background-color: var(--accent); }
 
         @media (max-width: 900px) {
             header { height: auto; flex-direction: column; gap: 8px; padding: 10px; }
-            .workspace { height: calc(100dvh - header.getBoundingClientRect().height); }
             .workspace { flex-direction: column; }
             #editor-panel, #preview-panel { width: 100% !important; height: 50%; }
             .resizer { width: 100%; height: 6px; cursor: row-resize; }
@@ -140,7 +151,6 @@
     <header>
         <div class="logo">APMaths <span>HTML Editor</span></div>
         <div class="controls">
-            <!-- 6. KHO VÍ DỤ NẠP BÀI HỌC (EXAMPLES) -->
             <select id="examples-select" title="Chọn mã ví dụ mẫu">
                 <option value="" disabled selected>Chọn ví dụ mẫu ▼</option>
                 <option value="html">Cấu trúc HTML5</option>
@@ -166,9 +176,9 @@
         <div class="panel" id="editor-panel">
             <div class="panel-header">
                 <span>Source Code</span>
-                <!-- 5. HIỂN THỊ TRẠNG THÁI UX -->
                 <span id="status-text" class="status-indicator status-saved">✔ Saved</span>
             </div>
+            <!-- Cấu trúc sẵn sàng lấp đầy 100% không gian -->
             <textarea id="code-editor" spellcheck="false" placeholder="Nhập mã HTML tại đây..."></textarea>
         </div>
 
@@ -176,7 +186,6 @@
 
         <div class="panel" id="preview-panel">
             <div class="panel-header">Live Preview</div>
-            <!-- 7. MỞ RỘNG SANDBOX ĐỂ HỖ TRỢ FORM VÀ DOWNLOAD -->
             <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-downloads"></iframe>
         </div>
     </div>
@@ -196,7 +205,6 @@
         const examplesSelect = document.getElementById('examples-select');
         const statusText = document.getElementById('status-text');
 
-        // --- DỮ LIỆU KHO VÍ DỤ MẪU (EXAMPLES DATA) ---
         const examples = {
             html: `<!DOCTYPE html>\n<html>\n<head>\n  <title>Trang Web Của Tôi</title>\n</head>\n<body>\n  <h1>Xin chào thế giới!</h1>\n  <p>Đây là một đoạn văn bản mẫu chuẩn cấu trúc HTML5.</p>\n</body>\n</html>`,
             css: `<!DOCTYPE html>\n<html>\n<head>\n<style>\n  .box {\n    background-color: #3498db;\n    color: white;\n    padding: 20px;\n    border-radius: 8px;\n    text-align: center;\n    box-shadow: 0 4px 6px rgba(0,0,0,0.1);\n  }\n</style>\n</head>\n<body>\n  <div class="box">Hộp màu tùy chỉnh bằng CSS</div>\n</body>\n</html>`,
@@ -206,7 +214,7 @@
         };
         const defaultCode = examples.html;
 
-        // --- KHỞI TẠO HỆ THỐNG ---
+        // KHỞI TẠO HỆ THỐNG
         editor.value = localStorage.getItem('apmaths_html_code') || defaultCode;
         const savedTheme = localStorage.getItem('apmaths_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -220,7 +228,6 @@
             };
         }
 
-        // --- HÀM DOWNLOAD BẢO TOÀN (TÁCH BIỆT CHO TRÌNH LẮNG NGHE CHUNG) ---
         function triggerDownload() {
             let filename = prompt("Nhập tên file muốn lưu:", "index.html");
             if (filename === null) return;
@@ -237,7 +244,7 @@
             URL.revokeObjectURL(a.href);
         }
 
-        // --- 4. TÍNH NĂNG PHÍM TẮT CTRL + S CHUYÊN NGHIỆP ---
+        // PHÍM TẮT CTRL + S
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
                 e.preventDefault();
@@ -246,16 +253,23 @@
         });
         downloadBtn.addEventListener('click', triggerDownload);
 
-        // --- HÀM CHẠY LIVE PREVIEW ---
+        // --- HÀM CHẠY LIVE PREVIEW (ĐÃ SỬA LỖI NÚT RUN) ---
         function runCode() {
             const code = editor.value;
             const blob = new Blob([code], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
-            previewFrame.onload = () => URL.revokeObjectURL(url);
+            
+            // Đảm bảo việc giải phóng vùng nhớ diễn ra SAU KHI iframe đã nạp xong hoàn toàn
+            previewFrame.onload = () => {
+                URL.revokeObjectURL(url);
+                // Xóa bỏ listener này sau khi chạy để không bị lặp lại vô tận khi src thay đổi
+                previewFrame.onload = null; 
+            };
+            
             previewFrame.src = url;
         }
 
-        // --- 1 & 5. AUTO SAVE ĐỘC LẬP & CẬP NHẬT TRẠNG THÁI GIAO DIỆN MƯỢT MÀ ---
+        // AUTO SAVE ĐỘC LẬP
         const saveStorage = debounce(() => {
             localStorage.setItem('apmaths_html_code', editor.value);
             statusText.textContent = "✔ Saved";
@@ -278,7 +292,7 @@
             if (e.target.checked) runCode();
         });
 
-        // --- 2. NÚT RESET AN TOÀN ---
+        // NÚT RESET
         resetBtn.addEventListener('click', () => {
             if (confirm("Bạn có chắc chắn muốn khôi phục mã nguồn về trạng thái mặc định ban đầu?")) {
                 editor.value = defaultCode;
@@ -288,7 +302,7 @@
             }
         });
 
-        // --- 3. NÚT COPY SAO CHÉP NHANH ---
+        // NÚT COPY SAO CHÉP
         copyBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(editor.value).then(() => {
                 const oldText = copyBtn.textContent;
@@ -297,7 +311,6 @@
             });
         });
 
-        // --- XỬ LÝ SỰ KIỆN KHI CHỌN VÍ DỤ ---
         examplesSelect.addEventListener('change', (e) => {
             const val = e.target.value;
             if (examples[val]) {
@@ -307,7 +320,7 @@
             }
         });
 
-        // --- BỘ XỬ LÝ KÉO THẢ CHIA MÀN HÌNH (POINTER EVENTS) ---
+        // KÉO THẠ RÌA MÀN HÌNH (POINTER EVENTS)
         let isDragging = false;
         dragBar.addEventListener('pointerdown', (e) => {
             e.preventDefault(); isDragging = true;
@@ -339,7 +352,6 @@
         document.addEventListener('pointerup', stopDragging);
         document.addEventListener('pointercancel', stopDragging);
 
-        // ĐỔI THEME & LOAD TRANG BAN ĐẦU
         themeBtn.addEventListener('click', () => {
             const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', newTheme);
