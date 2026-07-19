@@ -13,22 +13,31 @@ permalink: /knowledge/
         font-family: system-ui, -apple-system, sans-serif;
     }
     .knowledge-intro {
-        text-align: center;
-        max-width: 800px;
-        margin: 0 auto 50px auto;
-        line-height: 1.6;
-    }
-    .knowledge-intro h1 {
-        font-size: 2.6rem;
-        color: #1a202c;
-        margin-bottom: 15px;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-    }
-    .knowledge-intro p {
-        color: #4a5568;
-        font-size: 1.1rem;
-    }
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 50px auto;
+    line-height: 1.6;
+    color: #ffffff; /* Màu chữ mặc định cho toàn khối */
+}
+
+.knowledge-intro h1 {
+    font-size: 2.6rem;
+    color: #ffffff; /* Chuyển tiêu đề h1 sang màu trắng */
+    margin-bottom: 15px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.knowledge-intro p {
+    color: #ffffff; /* Chuyển đoạn văn p sang màu trắng */
+    font-size: 1.1rem;
+}
+
+/* Đảm bảo các chữ in đậm hoặc in nghiêng bên trong p cũng màu trắng */
+.knowledge-intro p strong,
+.knowledge-intro p em {
+    color: #ffffff;
+}
     
     /* Bố cục Grid 3 cột cho 3 môn chính */
     .knowledge-grid {
