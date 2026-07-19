@@ -11,7 +11,7 @@ body {
 }
 
 .container {
-    max-width: 850px; /* SỬA quan trọng nhất: Đổi thành max-width và width 100% để tự co giãn */
+    max-width: 850px; /* Tự động co giãn linh hoạt trên mọi kích thước màn hình */
     width: 100%;
     margin: 40px auto 0 auto;
     box-sizing: border-box;
@@ -154,7 +154,6 @@ button {
     color: #1e3c72;
     cursor: pointer;
     transition: all 0.2s;
-    margin: 0 10px;
 }
 
 button:not(:disabled):hover {
@@ -170,10 +169,21 @@ button:disabled {
     border: 1px solid #ccc;
 }
 
-/* Khối bao quanh các nút xuất file */
+/* Khối bao quanh các nút xuất file - Dùng Flexbox cố định hàng ngang */
 .export-actions {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Khoảng cách cố định giữa 2 nút */
     margin-top: 20px;
+}
+
+/* Định dạng riêng cho 2 nút xuất file với độ rộng cố định */
+.export-actions button {
+    width: 180px; /* Chiều rộng cố định hoàn hảo trên Desktop */
+    padding: 12px 0; /* Đặt padding ngang bằng 0 vì width đã cố định */
+    margin: 0; /* Xóa margin cũ để dùng gap của flexbox */
+    box-sizing: border-box;
+    text-align: center;
 }
 
 /* ==========================================================
@@ -207,7 +217,7 @@ th, td {
 }
 
 th {
-    background-color: #1e3c72; /* Đồng bộ màu header bảng */
+    background-color: #1e3c72;
     color: #ffffff;
     font-weight: 600;
     font-size: 15px;
@@ -352,7 +362,8 @@ tbody tr:hover {
    ========================================================== */
 @media (max-width: 768px) {
     /* Thêm lề trái/phải thống nhất và ngăn chặn container tràn viền */
-    .container {
+    .container,
+    .footer {
         padding-left: 20px !important;
         padding-right: 20px !important;
         width: 100% !important;
@@ -373,12 +384,24 @@ tbody tr:hover {
         box-sizing: border-box;
     }
 
-    /* Ép nút xử lý chính và các nút xuất file co giãn theo chiều ngang màn hình */
-    #btnProcess,
-    .export-actions button {
+    /* Ép nút xử lý chính co giãn theo chiều ngang màn hình */
+    #btnProcess {
         width: 100% !important;
         box-sizing: border-box;
-        margin: 8px 0 !important; /* Xếp dọc các nút để không chồng lấn chữ */
+        margin: 8px 0 !important;
+    }
+
+    /* 2 Nút xuất dữ liệu: Ép giữ nguyên hàng ngang và giữ độ rộng cố định tinh tế */
+    .export-actions {
+        flex-direction: row !important; /* Không cho rớt dòng */
+        justify-content: center;
+        gap: 10px; /* Thu hẹp nhẹ khoảng cách trên màn hình nhỏ */
+    }
+
+    .export-actions button {
+        width: 165px !important; /* Độ rộng hoàn hảo cho mobile, không bị phình to */
+        font-size: 14px; /* Thu nhỏ chữ 1px để không bị xuống dòng */
+        margin: 0 !important;
     }
 
     /* Khung kết quả co giãn thông minh không tràn viền */
