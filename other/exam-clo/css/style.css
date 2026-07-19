@@ -10,6 +10,8 @@ body {
     margin: 40px auto 0 auto;
 }
 
+
+
 /* --- 1. LÀM TIÊU ĐỀ NỔI BẬT HƠN --- */
 h1 {
     text-align: center;
@@ -339,4 +341,42 @@ tbody tr:hover {
 /* Trang trí dòng EXAM-CLO và Tác giả cho khít nhau */
 .footer-info, .footer-copyright {
     margin-bottom: 2px; /* Khoảng cách rất mỏng giữa các dòng */
+}
+
+/* ==========================================================
+   CSS RESPONSIVE: ĐỒNG BỘ TRÊN ĐIỆN THOẠI
+   ========================================================== */
+@media (max-width: 768px) {
+    /* 1. Chuyển 2 card nạp file từ cùng hàng thành dọc */
+    .upload-grid {
+        flex-direction: column;
+        gap: 15px; /* Khoảng cách giữa 2 card khi xếp dọc */
+    }
+
+    /* 2. Đảm bảo các nút bấm co giãn vừa vặn, không bị tràn viền */
+    .action-btn, 
+    .export-btn {
+        width: 100%; /* Nút bấm chiếm hết chiều ngang trên mobile để dễ ấn */
+        box-sizing: border-box;
+    }
+
+    /* 3. Thu gọn khu vực xuất kết quả và bảng dữ liệu */
+    #result {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto; /* Bật cuộn ngang riêng cho bảng nếu dữ liệu quá rộng */
+        box-sizing: border-box;
+        padding: 5px; /* Giảm padding để tăng không gian hiển thị */
+    }
+
+    /* Tối ưu thêm cho bảng dữ liệu (nếu sau này cậu có render bảng vào #result) */
+    #result table {
+        width: 100%;
+        font-size: 13px; /* Thu nhỏ chữ một chút trên điện thoại */
+    }
+    
+    #result th, 
+    #result td {
+        padding: 8px 6px; /* Thu hẹp khoảng cách các ô */
+    }
 }
