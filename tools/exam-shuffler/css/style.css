@@ -1,0 +1,41 @@
+
+/* =====================================================
+   Exam Shuffler v1.0
+   ===================================================== */
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family: "Inter","Segoe UI",sans-serif;
+}
+
+#dropZone{
+    transition:all .25s ease;
+}
+
+#dropZone.dragover{
+    border-color:#2563eb;
+    background:#dbeafe;
+}
+
+#processBtn{
+    transition:all .25s ease;
+}
+
+#processBtn:hover{
+    transform:translateY(-1px);
+}
+
+#progressBar{
+    transition:width .35s ease;
+}
+
+#logContent{
+    white-space:pre-wrap;
+}
+
+.hidden{
+    display:none;
+}
