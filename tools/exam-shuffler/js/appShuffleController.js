@@ -11,7 +11,7 @@
 ===================================================== */
 
 import { processExamShuffling } from "./appShuffle.js";
-
+import { exportZip } from "./zip/zipExporter.js";
 // DOM Elements
 const fileInput = document.getElementById("docxFile");
 const dropZone = document.getElementById("dropZone");
@@ -151,34 +151,31 @@ if (processBtn) {
             };
 
             // 2. Gọi Pipeline xáo trộn chính thức
-            const results = await processExamShuffling(
-                selectedFile,
-                examCodes,
-                options,
-                (percent, message) => {
-                    setProgress(percent, message);
-                    log(message);
-                }
-            );
+            const { docxFiles, excelBlob } = await processExamShuffling(
+    selectedFile,
+    examCodes,
+    options,
+    (percent, message) => {
+        setProgress(percent, message);
+        log(message);
+    }
+);
 
             // 3. Tải xuống tất cả các file .docx kết quả (có nhịp nghỉ 150ms)
-            if (Array.isArray(results) && results.length > 0) {
-                log(`Đang tải xuống ${results.length} file DOCX...`);
+            log("Đang tạo file ZIP...");
 
-                for (const { examCode, blob } of results) {
-                    const objectUrl = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = objectUrl;
-                    a.download = `De_Thi_Ma_${examCode}_${selectedFile.name}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(objectUrl);
-
-                    // Delay 150ms giữa mỗi file để trình duyệt không chặn download hàng loạt
-                    await delay(150);
-                }
-            }
+await exportZip({
+    exams: docxFiles.map(({ examCode, blob }) => ({
+        name: `Đề_${examCode}.docx`,
+        blob
+    })),
+    excels: [
+        {
+            name: "Dap_An_Tong_Hop.xlsx",
+            blob: excelBlob
+        }
+    ]
+});
 
             if (checkList) {
                 checkList.innerHTML = `

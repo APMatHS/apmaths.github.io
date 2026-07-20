@@ -9,7 +9,7 @@
 ===================================================== */
 
 import { processExamShuffling } from "./appShuffle.js";
-
+import { exportZip } from "./zip/zipExporter.js";
 console.log("APP STARTED");
 
 // Hằng số cấu hình
@@ -176,33 +176,39 @@ if (processBtn) {
             };
 
             // 2. Gọi Orchestrator thực thi Pipeline
-            const results = await processExamShuffling(
-                selectedFile,
-                examCodes,
-                options,
-                (percent, message) => {
-                    setProgress(percent, message);
-                    log(message);
-                }
-            );
+           const { docxFiles, excelBlob } = await processExamShuffling(
+    selectedFile,
+    examCodes,
+    options,
+    (percent, message) => {
+        setProgress(percent, message);
+        log(message);
+    }
+);
 
-            // 3. Tải xuống tuần tự từng file với DOWNLOAD_DELAY
-            log("Đang kích hoạt tải xuống các mã đề...");
-            if (Array.isArray(results)) {
-                for (const { examCode, blob } of results) {
-                    const objectUrl = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = objectUrl;
-                    a.download = `Đề_${examCode}.docx`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(objectUrl);
+console.log("Returned from processExamShuffling");
+console.log(docxFiles);
+console.log(excelBlob);
 
-                    // Delay giữa các lượt download
-                    await new Promise(resolve => setTimeout(resolve, DOWNLOAD_DELAY));
-                }
-            }
+
+           
+// 3. Tạo và tải file ZIP
+log("Đang tạo file ZIP...");
+console.log("Before exportZip");
+await exportZip({
+    exams: docxFiles.map(({ examCode, blob }) => ({
+        name: `Đề_${examCode}.docx`,
+        blob
+    })),
+    excels: [
+        {
+            name: "Dap_An_Tong_Hop.xlsx",
+            blob: excelBlob
+        }
+    ]
+});
+console.log("After exportZip");
+
 
             // 4. Cập nhật UI kết quả
             if (checkList) {

@@ -121,3 +121,31 @@ export function writeRawDocument(zip, xmlDoc) {
         throw new Error("Thất bại khi tuần tự hóa DOM XML và ghi vào JSZip: " + getErrorMessage(err));
     }
 }
+
+/**
+ * =====================================================
+ * Sinh file DOCX dưới dạng Blob.
+ *
+ * Dùng cho:
+ * - Export DOCX
+ * - Đóng gói ZIP
+ *
+ * @param {JSZip} zip
+ * @returns {Promise<Blob>}
+ * =====================================================
+ */
+export async function generateDocxBlob(zip) {
+
+    if (!zip || typeof zip.generateAsync !== "function") {
+        throw new TypeError("Tham số 'zip' phải là một instance hợp lệ của JSZip.");
+    }
+
+    return await zip.generateAsync({
+        type: "blob",
+        compression: "DEFLATE",
+        compressionOptions: {
+            level: 9
+        }
+    });
+
+}

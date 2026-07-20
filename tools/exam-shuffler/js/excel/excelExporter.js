@@ -17,7 +17,24 @@ import { downloadWorkbook } from "./downloadExcel.js";
  * @param {Array<Object>} exams - Danh sách bộ đề thi
  * @param {string} fileName - Tên file Excel xuất ra (mặc định: "Dap_An_Tong_Hop.xlsx")
  */
-export async function exportAnswerExcel(exams, fileName = "Dap_An_Tong_Hop.xlsx") {
+export async function exportAnswerExcel(
+    exams,
+    fileName = "Dap_An_Tong_Hop.xlsx",
+    download = true
+) {
     const workbook = await buildAnswerWorkbook(exams);
-    await downloadWorkbook(workbook, fileName);
+
+    if (download) {
+        await downloadWorkbook(workbook, fileName);
+        return null;
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    return new Blob(
+        [buffer],
+        {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
+    );
 }

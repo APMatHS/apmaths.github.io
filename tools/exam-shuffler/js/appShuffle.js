@@ -27,6 +27,7 @@ import { validateExamSet } from "./utils/validator.js";
 import { applyExamCodeToExam } from "./docx/examCodeWriter.js";
 import { exportAnswerExcel } from "./excel/excelExporter.js";
 import { formatExamDocument } from "./docx/docxFormatter.js";
+import { exportZip } from "./zip/zipExporter.js";
 
 /**
  * Deep clone mảng câu hỏi dựa trên mảng nguyên khối nodes[]
@@ -204,14 +205,28 @@ export async function processExamShuffling(
             })
         );
 
-        // 14. Excel Writer & Download
-        onProgress(95, "Đang hoàn tất xuất các tệp đầu ra...");
-        await exportAnswerExcel(exams, "Dap_An_Tong_Hop.xlsx");
+       // 14. Excel Writer
+onProgress(95, "Đang hoàn tất xuất các tệp đầu ra...");
 
-        onProgress(100, "Hoàn tất tạo bộ đề thi và file đáp án Excel!");
-        console.timeEnd("[Pipeline] Total Execution Time");
+console.log("A");
+const excelBlob = await exportAnswerExcel(
+    exams,
+    "Dap_An_Tong_Hop.xlsx",
+    false
+);
 
-        return exportResults;
+onProgress(100, "Hoàn tất tạo bộ đề thi và file đáp án Excel!");
+
+
+console.log("B");
+
+console.log("C");
+console.log("exportResults =", exportResults);
+console.log("excelBlob =", excelBlob);
+return {
+    docxFiles: exportResults,
+    excelBlob
+};
 
     } catch (error) {
         console.error("[Pipeline Error] Failed to process exam shuffling:", error);
