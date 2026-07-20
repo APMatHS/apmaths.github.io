@@ -27,7 +27,7 @@
       <label id="dropZone" class="flex flex-col items-center justify-center w-full h-full min-h-[220px] border-2 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors p-4">
         <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-400 mb-3"></i>
         <p class="font-medium text-slate-700 text-center">Chọn hoặc kéo thả file DOCX</p>
-        <p class="text-sm text-slate-400 text-center mt-1">Đề gốc có đáp án đúng được gạch chân</p>
+        <p class="text-sm text-slate-400 text-center mt-1">Đề gốc có đáp án đúng được gạch chân hay tô đỏ</p>
         <input id="docxFile" type="file" accept=".docx" hidden>
       </label>
       <div id="fileInfo" class="hidden mt-3 text-emerald-600 font-medium"><i class="fa-solid fa-circle-check"></i> <span id="fileName"></span></div>
@@ -52,8 +52,8 @@
       <ul class="text-[11px] text-amber-900/80 mt-2 space-y-0.5 list-disc list-inside">
         <li>Mỗi phương án <b>A. B. C. D.</b> nằm ở 1 dòng riêng, không dùng Numbering</li>
         <li>Phải có dấu chấm "." sau số câu và đáp án.</li>
-        <li>Gạch chân đáp án đúng (ví dụ: <u><b>A</b></u>).</li>
-        <li>Sau câu cuối cùng không bấm Enter tạo dòng trống.</li>
+        <li>Gạch chân đáp án đúng (ví dụ: <u><b>A</b></u>) hay tô đỏ.</li>
+        <li>Sau đáp án D. câu cuối cùng không nhấn Enter (phía sau đề trống)</li>
       </ul>
     </div>
   </div>
