@@ -21,7 +21,9 @@ export function calculateStudentScore(student, answerData, maxScores) {
         return;
     }
 
-    const cloStatistic = student.result.clo;
+    const useCLO = answerData.useCLO === true;
+
+    const cloStatistic = student.result.clo || {};
     const marks = {};
     const detail = {}; // Nơi lưu điểm số chi tiết cho từng CLO
 
@@ -30,6 +32,18 @@ export function calculateStudentScore(student, answerData, maxScores) {
 
     // 1. GPA
     const gpa = calculateGPA(totalCorrect, totalQuestion);
+
+    // Nếu không sử dụng CLO thì chỉ lưu GPA
+if (!useCLO) {
+    student.result = {
+        ...student.result,
+        marks: {
+            GPA: gpa
+        },
+        detail: {}
+    };
+    return;
+}
 
     // 2. Tính từng CLO
     for (const clo in cloStatistic) {

@@ -21,6 +21,18 @@ export function parseUntData(data) {
     // Dòng bắt đầu danh sách sinh viên (Dòng 7 trong Excel, index = 6)
     const FIRST_ROW = 6;
 
+    // =======================================
+// Kiểm tra đúng định dạng file UnT
+// =======================================
+
+if (data.length < 7) {
+
+    throw new Error(
+"Đây không phải file kết quả UnT."
+    );
+
+}
+
     // Cấu hình các chỉ số cột (0-indexed)
     const COL_SBD = 2;        // Cột C: SBD
     const COL_EXAM = 4;       // Cột E: Mã đề
@@ -28,6 +40,24 @@ export function parseUntData(data) {
 
     const students = [];
     const examCount = {};
+    let questionCount = 0;
+    // Lưu SBD đã gặp để phát hiện trùng
+    const sbdSet = new Set();
+
+    // Xác định số câu từ dòng sinh viên đầu tiên
+for (let r = FIRST_ROW; r < data.length; r++) {
+    const row = data[r];
+    if (!row) continue;
+
+    const sbd = String(row[COL_SBD] ?? "").trim();
+    if (sbd === "") continue;
+
+    for (let c = FIRST_ANSWER; c < row.length; c += 2) {
+        questionCount++;
+    }
+
+    break;
+}
 
     // Đọc từng sinh viên
     for (let r = FIRST_ROW; r < data.length; r++) {
@@ -35,11 +65,40 @@ export function parseUntData(data) {
         if (!row || row.length <= COL_SBD) continue;
 
         // 1. Lấy Số báo danh
-        const sbd = String(row[COL_SBD] ?? "").trim();
-        if (sbd === "") continue;
+const sbd = String(row[COL_SBD] ?? "").trim();
+
+if (sbd === "") {
+
+    throw new Error(
+        `Dòng ${r + 1} chưa có SBD.`
+    );
+
+}
+
+
+// Kiểm tra SBD trùng
+if (sbdSet.has(sbd)) {
+
+    throw new Error(
+        `SBD ${sbd} xuất hiện nhiều hơn một lần.`
+    );
+
+}
+    
+
+sbdSet.add(sbd);
+        
 
         // 2. Lấy Mã đề (Chuẩn hóa 3 chữ số, VD: 1 -> "001")
         let examCode = String(row[COL_EXAM] ?? "").trim();
+        
+        if (examCode === "") {
+
+    throw new Error(
+        `SBD ${sbd} chưa có mã đề.`
+    );
+
+}
         if (examCode !== "" && !isNaN(examCode)) {
             examCode = examCode.padStart(3, "0");
         }
@@ -68,9 +127,10 @@ export function parseUntData(data) {
 
     // Trả về Object dữ liệu thuần
     return {
-        totalStudent: students.length,
-        examCount: examCount,
-        students: students
+    totalStudent: students.length,
+    examCount: examCount,
+    questionCount: questionCount,
+    students: students
     };
 }
 
@@ -85,4 +145,7 @@ export function debugStudents(untData) {
     console.log("");
     console.log("===== THỐNG KÊ MÃ ĐỀ =====");
     console.log(untData?.examCount || {});
+    console.log("===== SỐ CÂU =====");
+    console.log(untData?.questionCount);
+    console.log("");
 }

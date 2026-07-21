@@ -22,16 +22,46 @@
             <div class="card">
                 <h3>File Đáp án + CLO</h3>
                 <input type="file" id="answerFile" accept=".xlsx,.xls">
-                <p>
-                    <a href="https://drive.google.com/drive/folders/1hNHQZvQrZ_qdh298rmvVCmSOTkexID-6?usp=sharing"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        Xem và tải file đáp án mẫu
-                    </a>
-                </p>
             </div>
         </div>
         
+        <!--hướng dẫn nhanh-->
+
+        <div class="note-box">
+    <h3>Hướng dẫn</h3>
+
+    <ul>
+        <li>
+            <b>File UnT:</b> File Excel xuất từ phần mềm <b>UnT Dạy học</b>,
+            trong đó phải có <b>Số báo danh (SBD)</b> và <b>Mã đề</b>.
+            Nếu thiếu SBD hoặc Mã đề, chương trình sẽ báo lỗi.
+        </li>
+
+        <li>
+            <b>File đáp án:</b> Chuẩn bị theo đúng mẫu dưới đây, chú ý các cột khác hoàn toàn trống. Hoặc bạn có thể tải file
+        <a href="Dap-an.xlsx" download>Tại đây</a>.
+         <img
+    src="Dap-an.png"
+    alt="Mẫu File Đáp Án"
+    style="
+        width:60%;
+        max-width:700px;
+        border:1px solid #ccc;
+        border-radius:6px;
+        display:block;
+        margin:10px auto;
+    ">
+        </li>
+        <li>Sau đó nhấn nút <b>Đọc dữ liệu và chấm bài</b>. Nếu thành công có thể xuất 2 bảng điểm.</li>
+    </ul>
+
+  
+
+
+</div>
+
+
+
         <!-- Nút xử lý chính -->
         <button id="btnProcess">Đọc dữ liệu và chấm bài</button>
         
@@ -48,8 +78,11 @@
         
         <!-- ĐƯA VÀO TRONG: Footer nằm cuối cùng bên trong container để thẳng hàng tuyệt đối -->
         <footer class="footer">
+      
             <div class="footer-links">
-                <a href="about.html">About</a>
+                
+                <a href="about.html">About</a> •
+                <a href="guide.html">Hướng dẫn</a>
             </div>
             <div class="footer-info">
                 <strong>EXAM-CLO</strong> • Phiên bản 1.0.0

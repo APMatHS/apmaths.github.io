@@ -51,16 +51,48 @@ btnProcess.addEventListener("click", async function () {
 
         // 2. Phân tích file đáp án
         appState.answerData = readAnswerWorkbook(answerWorkbook);
-
+console.log("Mã đề trong file đáp án:");
+console.log(Object.keys(appState.answerData.exams));
         // 3. Phân tích file UnT (Chuyển sheet thành mảng 2D rồi parse)
         const untSheetData = sheetToArray(untWorkbook);
         appState.untData = parseUntData(untSheetData);
+console.log("Mã đề trong file UnT:");
+console.log(Object.keys(appState.untData.examCount));
+        // Kiểm tra số lượng câu giữa file đáp án và file UnT
+const answerQuestionCount = appState.answerData.totalQuestion;
+const untQuestionCount = appState.untData.questionCount;
 
+if (answerQuestionCount !== untQuestionCount) {
+    throw new Error(
+        `Số lượng câu hỏi không khớp.\n\n` +
+        `File đáp án: ${answerQuestionCount} câu\n` +
+        `File UnT: ${untQuestionCount} câu`
+    );
+}
+
+const answerExamCodes = new Set(Object.keys(appState.answerData.exams));
+
+const invalidExamCodes = Object.keys(appState.untData.examCount)
+    .filter(code => code !== "" && !answerExamCodes.has(code));
+
+if (invalidExamCodes.length > 0) {
+    throw new Error(
+        "Các mã đề sau không tồn tại trong file đáp án:\n\n" +
+        invalidExamCodes.join(", ")
+    );
+}
         // 4. Sinh giao diện hiển thị thống kê
         renderSummaryHTML(appState.answerData, appState.untData);
 
+        console.log("Số sinh viên:", appState.untData.students.length);
+console.log("Số câu UnT:", appState.untData.questionCount);
+console.log("Số câu đáp án:", appState.answerData.totalQuestion);
+console.log("Sinh viên đầu tiên:", appState.untData.students[0]);
+
         // 5. Chấm bài sinh viên
         gradeAllStudents(appState.answerData, appState.untData);
+
+        console.log("Sau khi chấm:", appState.untData.students[0]);
 
         // 6. Tính điểm tối đa từng CLO (Business Flow)
         const examCodes = Object.keys(appState.answerData.exams);
