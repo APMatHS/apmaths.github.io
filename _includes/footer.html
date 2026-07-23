@@ -1,35 +1,79 @@
 <footer class="footer">
 
-    <p>
-        <strong>APMaths</strong><br>
-        Kiến thức • Công cụ • Tài nguyên Toán học
-    </p>
+    <div class="footer-grid">
 
-    <ul>
-        <li><a href="/">Trang chủ</a></li>
-        <li><a href="/knowledge/">Kiến thức</a></li>
-        <li><a href="/blog/">Blog</a></li>
-        <li><a href="/tools/">Công cụ</a></li>
-        <li><a href="/resources/">Tài nguyên</a></li>
-        <li><a href="/about/">Giới thiệu</a></li>
-    </ul>
+        <!-- ===================== -->
+        <!-- Website -->
+        <!-- ===================== -->
 
-    <ul>
-        <li>
-            <a href="mailto:hoangnam.sp101@gmail.com">
-                <i class="fa fa-envelope"></i> Email
-            </a>
-        </li>
+        <div class="footer-column">
 
-        <li>
-            <a href="/other/html-code/">
-                <i class="fa fa-file-code-o"></i> HTML Code
-            </a>
-        </li>
-    </ul>
+            <h4>{{ include.t.site.title }}</h4>
+
+            <p>{{ include.t.site.tagline }}</p>
+
+        </div>
+
+        <!-- ===================== -->
+        <!-- Navigation -->
+        <!-- ===================== -->
+
+        <div class="footer-column">
+
+            <h4>{{ include.t.footer.navigation | default: "Điều hướng" }}</h4>
+
+            <ul>
+
+                <li><a href="/">{{ include.t.menu.home }}</a></li>
+
+                <li><a href="/knowledge/">{{ include.t.menu.knowledge }}</a></li>
+
+                <li><a href="/blog/">{{ include.t.menu.blog }}</a></li>
+
+                <li><a href="/tools/">{{ include.t.menu.tools }}</a></li>
+
+                <li><a href="/resources/">{{ include.t.menu.resources }}</a></li>
+
+                <li><a href="/about/">{{ include.t.menu.about }}</a></li>
+
+            </ul>
+
+        </div>
+
+        <!-- ===================== -->
+        <!-- Contact -->
+        <!-- ===================== -->
+
+        <div class="footer-column">
+
+            <h4>{{ include.t.footer.contact | default: "Liên hệ" }}</h4>
+
+            <ul>
+
+                <li>
+                    <a href="mailto:hoangnam.sp101@gmail.com">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                        Email
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/other/html-code/">
+                        <i class="fa fa-file-code-o" aria-hidden="true"></i>
+                        HTML Code
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
 
     <p class="copyright">
-        &copy; {{ "now" | date: "%Y" }} APMaths. All rights reserved.
+        &copy; {{ "now" | date: "%Y" }}
+        {{ include.t.site.title }}.
+        {{ include.t.footer.copyright | default: "All rights reserved." }}
     </p>
 
 </footer>

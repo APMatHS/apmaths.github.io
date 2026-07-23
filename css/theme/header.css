@@ -1,0 +1,323 @@
+/* ==========================================================
+   APMaths Theme V3.1
+   File    : header.css
+   Module  : Header & Navigation
+   Author  : Phan Hoang Nam
+   Version : 3.1
+   ========================================================== */
+
+
+/* ==========================================================
+   1. SITE HEADER
+   ========================================================== */
+
+.site-header{
+
+    max-width:1200px;
+
+    margin:32px auto 18px;
+
+    padding:0 24px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+}
+
+.site-logo{
+
+    width:72px;
+
+    height:72px;
+
+    object-fit:contain;
+
+    flex-shrink:0;
+}
+
+.site-header h2{
+
+    margin:0;
+
+    padding:0;
+
+    border:none;
+
+    font-size:2rem;
+
+    color:var(--primary);
+
+    line-height:1.2;
+}
+
+.site-header p{
+
+    margin-top:6px;
+
+    margin-bottom:0;
+
+    color:var(--text-light);
+
+    font-size:1rem;
+
+    text-align:left;
+}
+
+
+/* ==========================================================
+   2. NAVIGATION
+   ========================================================== */
+
+nav{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:1000;
+
+    background:#ffffff;
+
+    border-top:1px solid var(--border);
+
+    border-bottom:1px solid var(--border);
+
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+
+nav>ul{
+
+    max-width:1200px;
+
+    margin:0 auto;
+
+    padding:0 24px;
+
+    display:flex;
+
+    align-items:center;
+
+    list-style:none;
+}
+
+
+/* ==========================================================
+   3. MENU ITEMS
+   ========================================================== */
+
+nav>ul>li{
+
+    position:relative;
+}
+
+.nav-link{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    padding:16px 18px;
+
+    color:var(--text);
+
+    font-weight:600;
+
+    transition:var(--transition);
+}
+
+.nav-link:hover{
+
+    color:var(--primary);
+
+    background:var(--primary-soft);
+
+    text-decoration:none;
+}
+
+
+/* ==========================================================
+   4. SUB MENU ICON
+   ========================================================== */
+
+.toggle-subnav{
+
+    cursor:pointer;
+
+    font-size:.75rem;
+
+    color:var(--text-muted);
+
+    margin-left:-8px;
+
+    padding-right:14px;
+
+    user-select:none;
+}
+
+
+/* ==========================================================
+   5. DROPDOWN
+   ========================================================== */
+
+.sub-menu{
+
+    position:absolute;
+
+    left:0;
+
+    top:100%;
+
+    min-width:240px;
+
+    background:#ffffff;
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    box-shadow:var(--shadow-md);
+
+    list-style:none;
+
+    padding:8px 0;
+
+    margin:0;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transform:translateY(8px);
+
+    transition:all .25s ease;
+}
+
+nav li:hover>.sub-menu{
+
+    opacity:1;
+
+    visibility:visible;
+
+    transform:translateY(0);
+}
+
+.sub-menu li{
+
+    margin:0;
+}
+
+.sub-menu a{
+
+    display:block;
+
+    padding:10px 18px;
+
+    color:var(--text);
+
+    transition:var(--transition);
+}
+
+.sub-menu a:hover{
+
+    background:var(--primary-soft);
+
+    color:var(--primary);
+
+    text-decoration:none;
+}
+
+
+/* ==========================================================
+   6. ACTIVE PAGE
+   ========================================================== */
+
+.nav-link.active{
+
+    color:var(--primary);
+
+    font-weight:700;
+}
+
+
+/* ==========================================================
+   7. KEYBOARD ACCESSIBILITY
+   ========================================================== */
+
+.nav-link:focus,
+
+.sub-menu a:focus{
+
+    outline:2px solid var(--primary-light);
+
+    outline-offset:-2px;
+}
+
+
+/* ==========================================================
+   8. RESPONSIVE
+   ========================================================== */
+
+@media (max-width:900px){
+
+    .site-header{
+
+        flex-direction:column;
+
+        text-align:center;
+
+        gap:12px;
+    }
+
+    .site-header p{
+
+        text-align:center;
+    }
+
+    nav>ul{
+
+        flex-wrap:wrap;
+
+        justify-content:center;
+    }
+
+    .nav-link{
+
+        padding:14px 12px;
+    }
+
+    .sub-menu{
+
+        position:static;
+
+        opacity:1;
+
+        visibility:visible;
+
+        transform:none;
+
+        border:none;
+
+        box-shadow:none;
+
+        display:none;
+
+        margin-bottom:10px;
+    }
+
+    li.open>.sub-menu{
+
+        display:block;
+    }
+}
+
+/* ==========================================================
+   Site Navigation
+   ========================================================== */
+
+.site-nav{
+    position:relative;
+}

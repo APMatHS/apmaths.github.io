@@ -1,0 +1,594 @@
+/* ==========================================================
+   APMaths Theme V3.1
+   File    : academic.css
+   Module 1
+   Academic Blocks
+   ========================================================== */
+
+
+/* ==========================================================
+   1. BASE ACADEMIC BOX
+   ========================================================== */
+
+.academic-box{
+
+    margin:2rem 0;
+
+    padding:1.25rem 1.5rem;
+
+    border-left:5px solid;
+
+    border-radius:10px;
+
+    box-shadow:var(--shadow-sm);
+
+    background:#ffffff;
+}
+
+.academic-box>:first-child{
+
+    margin-top:0;
+}
+
+.academic-box>:last-child{
+
+    margin-bottom:0;
+}
+
+.academic-box h4{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:.5rem;
+
+    margin-bottom:.8rem;
+
+    font-size:1.15rem;
+
+    font-weight:700;
+}
+
+
+/* ==========================================================
+   2. DEFINITION
+   ========================================================== */
+
+.definition{
+
+    background:#eff6ff;
+
+    border-left-color:#2563eb;
+}
+
+.definition h4{
+
+    color:#1d4ed8;
+}
+
+
+/* ==========================================================
+   3. THEOREM
+   ========================================================== */
+
+.theorem{
+
+    background:#f5f3ff;
+
+    border-left-color:#7c3aed;
+}
+
+.theorem h4{
+
+    color:#6d28d9;
+}
+
+
+/* ==========================================================
+   4. LEMMA
+   ========================================================== */
+
+.lemma{
+
+    background:#ecfdf5;
+
+    border-left-color:#10b981;
+}
+
+.lemma h4{
+
+    color:#047857;
+}
+
+
+/* ==========================================================
+   5. PROPOSITION
+   ========================================================== */
+
+.proposition{
+
+    background:#fff7ed;
+
+    border-left-color:#f97316;
+}
+
+.proposition h4{
+
+    color:#c2410c;
+}
+
+
+/* ==========================================================
+   6. COROLLARY
+   ========================================================== */
+
+.corollary{
+
+    background:#eff6ff;
+
+    border-left-color:#0ea5e9;
+}
+
+.corollary h4{
+
+    color:#0369a1;
+}
+
+
+/* ==========================================================
+   7. TITLE ICON
+   ========================================================== */
+
+.definition h4::before{
+
+    content:"📘";
+}
+
+.theorem h4::before{
+
+    content:"🔷";
+}
+
+.lemma h4::before{
+
+    content:"📄";
+}
+
+.proposition h4::before{
+
+    content:"📐";
+}
+
+.corollary h4::before{
+
+    content:"🔹";
+}
+
+
+/* ==========================================================
+   8. SPACING
+   ========================================================== */
+
+.definition p,
+.theorem p,
+.lemma p,
+.proposition p,
+.corollary p{
+
+    margin-bottom:1rem;
+
+    line-height:1.8;
+}
+
+.definition p:last-child,
+.theorem p:last-child,
+.lemma p:last-child,
+.proposition p:last-child,
+.corollary p:last-child{
+
+    margin-bottom:0;
+}
+
+
+/* ==========================================================
+   9. RESPONSIVE
+   ========================================================== */
+
+@media (max-width:768px){
+
+    .academic-box{
+
+        padding:1rem 1.1rem;
+    }
+
+    .academic-box h4{
+
+        font-size:1.05rem;
+    }
+
+}
+
+
+/* ==========================================================
+   Module 2
+   Proof • Example • Exercise • Solution • Remark
+   ========================================================== */
+
+
+/* ==========================================================
+   10. PROOF
+   ========================================================== */
+
+.proof{
+
+    background:#f8fafc;
+
+    border-left-color:#64748b;
+}
+
+.proof h4{
+
+    color:#334155;
+}
+
+.proof h4::before{
+
+    content:"□";
+}
+
+.proof::after{
+
+    content:"∎";
+
+    display:block;
+
+    text-align:right;
+
+    margin-top:1rem;
+
+    font-size:1.2rem;
+
+    color:#475569;
+}
+
+
+/* ==========================================================
+   11. EXAMPLE
+   ========================================================== */
+
+.example{
+
+    background:#ecfeff;
+
+    border-left-color:#06b6d4;
+}
+
+.example h4{
+
+    color:#0f766e;
+}
+
+.example h4::before{
+
+    content:"Example";
+    
+    font-weight:700;
+}
+
+
+/* ==========================================================
+   12. EXERCISE
+   ========================================================== */
+
+.exercise{
+
+    background:#fffbeb;
+
+    border-left-color:#eab308;
+}
+
+.exercise h4{
+
+    color:#a16207;
+}
+
+.exercise h4::before{
+
+    content:"Exercise";
+    
+    font-weight:700;
+}
+
+
+/* ==========================================================
+   13. SOLUTION
+   ========================================================== */
+
+.solution{
+
+    background:#eef2ff;
+
+    border-left-color:#4f46e5;
+}
+
+.solution h4{
+
+    color:#3730a3;
+}
+
+.solution h4::before{
+
+    content:"Solution";
+    
+    font-weight:700;
+}
+
+
+/* ==========================================================
+   14. REMARK
+   ========================================================== */
+
+.remark{
+
+    background:#f9fafb;
+
+    border-left-color:#6b7280;
+}
+
+.remark h4{
+
+    color:#374151;
+}
+
+.remark h4::before{
+
+    content:"Remark";
+    
+    font-weight:700;
+}
+
+
+/* ==========================================================
+   15. COMMON SPACING
+   ========================================================== */
+
+.proof p,
+.example p,
+.exercise p,
+.solution p,
+.remark p{
+
+    margin-bottom:1rem;
+
+    line-height:1.8;
+}
+
+.proof p:last-child,
+.example p:last-child,
+.exercise p:last-child,
+.solution p:last-child,
+.remark p:last-child{
+
+    margin-bottom:0;
+}
+
+
+/* ==========================================================
+   16. LISTS
+   ========================================================== */
+
+.proof ul,
+.proof ol,
+.example ul,
+.example ol,
+.exercise ul,
+.exercise ol,
+.solution ul,
+.solution ol,
+.remark ul,
+.remark ol{
+
+    margin:1rem 0;
+
+    padding-left:1.6rem;
+}
+
+
+/* ==========================================================
+   17. MATH
+   ========================================================== */
+
+.proof mjx-container,
+.example mjx-container,
+.exercise mjx-container,
+.solution mjx-container,
+.remark mjx-container{
+
+    margin:.75rem 0;
+}
+
+
+/* ==========================================================
+   18. RESPONSIVE
+   ========================================================== */
+
+@media (max-width:768px){
+
+    .proof::after{
+
+        font-size:1rem;
+    }
+
+}
+
+
+/* ==========================================================
+   Module 3
+   Note • Warning • Tip • Utilities • Responsive
+   ========================================================== */
+
+
+/* ==========================================================
+   19. NOTE
+   ========================================================== */
+
+.note{
+
+    background:#eff6ff;
+
+    border-left-color:#3b82f6;
+}
+
+.note h4{
+
+    color:#1d4ed8;
+}
+
+.note h4::before{
+
+    content:"Note";
+
+    font-weight:700;
+}
+
+
+/* ==========================================================
+   20. WARNING
+   ========================================================== */
+
+.warning{
+
+    background:#fef2f2;
+
+    border-left-color:#ef4444;
+}
+
+.warning h4{
+
+    color:#b91c1c;
+}
+
+.warning h4::before{
+
+    content:"Warning";
+
+    font-weight:700;
+}
+
+
+/* ==========================================================
+   21. TIP
+   ========================================================== */
+
+.tip{
+
+    background:#ecfdf5;
+
+    border-left-color:#22c55e;
+}
+
+.tip h4{
+
+    color:#15803d;
+}
+
+.tip h4::before{
+
+    content:"Tip";
+
+    font-weight:700;
+}
+
+
+/* ==========================================================
+   22. UTILITIES
+   ========================================================== */
+
+.math-center{
+
+    text-align:center;
+}
+
+.math-right{
+
+    text-align:right;
+}
+
+.math-left{
+
+    text-align:left;
+}
+
+.no-margin{
+
+    margin:0 !important;
+}
+
+.no-padding{
+
+    padding:0 !important;
+}
+
+.tight{
+
+    line-height:1.4;
+}
+
+.loose{
+
+    line-height:2;
+}
+
+.text-center{
+
+    text-align:center;
+}
+
+.text-right{
+
+    text-align:right;
+}
+
+.text-left{
+
+    text-align:left;
+}
+
+
+/* ==========================================================
+   23. PRINT
+   ========================================================== */
+
+@media print{
+
+    .academic-box{
+
+        box-shadow:none;
+
+        break-inside:avoid;
+
+        page-break-inside:avoid;
+    }
+
+}
+
+
+/* ==========================================================
+   24. RESPONSIVE
+   ========================================================== */
+
+@media (max-width:768px){
+
+    .academic-box{
+
+        margin:1.5rem 0;
+    }
+
+    .academic-box h4{
+
+        font-size:1rem;
+    }
+
+}
+

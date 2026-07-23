@@ -10,17 +10,18 @@
 
     {% include header.html t=t %}
 
-    <nav>
+    <nav aria-label="Main navigation">
         {% include menu.html t=t %}
     </nav>
 
-    <div class="container">
+    <main id="main-content" class="container">
         {{ content }}
-    </div>
+    </main>
 
     {% include footer.html t=t %}
 
     <script src="/js/script.js"></script>
 
 </body>
+
 </html>

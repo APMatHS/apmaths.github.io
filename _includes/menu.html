@@ -1,73 +1,161 @@
 <ul>
 
-  <!-- Trang chủ -->
-  <li>
-    <a class="nav-link" href="/">
-      <i class="fa fa-home"></i>
-    </a>
-  </li>
+    <!-- ===================== -->
+    <!-- Trang chủ -->
+    <!-- ===================== -->
 
-  <!-- Kiến thức -->
-  <li>
-    <a class="nav-link" href="/knowledge/">
-      {{ include.t.nav.knowledge }}
-    </a>
+    <li>
 
-    <span class="toggle-subnav">&#9660;</span>
+        <a class="nav-link" href="/">
 
-    <ul class="sub-menu">
-      <li><a href="/knowledge/algebra/">{{ include.t.submenu.algebra }}</a></li>
-      <li><a href="/knowledge/calculus/">{{ include.t.submenu.calculus }}</a></li>
-      <li><a href="/knowledge/statistics/">{{ include.t.submenu.statistics }}</a></li>
-    </ul>
-  </li>
+            <i class="fa fa-home" aria-hidden="true"></i>
 
-  <!-- Blog -->
-  <li>
-    <a class="nav-link" href="/blog/">
-      {{ include.t.nav.blog }}
-    </a>
+            {{ include.t.nav.home }}
 
-    <span class="toggle-subnav">&#9660;</span>
+        </a>
 
-    <ul class="sub-menu">
-      <li><a href="/tags/">#{{ include.t.submenu.tags }}</a></li>
-      <li><a href="/categories/">#{{ include.t.submenu.categories }}</a></li>
-    </ul>
-  </li>
+    </li>
 
-  <!-- Công cụ -->
-  <li>
-    <a class="nav-link" href="/tools/">
-      {{ include.t.nav.tools }}
-    </a>
+    <!-- ===================== -->
+    <!-- Kiến thức -->
+    <!-- ===================== -->
 
-    <span class="toggle-subnav">&#9660;</span>
+    <li>
 
-    <ul class="sub-menu">
-      <li><a href="/other/html-code/">{{ include.t.submenu.html_code }}</a></li>
-    </ul>
-  </li>
+        <a class="nav-link" href="/knowledge/">
 
-  <!-- Tài nguyên -->
-  <li>
-    <a class="nav-link" href="/resources/">
-      {{ include.t.nav.resources }}
-    </a>
-  </li>
+            {{ include.t.nav.knowledge }}
 
-  <!-- Giới thiệu -->
-  <li>
-    <a class="nav-link" href="/about/">
-      {{ include.t.nav.about }}
-    </a>
+        </a>
 
-    <span class="toggle-subnav">&#9660;</span>
+        <span class="toggle-subnav">&#9660;</span>
 
-    <ul class="sub-menu">
-      <li><a href="/cv/">{{ include.t.submenu.cv }}</a></li>
-      <li><a href="/other/people/">{{ include.t.submenu.people }}</a></li>
-    </ul>
-  </li>
+        <ul class="sub-menu">
+
+            <li>
+                <a href="/knowledge/algebra/">
+                    {{ include.t.submenu.algebra }}
+                </a>
+            </li>
+
+            <li>
+                <a href="/knowledge/calculus/">
+                    {{ include.t.submenu.calculus }}
+                </a>
+            </li>
+
+            <li>
+                <a href="/knowledge/statistics/">
+                    {{ include.t.submenu.statistics }}
+                </a>
+            </li>
+
+        </ul>
+
+    </li>
+
+    <!-- ===================== -->
+    <!-- Blog -->
+    <!-- ===================== -->
+
+    <li>
+
+        <a class="nav-link" href="/blog/">
+
+            {{ include.t.nav.blog }}
+
+        </a>
+
+        <span class="toggle-subnav">&#9660;</span>
+
+        <ul class="sub-menu">
+
+            <li>
+                <a href="/tags/">
+                    #{{ include.t.submenu.tags }}
+                </a>
+            </li>
+
+            <li>
+                <a href="/categories/">
+                    #{{ include.t.submenu.categories }}
+                </a>
+            </li>
+
+        </ul>
+
+    </li>
+
+    <!-- ===================== -->
+    <!-- Công cụ -->
+    <!-- ===================== -->
+
+    <li>
+
+        <a class="nav-link" href="/tools/">
+
+            {{ include.t.nav.tools }}
+
+        </a>
+
+        <span class="toggle-subnav">&#9660;</span>
+
+        <ul class="sub-menu">
+
+            <li>
+                <a href="/other/html-code/">
+                    {{ include.t.submenu.html_code }}
+                </a>
+            </li>
+
+        </ul>
+
+    </li>
+
+    <!-- ===================== -->
+    <!-- Tài nguyên -->
+    <!-- ===================== -->
+
+    <li>
+
+        <a class="nav-link" href="/resources/">
+
+            {{ include.t.nav.resources }}
+
+        </a>
+
+    </li>
+
+    <!-- ===================== -->
+    <!-- Giới thiệu -->
+    <!-- ===================== -->
+
+    <li>
+
+        <a class="nav-link" href="/about/">
+
+            {{ include.t.nav.about }}
+
+        </a>
+
+        <span class="toggle-subnav">&#9660;</span>
+
+        <ul class="sub-menu">
+
+            <li>
+                <a href="/cv/">
+                    {{ include.t.submenu.cv }}
+                </a>
+            </li>
+
+            <li>
+                <a href="/other/people/">
+                    {{ include.t.submenu.people }}
+                </a>
+            </li>
+
+        </ul>
+
+    </li>
 
 </ul>

@@ -1,0 +1,878 @@
+/* ==========================================================
+   APMaths Theme V3.1
+   File    : article.css
+   Module 1: Article Layout & Typography
+   Author  : Phan Hoang Nam
+   Version : 3.1
+   ========================================================== */
+
+
+/* ==========================================================
+   1. ARTICLE LAYOUT
+   ========================================================== */
+
+main.container{
+
+    overflow-wrap:break-word;
+
+    word-break:normal;
+
+}
+
+main.container>*:first-child{
+
+    margin-top:0;
+}
+
+main.container>*:last-child{
+
+    margin-bottom:0;
+}
+
+
+/* ==========================================================
+   2. HEADINGS
+   ========================================================== */
+
+main h1{
+
+    font-size:2.6rem;
+
+    line-height:1.25;
+
+    margin:0 0 1.4rem;
+
+    color:var(--primary);
+
+    font-weight:700;
+
+    letter-spacing:-0.02em;
+}
+
+main h2{
+
+    font-size:2rem;
+
+    margin-top:3.5rem;
+
+    margin-bottom:1rem;
+
+    padding-bottom:.45rem;
+
+    border-bottom:2px solid var(--primary-soft);
+
+    scroll-margin-top:90px;
+}
+
+main h3{
+
+    font-size:1.6rem;
+
+    margin-top:2.5rem;
+
+    margin-bottom:.8rem;
+
+    color:var(--primary);
+}
+
+main h4{
+
+    font-size:1.3rem;
+
+    margin-top:2rem;
+
+    margin-bottom:.7rem;
+}
+
+main h5{
+
+    font-size:1.1rem;
+
+    margin-top:1.5rem;
+
+    margin-bottom:.5rem;
+}
+
+main h6{
+
+    font-size:1rem;
+
+    margin-top:1.2rem;
+
+    margin-bottom:.4rem;
+
+    color:var(--text-light);
+
+    text-transform:uppercase;
+
+    letter-spacing:.05em;
+}
+
+
+/* ==========================================================
+   3. PARAGRAPHS
+   ========================================================== */
+
+main p{
+
+    margin-bottom:1.35rem;
+
+    text-align:justify;
+
+    text-justify:inter-word;
+
+    line-height:1.9;
+}
+
+main p:last-child{
+
+    margin-bottom:0;
+}
+
+
+/* ==========================================================
+   4. LINKS
+   ========================================================== */
+
+main a{
+
+    color:var(--primary-light);
+
+    font-weight:500;
+
+    text-decoration:none;
+
+    transition:var(--transition);
+}
+
+main a:hover{
+
+    color:var(--primary);
+
+    text-decoration:underline;
+}
+
+main a:visited{
+
+    color:#5b4db5;
+}
+
+
+/* ==========================================================
+   5. LISTS
+   ========================================================== */
+
+main ul,
+main ol{
+
+    margin:1.25rem 0;
+
+    padding-left:2rem;
+}
+
+main li{
+
+    margin-bottom:.55rem;
+
+    line-height:1.8;
+}
+
+main li>ul,
+main li>ol{
+
+    margin-top:.5rem;
+
+    margin-bottom:.5rem;
+}
+
+
+/* ==========================================================
+   6. STRONG / EMPHASIS
+   ========================================================== */
+
+main strong{
+
+    font-weight:700;
+
+    color:#111827;
+}
+
+main em{
+
+    font-style:italic;
+}
+
+
+/* ==========================================================
+   7. HORIZONTAL RULE
+   ========================================================== */
+
+main hr{
+
+    margin:3rem 0;
+
+    border:none;
+
+    border-top:1px solid var(--border);
+}
+
+
+/* ==========================================================
+   8. SMALL TEXT
+   ========================================================== */
+
+main small{
+
+    color:var(--text-muted);
+
+    font-size:.92rem;
+}
+
+
+/* ==========================================================
+   9. RESPONSIVE
+   ========================================================== */
+
+@media (max-width:768px){
+
+    main h1{
+
+        font-size:2rem;
+    }
+
+    main h2{
+
+        font-size:1.7rem;
+    }
+
+    main h3{
+
+        font-size:1.4rem;
+    }
+
+    main p{
+
+        text-align:left;
+    }
+
+    main ul,
+    main ol{
+
+        padding-left:1.4rem;
+    }
+
+}
+
+/* ==========================================================
+   Module 2
+   Images • Figures • Tables
+   ========================================================== */
+
+
+/* ==========================================================
+   10. IMAGES
+   ========================================================== */
+
+main img{
+
+    display:block;
+
+    max-width:100%;
+
+    height:auto;
+
+    margin:2rem auto;
+
+    border-radius:10px;
+
+    box-shadow:var(--shadow-sm);
+}
+
+
+/* ==========================================================
+   11. FIGURE
+   ========================================================== */
+
+main figure{
+
+    margin:2rem auto;
+
+    text-align:center;
+}
+
+main figure img{
+
+    margin-bottom:.75rem;
+}
+
+main figcaption{
+
+    font-size:.95rem;
+
+    color:var(--text-muted);
+
+    font-style:italic;
+
+    line-height:1.6;
+}
+
+
+/* ==========================================================
+   12. TABLE
+   ========================================================== */
+
+main table{
+
+    width:100%;
+
+    margin:2rem 0;
+
+    border-collapse:collapse;
+
+    background:#ffffff;
+
+    font-size:.98rem;
+
+    overflow:hidden;
+
+    border-radius:10px;
+
+    box-shadow:var(--shadow-sm);
+}
+
+main thead{
+
+    background:var(--primary);
+}
+
+main th{
+
+    color:#ffffff;
+
+    font-weight:700;
+
+    text-align:center;
+
+    padding:14px 16px;
+
+    border:1px solid var(--primary);
+}
+
+main td{
+
+    padding:12px 16px;
+
+    border:1px solid var(--border);
+
+    vertical-align:top;
+}
+
+
+/* ==========================================================
+   13. TABLE STRIPES
+   ========================================================== */
+
+main tbody tr:nth-child(even){
+
+    background:#fafbfc;
+}
+
+main tbody tr:hover{
+
+    background:var(--primary-soft);
+
+    transition:background .2s ease;
+}
+
+
+/* ==========================================================
+   14. TABLE ALIGNMENT
+   ========================================================== */
+
+main td:first-child,
+main th:first-child{
+
+    text-align:center;
+
+    white-space:nowrap;
+}
+
+
+/* ==========================================================
+   15. RESPONSIVE TABLE
+   ========================================================== */
+
+.table-responsive{
+
+    overflow-x:auto;
+
+    margin:2rem 0;
+
+    -webkit-overflow-scrolling:touch;
+}
+
+.table-responsive table{
+
+    margin:0;
+
+    min-width:640px;
+}
+
+
+/* ==========================================================
+   16. IMAGE UTILITIES
+   ========================================================== */
+
+.img-center{
+
+    display:block;
+
+    margin-left:auto;
+
+    margin-right:auto;
+}
+
+.img-small{
+
+    max-width:320px;
+}
+
+.img-medium{
+
+    max-width:600px;
+}
+
+.img-large{
+
+    max-width:900px;
+}
+
+.img-border{
+
+    border:1px solid var(--border);
+}
+
+
+/* ==========================================================
+   17. IMAGE SHADOW
+   ========================================================== */
+
+.img-shadow{
+
+    box-shadow:var(--shadow-md);
+}
+
+.img-rounded{
+
+    border-radius:16px;
+}
+
+
+/* ==========================================================
+   18. RESPONSIVE
+   ========================================================== */
+
+@media (max-width:768px){
+
+    main table{
+
+        font-size:.92rem;
+    }
+
+    main th,
+    main td{
+
+        padding:10px 12px;
+    }
+
+    main img{
+
+        margin:1.5rem auto;
+    }
+
+    main figure{
+
+        margin:1.5rem auto;
+    }
+
+}
+
+/* ==========================================================
+   Module 3
+   Blockquote • Code • MathJax
+   ========================================================== */
+
+
+/* ==========================================================
+   19. BLOCKQUOTE
+   ========================================================== */
+
+main blockquote{
+
+    margin:2rem 0;
+
+    padding:1rem 1.5rem;
+
+    border-left:5px solid var(--primary);
+
+    background:var(--primary-soft);
+
+    color:var(--text-light);
+
+    font-style:italic;
+
+    border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+main blockquote p:last-child{
+
+    margin-bottom:0;
+}
+
+
+/* ==========================================================
+   20. INLINE CODE
+   ========================================================== */
+
+main code{
+
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+
+    font-size:.92em;
+
+    background:#f3f4f6;
+
+    color:#c7254e;
+
+    padding:.15rem .4rem;
+
+    border-radius:4px;
+
+    border:1px solid #e5e7eb;
+}
+
+
+/* ==========================================================
+   21. CODE BLOCK
+   ========================================================== */
+
+main pre{
+
+    margin:2rem 0;
+
+    padding:1.2rem;
+
+    overflow-x:auto;
+
+    background:#1f2937;
+
+    color:#f8fafc;
+
+    border-radius:10px;
+
+    line-height:1.6;
+
+    box-shadow:var(--shadow-sm);
+}
+
+main pre code{
+
+    background:none;
+
+    border:none;
+
+    color:inherit;
+
+    padding:0;
+
+    font-size:.95rem;
+
+    white-space:pre;
+}
+
+
+/* ==========================================================
+   22. KEYBOARD
+   ========================================================== */
+
+main kbd{
+
+    display:inline-block;
+
+    padding:.15rem .45rem;
+
+    font-size:.9em;
+
+    font-family:inherit;
+
+    background:#ffffff;
+
+    border:1px solid #d1d5db;
+
+    border-radius:4px;
+
+    box-shadow:0 1px 2px rgba(0,0,0,.12);
+}
+
+
+/* ==========================================================
+   23. MARK
+   ========================================================== */
+
+main mark{
+
+    background:#fff3b0;
+
+    color:inherit;
+
+    padding:.1rem .25rem;
+}
+
+
+/* ==========================================================
+   24. MATHJAX
+   ========================================================== */
+
+/* Inline Formula */
+
+main mjx-container{
+
+    overflow-x:auto;
+
+    overflow-y:hidden;
+}
+
+
+/* Display Formula */
+
+main mjx-container[display="true"]{
+
+    display:block;
+
+    margin:2rem 0;
+
+    padding:.3rem 0;
+
+    text-align:center;
+
+    overflow-x:auto;
+
+    overflow-y:hidden;
+}
+
+
+/* ==========================================================
+   25. LONG EQUATIONS
+   ========================================================== */
+
+.MathJax_Display{
+
+    overflow-x:auto;
+
+    overflow-y:hidden;
+}
+
+
+/* ==========================================================
+   26. LATEX ENVIRONMENTS
+   ========================================================== */
+
+main .math{
+
+    overflow-x:auto;
+}
+
+
+/* ==========================================================
+   27. PREVENT OVERFLOW
+   ========================================================== */
+
+main pre,
+main code,
+main mjx-container{
+
+    max-width:100%;
+}
+
+
+/* ==========================================================
+   28. HORIZONTAL SCROLL
+   ========================================================== */
+
+main pre::-webkit-scrollbar,
+main mjx-container::-webkit-scrollbar{
+
+    height:8px;
+}
+
+main pre::-webkit-scrollbar-thumb,
+main mjx-container::-webkit-scrollbar-thumb{
+
+    background:#94a3b8;
+
+    border-radius:999px;
+}
+
+
+/* ==========================================================
+   29. TEXT SELECTION
+   ========================================================== */
+
+main pre::selection{
+
+    background:#334155;
+
+    color:#ffffff;
+}
+
+/* ==========================================================
+   30. TABLE OF CONTENTS
+   ========================================================== */
+
+.toc{
+
+    margin:2rem 0;
+
+    padding:1.25rem 1.5rem;
+
+    background:#f8fbff;
+
+    border:1px solid var(--border);
+
+    border-left:5px solid var(--primary);
+
+    border-radius:var(--radius-md);
+
+    box-shadow:var(--shadow-sm);
+
+}
+
+.toc-title{
+
+    margin:0 0 1rem;
+
+    font-size:1rem;
+
+    font-weight:700;
+
+    color:var(--primary);
+
+    text-transform:uppercase;
+
+    letter-spacing:.05em;
+
+}
+
+.toc ul{
+
+    list-style:none;
+
+    margin:0;
+
+    padding-left:0;
+
+}
+
+.toc li{
+
+    margin:.45rem 0;
+
+}
+
+.toc li ul{
+
+    margin-top:.35rem;
+
+    margin-left:1rem;
+
+}
+
+.toc a{
+
+    display:block;
+
+    padding:.25rem 0;
+
+    color:var(--text);
+
+    text-decoration:none;
+
+    transition:var(--transition);
+
+}
+
+.toc a:hover{
+
+    color:var(--primary);
+
+    padding-left:.3rem;
+
+}
+
+.toc a.active{
+
+    color:var(--primary);
+
+    font-weight:600;
+
+}
+
+/* ==========================================================
+   31. RESPONSIVE
+   ========================================================== */
+
+@media (max-width:768px){
+
+    main pre{
+
+        padding:1rem;
+
+        font-size:.9rem;
+    }
+
+    main blockquote{
+
+        padding:.9rem 1.2rem;
+    }
+
+}
+
+
+/* ==========================================================
+   POST HEADER
+   ========================================================== */
+
+.post-header{
+
+    margin-bottom:2.5rem;
+
+}
+
+.meta{
+
+    margin-top:.5rem;
+
+    color:var(--text-muted);
+
+    font-size:.95rem;
+
+}
+
+.blog-tags{
+
+    margin-top:.8rem;
+
+    font-size:.95rem;
+
+}
+
+.blog-tags a{
+
+    display:inline-block;
+
+    margin-right:.45rem;
+
+}

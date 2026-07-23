@@ -1,7 +1,13 @@
+# ==========================================
+# Website
+# ==========================================
 site:
   title: "APMaths"
-  tagline: "Mathematics Knowledge • Tools • Resources"
+  tagline: "Knowledge • Tools • Mathematics Resources"
 
+# ==========================================
+# Navigation
+# ==========================================
 nav:
   home: "Home"
   knowledge: "Knowledge"
@@ -10,30 +16,49 @@ nav:
   resources: "Resources"
   about: "About"
 
+# ==========================================
+# Homepage
+# ==========================================
 home:
   welcome: "Welcome to APMaths"
-  description: "A website for mathematics knowledge, tools and resources."
+  description: "A website sharing mathematics knowledge, tools and resources."
 
+# ==========================================
+# Buttons
+# ==========================================
 button:
   read_more: "Read More"
   download: "Download"
   search: "Search"
   back: "Back"
 
+# ==========================================
+# Search
+# ==========================================
 search:
   placeholder: "Enter keywords..."
   no_result: "No results found."
 
+# ==========================================
+# Footer
+# ==========================================
 footer:
-  copyright: "© 2026 APMaths"
-  privacy: "Privacy Policy"
+  navigation: "Navigation"
   contact: "Contact"
+  privacy: "Privacy Policy"
+  copyright: "All rights reserved."
 
+# ==========================================
+# Sidebar
+# ==========================================
 sidebar:
   categories: "Categories"
   recent_posts: "Recent Posts"
   tags: "Tags"
 
+# ==========================================
+# Knowledge
+# ==========================================
 knowledge:
   calculus: "Calculus"
   algebra: "Algebra"
@@ -42,21 +67,19 @@ knowledge:
   probability: "Probability and Statistics"
   discrete_math: "Discrete Mathematics"
 
+# ==========================================
+# Resources
+# ==========================================
 resources:
   exams: "Exams"
   slides: "Slides"
-  books: "Textbooks"
+  books: "Books"
   pdf: "PDF"
   downloads: "Downloads"
 
-nav:
-  home: "Home"
-  knowledge: "Knowledge"
-  blog: "Blog"
-  tools: "Tools"
-  resources: "Resources"
-  about: "About"
-
+# ==========================================
+# Sub Menu
+# ==========================================
 submenu:
   calculus: "Calculus"
   algebra: "Algebra"
@@ -66,5 +89,5 @@ submenu:
   categories: "Categories"
 
   people: "People"
-  cv: "CV"
+  cv: "Curriculum Vitae"
   html_code: "HTML Code"

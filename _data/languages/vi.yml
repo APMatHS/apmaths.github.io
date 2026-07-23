@@ -43,9 +43,10 @@ search:
 # Footer
 # ==========================================
 footer:
-  copyright: "© 2026 APMaths"
-  privacy: "Chính sách bảo mật"
+  navigation: "Điều hướng"
   contact: "Liên hệ"
+  privacy: "Chính sách bảo mật"
+  copyright: "Bảo lưu mọi quyền."
 
 # ==========================================
 # Sidebar
@@ -76,18 +77,9 @@ resources:
   pdf: "PDF"
   downloads: "Tải xuống"
 
-
 # ==========================================
-# Menu
+# Sub Menu
 # ==========================================
-nav:
-  home: "Trang chủ"
-  knowledge: "Kiến thức"
-  blog: "Blog"
-  tools: "Công cụ"
-  resources: "Tài nguyên"
-  about: "Giới thiệu"
-
 submenu:
   calculus: "Giải tích"
   algebra: "Đại số"
