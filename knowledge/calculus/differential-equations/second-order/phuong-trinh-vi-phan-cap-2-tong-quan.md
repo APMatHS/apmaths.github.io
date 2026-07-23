@@ -147,12 +147,5 @@ Cách học này giúp xây dựng kiến thức từ cơ bản đến nâng cao
 
 ## Kết luận
 
-Phương trình vi phân cấp 2 là nền tảng của nhiều môn học trong toán ứng
-dụng và kỹ thuật. Điều quan trọng đầu tiên không phải là ghi nhớ tất cả
-công thức, mà là hiểu khái niệm, nhận biết dạng phương trình và lựa chọn
-đúng phương pháp giải. Sau khi nắm được bức tranh tổng thể, việc học các
-kỹ thuật chi tiết sẽ trở nên dễ dàng và hiệu quả hơn.
-
-Trong các bài viết tiếp theo, chúng ta sẽ lần lượt nghiên cứu từng dạng
-phương trình, trình bày phương pháp giải, ví dụ minh họa và bài tập có
-lời giải.
+Phương trình vi phân cấp 2 là nền tảng của nhiều môn học trong toán ứng dụng và kỹ thuật. Điều quan trọng đầu tiên không phải là ghi nhớ tất cả công thức, mà là hiểu khái niệm, nhận biết dạng phương trình và lựa chọn đúng phương pháp giải. Sau khi nắm được bức tranh tổng thể, việc học các kỹ thuật chi tiết sẽ trở nên dễ dàng và hiệu quả hơn. 
+Trong các bài viết tiếp theo, chúng ta sẽ lần lượt nghiên cứu từng dạng phương trình, trình bày phương pháp giải, ví dụ minh họa và bài tập có lời giải.
