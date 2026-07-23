@@ -14,30 +14,21 @@ title: "Phương trình vi phân cấp 2: Định nghĩa, phân loại và ứng
 
 # Phương trình vi phân cấp 2: Định nghĩa, phân loại và ứng dụng
 
-Phương trình vi phân cấp 2 là một trong những nội dung quan trọng của
-Giải tích và Toán ứng dụng. Nhiều hiện tượng trong vật lý, kỹ thuật, cơ
-học, điện học và kinh tế đều có thể mô tả bằng phương trình vi phân cấp
-hai. Vì vậy, việc hiểu bản chất của loại phương trình này sẽ giúp người
-học tiếp cận nhiều mô hình toán học trong thực tế.
+Phương trình vi phân cấp 2 là một trong những nội dung quan trọng của Giải tích và Toán ứng dụng. Nhiều hiện tượng trong vật lý, kỹ thuật, cơ học, điện học và kinh tế đều có thể mô tả bằng phương trình vi phân cấp hai. Vì vậy, việc hiểu bản chất của loại phương trình này sẽ giúp người học tiếp cận nhiều mô hình toán học trong thực tế.
 
-Bài viết này cung cấp cái nhìn tổng quan về phương trình vi phân cấp 2.
-Mục tiêu không phải trình bày chi tiết từng kỹ thuật giải, mà giúp bạn
-nhận biết các dạng thường gặp và lựa chọn phương pháp phù hợp. Các
-phương pháp sẽ được trình bày trong các bài viết chuyên đề.
+Bài viết này cung cấp cái nhìn tổng quan về phương trình vi phân cấp 2. Mục tiêu không phải trình bày chi tiết từng kỹ thuật giải, mà giúp bạn nhận biết các dạng thường gặp và lựa chọn phương pháp phù hợp. Các phương pháp sẽ được trình bày trong các bài viết chuyên đề.
 
 ## 1. Phương trình vi phân là gì?
 
-Phương trình vi phân là phương trình chứa hàm số chưa biết cùng với các
-đạo hàm của hàm đó.
+Phương trình vi phân là phương trình chứa hàm số chưa biết cùng với các đạo hàm của hàm đó.
 
 Ví dụ:
 
--   y' = x + y
--   y'' + y = 0
--   y'' - 3y' + 2y = e\^x
+*   $y' = x + y$
+*   $y'' + y = 0$
+*   $y'' - 3y' + 2y = e^{x}$
 
-Nếu đạo hàm bậc cao nhất xuất hiện là đạo hàm cấp hai thì phương trình
-được gọi là **phương trình vi phân cấp 2**.
+Nếu đạo hàm bậc cao nhất xuất hiện là đạo hàm cấp hai thì phương trình được gọi là **phương trình vi phân cấp 2**.
 
 ## 2. Định nghĩa
 
@@ -49,19 +40,16 @@ $$
 
 Trong đó:
 
--   x là biến độc lập;
--   y = y(x) là hàm cần tìm;
--   y' là đạo hàm cấp một;
--   y'' là đạo hàm cấp hai.
+-   $x$ là biến độc lập;
+-   $y = y(x)$ là hàm cần tìm;
+-   $y'$ là đạo hàm cấp một;
+-   $y''$ là đạo hàm cấp hai.
 
-Nghiệm của phương trình là một hàm số thỏa mãn phương trình trên trong
-một khoảng xác định.
+Nghiệm của phương trình là một hàm số thỏa mãn phương trình trên trong một khoảng xác định.
 
 ## 3. Vì sao phương trình vi phân cấp 2 quan trọng?
 
-Nhiều hiện tượng tự nhiên đều liên quan đến gia tốc. Theo cơ học Newton,
-gia tốc chính là đạo hàm cấp hai của quãng đường theo thời gian. Vì vậy
-các mô hình chuyển động thường dẫn đến phương trình vi phân cấp hai.
+Nhiều hiện tượng tự nhiên đều liên quan đến gia tốc. Theo cơ học Newton, gia tốc chính là đạo hàm cấp hai của quãng đường theo thời gian. Vì vậy các mô hình chuyển động thường dẫn đến phương trình vi phân cấp hai.
 
 Một số ví dụ tiêu biểu:
 
@@ -76,8 +64,7 @@ thống, nghiên cứu tính ổn định và thiết kế các mô hình kỹ t
 
 ## 4. Phân loại
 
-Trong chương trình đại học, phương trình vi phân cấp 2 thường được chia
-thành các nhóm sau.
+Trong chương trình đại học, phương trình vi phân cấp 2 thường được chia thành các nhóm sau.
 
 ### 4.1. Phương trình khuyết y và y'
 
@@ -96,8 +83,7 @@ Có dạng
 $$
 a(x)y''+b(x)y'+c(x)y=0.
 $$
-
-Nếu hệ số là hằng số, phương trình đặc trưng là công cụ giải cơ bản.
+Nếu  $a,b,c$ là hằng số thì ta gọi là phương trình vi phân tuyến tính cấp 2 hệ số hằng thuần nhất.
 
 ### 4.4. Phương trình tuyến tính không thuần nhất
 
@@ -107,9 +93,7 @@ $$
 a(x)y''+b(x)y'+c(x)y=f(x).
 $$
 
-Ngoài nghiệm của phương trình thuần nhất, cần tìm thêm một nghiệm riêng.
-Hai kỹ thuật phổ biến là phương pháp hệ số bất định và phương pháp biến
-thiên hằng số.
+Ngoài nghiệm của phương trình thuần nhất, cần tìm thêm một nghiệm riêng. Hai kỹ thuật phổ biến là phương pháp hệ số bất định và phương pháp biến thiên hằng số.
 
 ## 5. Làm thế nào để nhận dạng phương pháp giải?
 
@@ -136,8 +120,8 @@ công thức.
 
 Sau khi hiểu bài tổng quan này, bạn nên học theo thứ tự:
 
-1.  Phương trình khuyết y và y'.
-2.  Phương trình khuyết y.
+1.  Phương trình khuyết $y$ và $y'$.
+2.  Phương trình khuyết $y$.
 3.  Phương trình tuyến tính thuần nhất.
 4.  Phương trình tuyến tính không thuần nhất.
 5.  Bài tập tổng hợp.
