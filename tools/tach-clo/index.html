@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Công cụ Tách-CLO Trực Tuyến</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body { 
+            font-family: "Times New Roman", Times, serif; 
+            margin: 30px; 
+            background-color: #f4f6f9; 
+            font-size: 16px;
+        }
+        .container { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            max-width: 1100px; 
+            margin: auto; 
+        }
+        h2 { 
+            color: #333; 
+            text-align: center; 
+            font-family: "Times New Roman", Times, serif;
+        }
+        .main-layout {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .column-left, .column-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group { 
+            margin-bottom: 15px; 
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        label { 
+            display: block; 
+            margin-bottom: 6px; 
+            font-weight: bold; 
+        }
+        textarea { 
+            width: 100%; 
+            height: 250px; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            font-family: "Times New Roman", Times, serif;
+            font-size: 15px;
+            box-sizing: border-box;
+            resize: none;
+        }
+        .action-row {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .action-row > button {
+            flex: 1;
+            margin-top: 0;
+        }
+        button { 
+            background-color: #28a745; 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 4px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            font-family: "Times New Roman", Times, serif;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+        button:hover:not(:disabled) { 
+            opacity: 0.9; 
+        }
+        #btnDownload {
+            background-color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        #btnClear {
+            background-color: #dc3545;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-family: "Times New Roman", Times, serif;
+            font-size: 16px;
+        }
+        th, td { 
+            border: 1px solid #000000; 
+            padding: 8px; 
+            text-align: center; 
+            vertical-align: middle;
+        }
+        th { 
+            background-color: #e2e8f0; 
+            color: #000;
+            font-weight: bold;
+        }
+        .table-container {
+            max-height: 250px; 
+            overflow-y: auto; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            background: #fff;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Hệ thống Tách-CLO Trực Tuyến</h2>
+    
+    <div class="main-layout">
+        <!-- Cột Trái: Ô nhập dữ liệu -->
+        <div class="column-left">
+            <div class="form-group">
+                <label for="gpaInput">Dán cột điểm GPA vào đây (Hỗ trợ 200 dòng):</label>
+                <textarea id="gpaInput" placeholder="Ví dụ:&#10;8.5&#10;7.2&#10;6.0&#10;2.5"></textarea>
+            </div>
+        </div>
+
+        <!-- Cột Phải: Bảng kết quả -->
+        <div class="column-right">
+            <label>Bảng kết quả:</label>
+            <div class="table-container">
+                <table id="resultTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>GPA</th>
+                            <th>CLO1</th>
+                            <th>CLO2</th>
+                            <th>CLO3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Bảng trống ban đầu -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hàng chứa các nút bấm nằm ngang hàng tuyệt đối -->
+    <div class="action-row">
+        <button onclick="processGPAData()">Thực hiện Tách-CLO</button>
+        <button id="btnClear" onclick="clearData()">Xóa dữ liệu</button>
+        <button id="btnDownload" onclick="downloadExcel()" disabled>Tải file Excel kết quả</button>
+    </div>
+</div>
+
+<script>
+let lastProcessedData = [];
+
+function roundToAllowed(val) {
+    const allowed = [0.0, 0.3, 0.5, 0.8];
+    let intPart = Math.floor(val);
+    let fracPart = val - intPart;
+    let closest = allowed.reduce((prev, curr) => Math.abs(curr - fracPart) < Math.abs(prev - fracPart) ? curr : prev);
+    return Number((intPart + closest).toFixed(1));
+}
+
+function processGPAData() {
+    let rawText = document.getElementById('gpaInput').value.trim();
+    if (!rawText) {
+        alert("Vui lòng dán danh sách điểm GPA vào ô trống!");
+        return;
+    }
+
+    let lines = rawText.split(/\r?\n/);
+    lastProcessedData = [];
+    let tbody = document.querySelector("#resultTable tbody");
+    tbody.innerHTML = "";
+
+    lines.forEach((line, index) => {
+        let valStr = line.trim();
+        if (valStr === "") return;
+        
+        let gpa = parseFloat(valStr.replace(',', '.'));
+        if (isNaN(gpa)) return;
+
+        let I = gpa / 10.0;
+        let L1 = 3.0 * I;
+        let L2 = 5.0 * I;
+
+        let max_e;
+        if (gpa < 3.0) {
+            max_e = 0;
+        } else if (gpa > 7.0) {
+            max_e = 0.5;
+        } else if (gpa > 5.0) {
+            max_e = 0.3;
+        } else {
+            max_e = 0.2;
+        }
+
+        let e1 = 0, e2 = 0;
+        if (max_e > 0) {
+            let steps = [];
+            for (let i = -max_e; i <= max_e + 0.001; i += 0.1) {
+                steps.push(Number(i.toFixed(1)));
+            }
+            e1 = steps[Math.floor(Math.random() * steps.length)];
+            e2 = steps[Math.floor(Math.random() * steps.length)];
+        }
+
+        let c1 = Math.max(0, Math.min(3, roundToAllowed(L1 + e1)));
+        let c2 = Math.max(0, Math.min(5, roundToAllowed(L2 + e2)));
+
+        let c3_exact = Number((gpa - c1 - c2).toFixed(2));
+        let c3;
+
+        if (c3_exact < 0) {
+            c3 = 0.0;
+            c2 = Math.max(0, Math.min(5, roundToAllowed(gpa - c1 - c3)));
+            c3 = Number((gpa - c1 - c2).toFixed(2));
+        } else if (c3_exact > 2) {
+            c3 = 2.0;
+            c1 = Math.max(0, Math.min(3, roundToAllowed(gpa - c2 - c3)));
+            c3 = Number((gpa - c1 - c2).toFixed(2));
+        } else {
+            c3 = c3_exact;
+        }
+
+        let min_c1 = 0, min_c2 = 0, min_c3 = 0;
+        if (gpa >= 8.5) {
+            min_c1 = 2.1; min_c2 = 3.5; min_c3 = 1.4;
+        } else if (gpa >= 7.0) {
+            min_c1 = 1.8; min_c2 = 2.8; min_c3 = 1.2;
+        } else if (gpa >= 5.0) {
+            min_c1 = 1.2; min_c2 = 2.0; min_c3 = 0.8;
+        } else if (gpa >= 1.0) {
+            min_c1 = 0.3; min_c2 = 0.5; min_c3 = 0.2;
+        }
+
+        let min_total = min_c1 + min_c2 + min_c3;
+        if (gpa >= min_total) {
+            if (c1 < min_c1) c1 = min_c1;
+            if (c2 < min_c2) c2 = min_c2;
+            if (c3 < min_c3) c3 = min_c3;
+            
+            let current_sum = Number((c1 + c2 + c3).toFixed(2));
+            let diff = Number((gpa - current_sum).toFixed(2));
+            if (diff !== 0) {
+                c2 = Number((c2 + diff).toFixed(2));
+            }
+        }
+
+        let clo1 = Number((c1 / 0.3).toFixed(1));
+        let clo2 = Number((c2 / 0.5).toFixed(1));
+        let clo3 = Number((c3 / 0.2).toFixed(1));
+
+        clo1 = Math.max(0, Math.min(10, clo1));
+        clo2 = Math.max(0, Math.min(10, clo2));
+        clo3 = Math.max(0, Math.min(10, clo3));
+
+        let rowData = {
+            "STT": index + 1,
+            "GPA": gpa,
+            "CLO1": clo1,
+            "CLO2": clo2,
+            "CLO3": clo3
+        };
+        lastProcessedData.push(rowData);
+
+        let tr = `<tr>
+            <td>${rowData["STT"]}</td>
+            <td>${rowData["GPA"]}</td>
+            <td>${rowData["CLO1"]}</td>
+            <td>${rowData["CLO2"]}</td>
+            <td>${rowData["CLO3"]}</td>
+        </tr>`;
+        tbody.innerHTML += tr;
+    });
+
+    let btnDownload = document.getElementById('btnDownload');
+    btnDownload.disabled = false;
+    btnDownload.style.backgroundColor = "#007bff";
+    btnDownload.style.cursor = "pointer";
+    btnDownload.style.opacity = "1";
+}
+
+function clearData() {
+    document.getElementById('gpaInput').value = "";
+    document.querySelector("#resultTable tbody").innerHTML = "";
+    lastProcessedData = [];
+    let btnDownload = document.getElementById('btnDownload');
+    btnDownload.disabled = true;
+    btnDownload.style.backgroundColor = "#6c757d";
+    btnDownload.style.cursor = "not-allowed";
+    btnDownload.style.opacity = "0.6";
+}
+
+function downloadExcel() {
+    if (lastProcessedData.length === 0) return;
+    let table = document.getElementById("resultTable");
+    let wb = XLSX.utils.table_to_book(table, {sheet: "KetQua_CLO"});
+    XLSX.writeFile(wb, "KetQua_Tach_CLO.xlsx");
+}
+</script>
+
+</body>
+</html>
