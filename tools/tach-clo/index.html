@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Công cụ Tách-CLO Trực Tuyến V2.4</title>
+    <title>Công cụ Tách-CLO Trực Tuyến V3.1 (Bảo toàn GPA)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { 
@@ -147,13 +147,13 @@
 <body>
 
 <div class="container">
-    <h2>Hệ thống Tách-CLO Trực Tuyến - Phiên bản V2.4</h2>
+    <h2>Hệ thống Tách-CLO Trực Tuyến - Phiên bản V3.1</h2>
     
     <div class="main-layout">
         <div class="column-left">
             <div class="form-group">
                 <label for="gpaInput">1. Dán cột điểm GPA vào đây:</label>
-                <textarea id="gpaInput" placeholder="Ví dụ:&#10;10&#10;8.5&#10;7.2&#10;1.5"></textarea>
+                <textarea id="gpaInput" placeholder="Ví dụ:&#10;9.0&#10;8.5&#10;7.0&#10;1.5"></textarea>
             </div>
             
             <div class="form-group">
@@ -268,6 +268,7 @@ function lockProcessButton(isUnlocked) {
     }
 }
 
+// Hàm làm tròn đến bước nhảy thập phân cho phép (.0, .3, .5, .8)
 function roundToAllowed(val) {
     const allowed = [0.0, 0.3, 0.5, 0.8];
     let intPart = Math.floor(val);
@@ -290,78 +291,114 @@ function processGPAData() {
 
     let lines = rawText.split(/\r?\n/);
     lastProcessedData = [];
-    let tbody = document.querySelector("#resultTable tbody");
-    tbody.innerHTML = "";
+    let tbodyHTML = "";
+    let n = currentWeights.length;
 
-    lines.forEach((line, index) => {
-        let valStr = line.trim();
-        if (valStr === "") return;
+    for (let index = 0; index < lines.length; index++) {
+        let valStr = lines[index].trim();
+        if (valStr === "") continue;
         
         let gpa = parseFloat(valStr.replace(',', '.'));
-        if (isNaN(gpa)) return;
+        
+        if (isNaN(gpa) || gpa < 0 || gpa > 10) {
+            alert(`Dòng ${index + 1} có giá trị GPA không hợp lệ (${valStr}). Vui lòng nhập từ 0 đến 10.`);
+            return;
+        }
 
-        let numCols = currentWeights.length;
         let cloScores = [];
 
-        // Xử lý đặc biệt nếu GPA đạt điểm tuyệt đối 10.0
-        if (gpa >= 10.0) {
-            cloScores = new Array(numCols).fill(10.0);
+        // Trường hợp GPA đạt điểm tuyệt đối
+        if (gpa >= 9.95) {
+            cloScores = new Array(n).fill(10.0);
         } else {
-            let max_e;
-            if (gpa <= 2.0) {
-                max_e = 0; // GPA <= 2 thì e = 0 luôn
-            } else if (gpa < 3.0) {
-                max_e = 0;
-            } else if (gpa > 7.0) {
-                max_e = 0.5;
-            } else if (gpa > 5.0) {
-                max_e = 0.3;
-            } else {
-                max_e = 0.2; // Từ trên 3 đến 5
-            }
+            let max_e = 0;
+            if (gpa > 2.0 && gpa <= 4.0) max_e = 0.2;
+            else if (gpa > 4.0 && gpa <= 6.0) max_e = 0.3;
+            else if (gpa > 6.0) max_e = 0.5;
 
-            let subScores = [];
-            let sumSub = 0;
+            let minCloThreshold = 0;
+            if (gpa >= 8.5) minCloThreshold = 6.8;
+            else if (gpa >= 7.0) minCloThreshold = 5.3;
+            else if (gpa >= 5.0) minCloThreshold = 4.0;
+            else if (gpa >= 1.0) minCloThreshold = 0.3;
 
-            for (let i = 0; i < numCols; i++) {
-                let baseVal = gpa * currentWeights[i];
-                let e = 0;
-                if (max_e > 0 && i < numCols - 1) {
-                    let steps = [];
-                    for (let s = -max_e; s <= max_e + 0.001; s += 0.1) {
-                        steps.push(Number(s.toFixed(1)));
-                    }
-                    e = steps[Math.floor(Math.random() * steps.length)];
-                }
-                let adjusted = roundToAllowed(baseVal + e);
-                subScores.push(adjusted);
-                sumSub += adjusted;
-            }
+            let validFound = false;
+            let finalC = [];
+            let maxIterations = 200; // Giới hạn tối đa 200 vòng lặp thử
+            let iter = 0;
 
-            let lastIdx = numCols - 1;
-            let finalSub = Number((gpa - (sumSub - subScores[lastIdx])).toFixed(2));
-            subScores[lastIdx] = Math.max(0, finalSub);
-
-            cloScores = subScores.map((sub, idx) => {
-                let w = currentWeights[idx];
-                let cloVal = w > 0 ? Number((sub / w).toFixed(1)) : 0;
+            while (!validFound && iter < maxIterations) {
+                iter++;
+                let deltas = new Array(n).fill(0);
                 
-                if (gpa >= 8.5) {
-                    if (cloVal <= 6.5) cloVal = 6.8;
-                } else if (gpa >= 7.0) {
-                    if (cloVal <= 5.0) cloVal = 5.3;
-                } else if (gpa >= 5.0) {
-                    if (cloVal < 4.0) cloVal = 4.0;
-                } else if (gpa >= 1.0) {
-                    if (cloVal <= 0) cloVal = 0.3;
+                if (n === 1) {
+                    finalC = [gpa];
+                    validFound = true;
+                    break;
                 }
 
-                return Math.max(0, Math.min(10, cloVal));
-            });
+                let limitStep = Math.round(max_e * 10);
+                let currentSumWDelta = 0;
+
+                // Sinh n-1 delta ngẫu nhiên
+                for (let i = 0; i < n - 1; i++) {
+                    let randStep = Math.floor(Math.random() * (2 * limitStep + 1)) - limitStep;
+                    deltas[i] = randStep / 10.0;
+                    currentSumWDelta += currentWeights[i] * deltas[i];
+                }
+
+                // Tính delta cuối cùng chính xác theo siêu phẳng sum(w_i * delta_i) = 0
+                let w_last = currentWeights[n - 1];
+                if (w_last > 0) {
+                    let d_last = -currentSumWDelta / w_last;
+                    deltas[n - 1] = Number(d_last.toFixed(1));
+                }
+
+                let candidateC = deltas.map(d => Number((gpa + d).toFixed(1)));
+
+                let inRange = candidateC.every(c => c >= 0 && c <= 10);
+                let passThreshold = candidateC.every(c => c >= minCloThreshold);
+
+                if (inRange && passThreshold) {
+                    let checkSum = 0;
+                    for (let i = 0; i < n; i++) checkSum += currentWeights[i] * candidateC[i];
+                    
+                    if (Math.abs(checkSum - gpa) < 0.001) {
+                        // Bước làm tròn chuẩn và bù sai số nhỏ
+                        let roundedC = candidateC.map(c => roundToAllowed(c));
+                        
+                        let roundedSum = 0;
+                        for (let i = 0; i < n; i++) roundedSum += currentWeights[i] * roundedC[i];
+                        let errorDiff = Number((gpa - roundedSum).toFixed(2));
+
+                        if (n > 0 && Math.abs(errorDiff) > 0.0001) {
+                            let lastIdx = n - 1;
+                            let adjustedLast = roundedC[lastIdx] + (errorDiff / currentWeights[lastIdx]);
+                            roundedC[lastIdx] = Number(Math.max(0, Math.min(10, adjustedLast)).toFixed(1));
+                        }
+
+                        // Kiểm tra hậu kỳ kỹ lưỡng sau khi bù sai số làm tròn
+                        let finalCheckSum = 0;
+                        for (let i = 0; i < n; i++) finalCheckSum += currentWeights[i] * roundedC[i];
+
+                        if (Math.abs(finalCheckSum - gpa) <= 0.05) {
+                            finalC = roundedC;
+                            validFound = true;
+                        }
+                    }
+                }
+            }
+
+            // Lớp bảo vệ cuối cùng: Nếu vẫn thất bại sau 200 lần thử, fallback an toàn gán đều về GPA
+            if (!validFound) {
+                finalC = new Array(n).fill(gpa);
+            }
+
+            cloScores = finalC;
         }
 
         let rowData = {
-            "STT": index + 1,
+            "STT": lastProcessedData.length + 1,
             "GPA": gpa
         };
         
@@ -372,8 +409,10 @@ function processGPAData() {
         });
 
         lastProcessedData.push(rowData);
-        tbody.innerHTML += `<tr>${trHTML}</tr>`;
-    });
+        tbodyHTML += `<tr>${trHTML}</tr>`;
+    }
+
+    document.querySelector("#resultTable tbody").innerHTML = tbodyHTML;
 
     let btnDownload = document.getElementById('btnDownload');
     btnDownload.disabled = false;
@@ -396,9 +435,10 @@ function clearData() {
 
 function downloadExcel() {
     if (lastProcessedData.length === 0) return;
-    let table = document.getElementById("resultTable");
-    let wb = XLSX.utils.table_to_book(table, {sheet: "KetQua_CLO_V2.4"});
-    XLSX.writeFile(wb, "KetQua_Tach_CLO_V2.4.xlsx");
+    let worksheet = XLSX.utils.json_to_sheet(lastProcessedData);
+    let workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "KetQua_CLO_V3.1");
+    XLSX.writeFile(workbook, "KetQua_Tach_CLO_V3.1.xlsx");
 }
 </script>
 
