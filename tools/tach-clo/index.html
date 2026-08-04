@@ -2,18 +2,18 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Công cụ Tách-CLO Trực Tuyến</title>
+    <title>Công cụ Tách-CLO Trực Tuyến V2.2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { 
             font-family: "Times New Roman", Times, serif; 
-            margin: 30px; 
+            margin: 20px; 
             background-color: #f4f6f9; 
             font-size: 16px;
         }
         .container { 
             background: white; 
-            padding: 25px; 
+            padding: 20px; 
             border-radius: 8px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
             max-width: 1100px; 
@@ -23,11 +23,12 @@
             color: #333; 
             text-align: center; 
             font-family: "Times New Roman", Times, serif;
+            margin-top: 5px;
+            margin-bottom: 20px;
         }
         .main-layout {
             display: flex;
             gap: 20px;
-            margin-top: 15px;
         }
         .column-left, .column-right {
             flex: 1;
@@ -35,20 +36,20 @@
             flex-direction: column;
         }
         .form-group { 
-            margin-bottom: 15px; 
-            flex: 1;
+            margin-bottom: 12px; 
             display: flex;
             flex-direction: column;
         }
         label { 
             display: block; 
-            margin-bottom: 6px; 
+            margin-bottom: 4px; 
             font-weight: bold; 
+            font-size: 15px;
         }
         textarea { 
             width: 100%; 
-            height: 250px; 
-            padding: 10px; 
+            height: 160px; 
+            padding: 8px; 
             border: 1px solid #ccc; 
             border-radius: 4px; 
             font-family: "Times New Roman", Times, serif;
@@ -56,22 +57,47 @@
             box-sizing: border-box;
             resize: none;
         }
+        input[type="number"] {
+            padding: 7px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .ratio-inputs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        .ratio-box {
+            display: flex;
+            flex-direction: column;
+        }
+        .ratio-box label {
+            font-size: 12px;
+            font-weight: normal;
+            text-align: center;
+            margin-bottom: 2px;
+        }
         .action-row {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             margin-top: 20px;
         }
         .action-row > button {
             flex: 1;
-            margin-top: 0;
         }
         button { 
             background-color: #28a745; 
             color: white; 
             border: none; 
-            padding: 12px 20px; 
+            padding: 10px 15px; 
             border-radius: 4px; 
-            font-size: 16px; 
+            font-size: 15px; 
             cursor: pointer; 
             font-family: "Times New Roman", Times, serif;
             font-weight: bold;
@@ -81,6 +107,9 @@
             opacity: 0.9; 
         }
         #btnDownload {
+            background-color: #007bff;
+        }
+        #btnDownload:disabled {
             background-color: #6c757d;
             cursor: not-allowed;
             opacity: 0.6;
@@ -92,11 +121,11 @@
             width: 100%; 
             border-collapse: collapse; 
             font-family: "Times New Roman", Times, serif;
-            font-size: 16px;
+            font-size: 15px;
         }
         th, td { 
             border: 1px solid #000000; 
-            padding: 8px; 
+            padding: 6px; 
             text-align: center; 
             vertical-align: middle;
         }
@@ -106,10 +135,10 @@
             font-weight: bold;
         }
         .table-container {
-            max-height: 250px; 
+            max-height: 295px; 
             overflow-y: auto; 
             border: 1px solid #ccc; 
-            border-radius: 4px; 
+            border-radius: 4px;
             background: #fff;
             flex: 1;
         }
@@ -118,24 +147,38 @@
 <body>
 
 <div class="container">
-    <h2>Hệ thống Tách-CLO Trực Tuyến</h2>
+    <h2>Hệ thống Tách-CLO Trực Tuyến - Phiên bản V2.2</h2>
     
     <div class="main-layout">
-        <!-- Cột Trái: Ô nhập dữ liệu -->
+        <!-- Cột Trái: Ô nhập GPA & Cấu hình CLO -->
         <div class="column-left">
             <div class="form-group">
-                <label for="gpaInput">Dán cột điểm GPA vào đây (Hỗ trợ 200 dòng):</label>
+                <label for="gpaInput">1. Dán cột điểm GPA vào đây:</label>
                 <textarea id="gpaInput" placeholder="Ví dụ:&#10;8.5&#10;7.2&#10;6.0&#10;2.5"></textarea>
             </div>
+            
+            <div class="form-group">
+                <label for="numClo">2. Số lượng thành phần CLO:</label>
+                <input type="number" id="numClo" min="1" max="6" value="3" onchange="generateRatioInputs()">
+            </div>
+
+            <div class="form-group">
+                <label>3. Tỷ lệ % cho từng CLO (Tổng bằng 100%):</label>
+                <div id="ratioFields" class="ratio-inputs-container">
+                    <!-- Sinh tự động bằng JS -->
+                </div>
+            </div>
+
+            <button onclick="confirmConfig()" style="background-color: #17a2b8; margin-top: 5px;">Xác nhận cấu hình tỷ lệ</button>
         </div>
 
         <!-- Cột Phải: Bảng kết quả -->
         <div class="column-right">
-            <label>Bảng kết quả:</label>
+            <label>4. Bảng kết quả sau khi tách:</label>
             <div class="table-container">
                 <table id="resultTable">
                     <thead>
-                        <tr>
+                        <tr id="tableHeaderRow">
                             <th>STT</th>
                             <th>GPA</th>
                             <th>CLO1</th>
@@ -144,16 +187,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Bảng trống ban đầu -->
+                        <!-- Kết quả hiển thị ở đây -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Hàng chứa các nút bấm nằm ngang hàng tuyệt đối -->
+    <!-- Hàng nút điều khiển phía dưới -->
     <div class="action-row">
-        <button onclick="processGPAData()">Thực hiện Tách-CLO</button>
+        <button id="btnProcess" onclick="processGPAData()" disabled style="background-color: #6c757d; cursor: not-allowed; opacity: 0.6;">Bắt đầu Tách-CLO</button>
         <button id="btnClear" onclick="clearData()">Xóa dữ liệu</button>
         <button id="btnDownload" onclick="downloadExcel()" disabled>Tải file Excel kết quả</button>
     </div>
@@ -161,6 +204,76 @@
 
 <script>
 let lastProcessedData = [];
+let currentWeights = [];
+
+window.onload = function() {
+    generateRatioInputs();
+};
+
+function generateRatioInputs() {
+    let num = parseInt(document.getElementById('numClo').value);
+    if (isNaN(num) || num < 1) num = 1;
+    if (num > 6) num = 6;
+    document.getElementById('numClo').value = num;
+
+    let container = document.getElementById('ratioFields');
+    container.innerHTML = "";
+
+    let defaultRatios = num === 3 ? [30, 50, 20] : [];
+    for (let i = 0; i < num; i++) {
+        let val = defaultRatios[i] !== undefined ? defaultRatios[i] : Math.floor(100 / num);
+        let div = document.createElement('div');
+        div.className = 'ratio-box';
+        div.innerHTML = `<label>CLO${i+1}</label><input type="number" class="ratio-input" value="${val}" min="1" max="100">`;
+        container.appendChild(div);
+    }
+    lockProcessButton(false);
+}
+
+function confirmConfig() {
+    let inputs = document.querySelectorAll('.ratio-input');
+    let sum = 0;
+    let weights = [];
+    
+    inputs.forEach(input => {
+        let val = parseFloat(input.value);
+        if (isNaN(val)) val = 0;
+        weights.push(val);
+        sum += val;
+    });
+
+    if (Math.abs(sum - 100) > 0.01) {
+        alert("Tổng tỷ lệ các CLO phải bằng đúng 100%! Hiện tại tổng đang là: " + sum + "%");
+        return;
+    }
+
+    currentWeights = weights.map(w => w / 100.0);
+
+    let headerRow = document.getElementById('tableHeaderRow');
+    let headerHTML = '<th>STT</th><th>GPA</th>';
+    for (let i = 0; i < weights.length; i++) {
+        headerHTML += `<th>CLO${i+1}</th>`;
+    }
+    headerRow.innerHTML = headerHTML;
+
+    lockProcessButton(true);
+    alert("Xác nhận cấu hình thành công! Bạn có thể bấm 'Bắt đầu Tách-CLO'.");
+}
+
+function lockProcessButton(isUnlocked) {
+    let btnProcess = document.getElementById('btnProcess');
+    if (isUnlocked) {
+        btnProcess.disabled = false;
+        btnProcess.style.backgroundColor = "#28a745";
+        btnProcess.style.cursor = "pointer";
+        btnProcess.style.opacity = "1";
+    } else {
+        btnProcess.disabled = true;
+        btnProcess.style.backgroundColor = "#6c757d";
+        btnProcess.style.cursor = "not-allowed";
+        btnProcess.style.opacity = "0.6";
+    }
+}
 
 function roundToAllowed(val) {
     const allowed = [0.0, 0.3, 0.5, 0.8];
@@ -171,6 +284,11 @@ function roundToAllowed(val) {
 }
 
 function processGPAData() {
+    if (currentWeights.length === 0) {
+        alert("Vui lòng bấm 'Xác nhận cấu hình tỷ lệ' trước khi thực hiện tách!");
+        return;
+    }
+
     let rawText = document.getElementById('gpaInput').value.trim();
     if (!rawText) {
         alert("Vui lòng dán danh sách điểm GPA vào ô trống!");
@@ -189,9 +307,7 @@ function processGPAData() {
         let gpa = parseFloat(valStr.replace(',', '.'));
         if (isNaN(gpa)) return;
 
-        let I = gpa / 10.0;
-        let L1 = 3.0 * I;
-        let L2 = 5.0 * I;
+        let numCols = currentWeights.length;
 
         let max_e;
         if (gpa < 3.0) {
@@ -204,88 +320,62 @@ function processGPAData() {
             max_e = 0.2;
         }
 
-        let e1 = 0, e2 = 0;
-        if (max_e > 0) {
-            let steps = [];
-            for (let i = -max_e; i <= max_e + 0.001; i += 0.1) {
-                steps.push(Number(i.toFixed(1)));
+        let subScores = [];
+        let sumSub = 0;
+
+        for (let i = 0; i < numCols; i++) {
+            let baseVal = gpa * currentWeights[i];
+            let e = 0;
+            if (max_e > 0 && i < numCols - 1) {
+                let steps = [];
+                for (let s = -max_e; s <= max_e + 0.001; s += 0.1) {
+                    steps.push(Number(s.toFixed(1)));
+                }
+                e = steps[Math.floor(Math.random() * steps.length)];
             }
-            e1 = steps[Math.floor(Math.random() * steps.length)];
-            e2 = steps[Math.floor(Math.random() * steps.length)];
+            let adjusted = roundToAllowed(baseVal + e);
+            subScores.push(adjusted);
+            sumSub += adjusted;
         }
 
-        let c1 = Math.max(0, Math.min(3, roundToAllowed(L1 + e1)));
-        let c2 = Math.max(0, Math.min(5, roundToAllowed(L2 + e2)));
+        let lastIdx = numCols - 1;
+        let finalSub = Number((gpa - (sumSub - subScores[lastIdx])).toFixed(2));
+        subScores[lastIdx] = Math.max(0, finalSub);
 
-        let c3_exact = Number((gpa - c1 - c2).toFixed(2));
-        let c3;
-
-        if (c3_exact < 0) {
-            c3 = 0.0;
-            c2 = Math.max(0, Math.min(5, roundToAllowed(gpa - c1 - c3)));
-            c3 = Number((gpa - c1 - c2).toFixed(2));
-        } else if (c3_exact > 2) {
-            c3 = 2.0;
-            c1 = Math.max(0, Math.min(3, roundToAllowed(gpa - c2 - c3)));
-            c3 = Number((gpa - c1 - c2).toFixed(2));
-        } else {
-            c3 = c3_exact;
-        }
-
-        let min_c1 = 0, min_c2 = 0, min_c3 = 0;
-        if (gpa >= 8.5) {
-            min_c1 = 2.1; min_c2 = 3.5; min_c3 = 1.4;
-        } else if (gpa >= 7.0) {
-            min_c1 = 1.8; min_c2 = 2.8; min_c3 = 1.2;
-        } else if (gpa >= 5.0) {
-            min_c1 = 1.2; min_c2 = 2.0; min_c3 = 0.8;
-        } else if (gpa >= 1.0) {
-            min_c1 = 0.3; min_c2 = 0.5; min_c3 = 0.2;
-        }
-
-        let min_total = min_c1 + min_c2 + min_c3;
-        if (gpa >= min_total) {
-            if (c1 < min_c1) c1 = min_c1;
-            if (c2 < min_c2) c2 = min_c2;
-            if (c3 < min_c3) c3 = min_c3;
+        let cloScores = subScores.map((sub, idx) => {
+            let w = currentWeights[idx];
+            let cloVal = w > 0 ? Number((sub / w).toFixed(1)) : 0;
             
-            let current_sum = Number((c1 + c2 + c3).toFixed(2));
-            let diff = Number((gpa - current_sum).toFixed(2));
-            if (diff !== 0) {
-                c2 = Number((c2 + diff).toFixed(2));
+            if (gpa >= 8.5) {
+                if (cloVal <= 6.5) cloVal = 6.8;
+            } else if (gpa >= 7.0) {
+                if (cloVal <= 5.0) cloVal = 5.3;
+            } else if (gpa >= 5.0) {
+                if (cloVal < 4.0) cloVal = 4.0;
+            } else if (gpa >= 1.0) {
+                if (cloVal <= 0) cloVal = 0.3;
             }
-        }
 
-        let clo1 = Number((c1 / 0.3).toFixed(1));
-        let clo2 = Number((c2 / 0.5).toFixed(1));
-        let clo3 = Number((c3 / 0.2).toFixed(1));
-
-        clo1 = Math.max(0, Math.min(10, clo1));
-        clo2 = Math.max(0, Math.min(10, clo2));
-        clo3 = Math.max(0, Math.min(10, clo3));
+            return Math.max(0, Math.min(10, cloVal));
+        });
 
         let rowData = {
             "STT": index + 1,
-            "GPA": gpa,
-            "CLO1": clo1,
-            "CLO2": clo2,
-            "CLO3": clo3
+            "GPA": gpa
         };
-        lastProcessedData.push(rowData);
+        
+        let trHTML = `<td>${rowData["STT"]}</td><td>${rowData["GPA"]}</td>`;
+        cloScores.forEach((score, idx) => {
+            rowData[`CLO${idx+1}`] = score;
+            trHTML += `<td>${score}</td>`;
+        });
 
-        let tr = `<tr>
-            <td>${rowData["STT"]}</td>
-            <td>${rowData["GPA"]}</td>
-            <td>${rowData["CLO1"]}</td>
-            <td>${rowData["CLO2"]}</td>
-            <td>${rowData["CLO3"]}</td>
-        </tr>`;
-        tbody.innerHTML += tr;
+        lastProcessedData.push(rowData);
+        tbody.innerHTML += `<tr>${trHTML}</tr>`;
     });
 
     let btnDownload = document.getElementById('btnDownload');
     btnDownload.disabled = false;
-    btnDownload.style.backgroundColor = "#007bff";
     btnDownload.style.cursor = "pointer";
     btnDownload.style.opacity = "1";
 }
@@ -294,18 +384,20 @@ function clearData() {
     document.getElementById('gpaInput').value = "";
     document.querySelector("#resultTable tbody").innerHTML = "";
     lastProcessedData = [];
+    
     let btnDownload = document.getElementById('btnDownload');
     btnDownload.disabled = true;
-    btnDownload.style.backgroundColor = "#6c757d";
     btnDownload.style.cursor = "not-allowed";
     btnDownload.style.opacity = "0.6";
+
+    lockProcessButton(false);
 }
 
 function downloadExcel() {
     if (lastProcessedData.length === 0) return;
     let table = document.getElementById("resultTable");
-    let wb = XLSX.utils.table_to_book(table, {sheet: "KetQua_CLO"});
-    XLSX.writeFile(wb, "KetQua_Tach_CLO.xlsx");
+    let wb = XLSX.utils.table_to_book(table, {sheet: "KetQua_CLO_V2.2"});
+    XLSX.writeFile(wb, "KetQua_Tach_CLO_V2.2.xlsx");
 }
 </script>
 
