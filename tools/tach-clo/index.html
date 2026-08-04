@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Công cụ Tách-CLO Trực Tuyến V2.2</title>
+    <title>Công cụ Tách-CLO Trực Tuyến V2.4</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { 
@@ -147,14 +147,13 @@
 <body>
 
 <div class="container">
-    <h2>Hệ thống Tách-CLO Trực Tuyến - Phiên bản V2.2</h2>
+    <h2>Hệ thống Tách-CLO Trực Tuyến - Phiên bản V2.4</h2>
     
     <div class="main-layout">
-        <!-- Cột Trái: Ô nhập GPA & Cấu hình CLO -->
         <div class="column-left">
             <div class="form-group">
                 <label for="gpaInput">1. Dán cột điểm GPA vào đây:</label>
-                <textarea id="gpaInput" placeholder="Ví dụ:&#10;8.5&#10;7.2&#10;6.0&#10;2.5"></textarea>
+                <textarea id="gpaInput" placeholder="Ví dụ:&#10;10&#10;8.5&#10;7.2&#10;1.5"></textarea>
             </div>
             
             <div class="form-group">
@@ -164,15 +163,12 @@
 
             <div class="form-group">
                 <label>3. Tỷ lệ % cho từng CLO (Tổng bằng 100%):</label>
-                <div id="ratioFields" class="ratio-inputs-container">
-                    <!-- Sinh tự động bằng JS -->
-                </div>
+                <div id="ratioFields" class="ratio-inputs-container"></div>
             </div>
 
             <button onclick="confirmConfig()" style="background-color: #17a2b8; margin-top: 5px;">Xác nhận cấu hình tỷ lệ</button>
         </div>
 
-        <!-- Cột Phải: Bảng kết quả -->
         <div class="column-right">
             <label>4. Bảng kết quả sau khi tách:</label>
             <div class="table-container">
@@ -186,15 +182,12 @@
                             <th>CLO3</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Kết quả hiển thị ở đây -->
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Hàng nút điều khiển phía dưới -->
     <div class="action-row">
         <button id="btnProcess" onclick="processGPAData()" disabled style="background-color: #6c757d; cursor: not-allowed; opacity: 0.6;">Bắt đầu Tách-CLO</button>
         <button id="btnClear" onclick="clearData()">Xóa dữ liệu</button>
@@ -308,56 +301,64 @@ function processGPAData() {
         if (isNaN(gpa)) return;
 
         let numCols = currentWeights.length;
+        let cloScores = [];
 
-        let max_e;
-        if (gpa < 3.0) {
-            max_e = 0;
-        } else if (gpa > 7.0) {
-            max_e = 0.5;
-        } else if (gpa > 5.0) {
-            max_e = 0.3;
+        // Xử lý đặc biệt nếu GPA đạt điểm tuyệt đối 10.0
+        if (gpa >= 10.0) {
+            cloScores = new Array(numCols).fill(10.0);
         } else {
-            max_e = 0.2;
-        }
+            let max_e;
+            if (gpa <= 2.0) {
+                max_e = 0; // GPA <= 2 thì e = 0 luôn
+            } else if (gpa < 3.0) {
+                max_e = 0;
+            } else if (gpa > 7.0) {
+                max_e = 0.5;
+            } else if (gpa > 5.0) {
+                max_e = 0.3;
+            } else {
+                max_e = 0.2; // Từ trên 3 đến 5
+            }
 
-        let subScores = [];
-        let sumSub = 0;
+            let subScores = [];
+            let sumSub = 0;
 
-        for (let i = 0; i < numCols; i++) {
-            let baseVal = gpa * currentWeights[i];
-            let e = 0;
-            if (max_e > 0 && i < numCols - 1) {
-                let steps = [];
-                for (let s = -max_e; s <= max_e + 0.001; s += 0.1) {
-                    steps.push(Number(s.toFixed(1)));
+            for (let i = 0; i < numCols; i++) {
+                let baseVal = gpa * currentWeights[i];
+                let e = 0;
+                if (max_e > 0 && i < numCols - 1) {
+                    let steps = [];
+                    for (let s = -max_e; s <= max_e + 0.001; s += 0.1) {
+                        steps.push(Number(s.toFixed(1)));
+                    }
+                    e = steps[Math.floor(Math.random() * steps.length)];
                 }
-                e = steps[Math.floor(Math.random() * steps.length)];
+                let adjusted = roundToAllowed(baseVal + e);
+                subScores.push(adjusted);
+                sumSub += adjusted;
             }
-            let adjusted = roundToAllowed(baseVal + e);
-            subScores.push(adjusted);
-            sumSub += adjusted;
+
+            let lastIdx = numCols - 1;
+            let finalSub = Number((gpa - (sumSub - subScores[lastIdx])).toFixed(2));
+            subScores[lastIdx] = Math.max(0, finalSub);
+
+            cloScores = subScores.map((sub, idx) => {
+                let w = currentWeights[idx];
+                let cloVal = w > 0 ? Number((sub / w).toFixed(1)) : 0;
+                
+                if (gpa >= 8.5) {
+                    if (cloVal <= 6.5) cloVal = 6.8;
+                } else if (gpa >= 7.0) {
+                    if (cloVal <= 5.0) cloVal = 5.3;
+                } else if (gpa >= 5.0) {
+                    if (cloVal < 4.0) cloVal = 4.0;
+                } else if (gpa >= 1.0) {
+                    if (cloVal <= 0) cloVal = 0.3;
+                }
+
+                return Math.max(0, Math.min(10, cloVal));
+            });
         }
-
-        let lastIdx = numCols - 1;
-        let finalSub = Number((gpa - (sumSub - subScores[lastIdx])).toFixed(2));
-        subScores[lastIdx] = Math.max(0, finalSub);
-
-        let cloScores = subScores.map((sub, idx) => {
-            let w = currentWeights[idx];
-            let cloVal = w > 0 ? Number((sub / w).toFixed(1)) : 0;
-            
-            if (gpa >= 8.5) {
-                if (cloVal <= 6.5) cloVal = 6.8;
-            } else if (gpa >= 7.0) {
-                if (cloVal <= 5.0) cloVal = 5.3;
-            } else if (gpa >= 5.0) {
-                if (cloVal < 4.0) cloVal = 4.0;
-            } else if (gpa >= 1.0) {
-                if (cloVal <= 0) cloVal = 0.3;
-            }
-
-            return Math.max(0, Math.min(10, cloVal));
-        });
 
         let rowData = {
             "STT": index + 1,
@@ -396,8 +397,8 @@ function clearData() {
 function downloadExcel() {
     if (lastProcessedData.length === 0) return;
     let table = document.getElementById("resultTable");
-    let wb = XLSX.utils.table_to_book(table, {sheet: "KetQua_CLO_V2.2"});
-    XLSX.writeFile(wb, "KetQua_Tach_CLO_V2.2.xlsx");
+    let wb = XLSX.utils.table_to_book(table, {sheet: "KetQua_CLO_V2.4"});
+    XLSX.writeFile(wb, "KetQua_Tach_CLO_V2.4.xlsx");
 }
 </script>
 
