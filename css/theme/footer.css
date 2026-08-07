@@ -187,3 +187,214 @@
     }
 
 }
+
+/* ==========================================================
+   Module 2
+   Social • Back To Top • Utilities • Responsive
+   ========================================================== */
+
+
+/* ==========================================================
+   12. SOCIAL LINKS
+   ========================================================== */
+
+.footer-social{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:.75rem;
+
+    flex-wrap:wrap;
+
+    margin-top:1rem;
+}
+
+.footer-social a{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.08);
+
+    color:#ffffff;
+
+    text-decoration:none;
+
+    transition:var(--transition);
+}
+
+.footer-social a:hover{
+
+    background:var(--primary);
+
+    transform:translateY(-2px);
+}
+
+
+/* ==========================================================
+   13. BACK TO TOP
+   ========================================================== */
+
+.back-to-top{
+
+    position:fixed;
+
+    right:24px;
+
+    bottom:24px;
+
+    width:46px;
+
+    height:46px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:var(--primary);
+
+    color:#ffffff;
+
+    cursor:pointer;
+
+    box-shadow:var(--shadow-md);
+
+    transition:var(--transition);
+
+    z-index:999;
+}
+
+.back-to-top:hover{
+
+    transform:translateY(-3px);
+
+    filter:brightness(1.08);
+}
+
+.back-to-top:active{
+
+    transform:translateY(0);
+}
+
+
+/* ==========================================================
+   14. FOOTER BADGE
+   ========================================================== */
+
+.footer-badge{
+
+    display:inline-block;
+
+    margin-top:.6rem;
+
+    padding:.3rem .75rem;
+
+    border-radius:999px;
+
+    background:rgba(255,255,255,.08);
+
+    color:#cbd5e1;
+
+    font-size:.85rem;
+}
+
+
+/* ==========================================================
+   15. FOOTER LOGO
+   ========================================================== */
+
+.footer-logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:.75rem;
+
+    margin-bottom:1rem;
+
+    font-size:1.25rem;
+
+    font-weight:700;
+
+    color:#ffffff;
+}
+
+.footer-logo img{
+
+    width:40px;
+
+    height:40px;
+
+    object-fit:contain;
+}
+
+
+/* ==========================================================
+   16. FOOTER SMALL
+   ========================================================== */
+
+.footer-small{
+
+    font-size:.9rem;
+
+    color:#94a3b8;
+
+    line-height:1.7;
+}
+
+
+/* ==========================================================
+   17. ACCESSIBILITY
+   ========================================================== */
+
+.footer-column a:focus-visible,
+.footer-social a:focus-visible,
+.back-to-top:focus-visible{
+
+    outline:2px solid #ffffff;
+
+    outline-offset:3px;
+}
+
+
+/* ==========================================================
+   18. RESPONSIVE
+   ========================================================== */
+
+@media (max-width:768px){
+
+    .footer-social{
+
+        justify-content:center;
+    }
+
+    .back-to-top{
+
+        width:42px;
+
+        height:42px;
+
+        right:18px;
+
+        bottom:18px;
+    }
+
+}
