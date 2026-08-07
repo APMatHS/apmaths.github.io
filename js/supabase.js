@@ -6,4 +6,9 @@ const supabaseKey = "sb_publishable_TcYRYTrR3VZgOoyH0Ye1hQ_d-Jm4UwL";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-console.log("Supabase OK");
+const { data, error } = await supabase
+  .from("test")
+  .select("*");
+
+console.log(data);
+console.log(error);
