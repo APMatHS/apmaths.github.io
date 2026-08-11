@@ -51,7 +51,7 @@
         "Times New Roman",
         serif;
 
-    font-size: 2.8rem;
+    font-size: 2.45rem;
 
     font-weight: 700;
 
@@ -65,17 +65,15 @@
 /* ---------- Tagline ---------- */
 
 .site-header p {
-
-    margin: 8px 0 0;
+    margin: 6px 0 0;
 
     color: var(--text-light);
 
-    font-size: 1rem;
+    font-size: .95rem;
 
-    line-height: 1.4;
+    line-height: 1.35;
 
     text-align: left;
-
 }
 
 
@@ -147,19 +145,17 @@ nav > ul > li {
 /* ---------- Main links ---------- */
 
 .nav-link {
-
     display: flex;
-
     align-items: center;
-
     gap: 7px;
 
     min-height: 58px;
 
-    padding: 0 18px;
+    padding: 0 17px;
 
     color: var(--text);
 
+    font-size: 1rem;
     font-weight: 600;
 
     text-decoration: none;
@@ -170,7 +166,6 @@ nav > ul > li {
         color .2s ease,
         background-color .2s ease,
         border-color .2s ease;
-
 }
 
 
