@@ -52,6 +52,8 @@
    2. NAVIGATION
    ========================================================== */
 
+
+
 nav {
 
     position: sticky;
@@ -76,26 +78,17 @@ nav {
 
 /* ---------- Main navigation ---------- */
 
+
 nav > ul {
-
     max-width: 1200px;
-
     min-height: 58px;
-
     margin: 0 auto;
-
     padding: 0 24px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     list-style: none;
-
 }
-
 
 /* ==========================================================
    3. MENU ITEMS
