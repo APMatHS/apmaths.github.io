@@ -91,3 +91,6 @@ submenu:
   people: "People"
   cv: "Curriculum Vitae"
   html_code: "HTML Code"
+  qr: "QR Code"
+  exam_clo: "Exam-CLO"
+  exam_shuffler: "Exam Shuffler"

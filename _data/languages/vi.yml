@@ -78,7 +78,7 @@ resources:
   downloads: "Tải xuống"
 
 # ==========================================
-# Sub Menu
+# Sub Menu   
 # ==========================================
 submenu:
   calculus: "Giải tích"
@@ -91,7 +91,6 @@ submenu:
   people: "Thành viên"
   cv: "CV"
   html_code: "Mã HTML"
-  html_code: "Mã HTML"
-  qr: "Tạo mã QR"
+  qr: "Tạo QR"
   exam_clo: "Chấm điểm CLO"
   exam_shuffler: "Trộn đề"
