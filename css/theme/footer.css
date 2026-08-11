@@ -1,8 +1,7 @@
 /* ==========================================================
-   APMaths Theme V3.1
+   APMaths Theme V3.2
    File    : footer.css
-   Module 1
-   Footer Layout
+   Module  : Footer
    ========================================================== */
 
 
@@ -10,391 +9,255 @@
    1. FOOTER
    ========================================================== */
 
-.site-footer{
+.footer {
 
-    margin-top:4rem;
+    margin-top: 60px;
 
-    padding:3rem 0 2rem;
+    padding: 42px 24px 0;
 
-    background:#1e293b;
+    background: #1e3a73;
 
-    color:#cbd5e1;
+    color: #dbe5f5;
+
 }
 
 
 /* ==========================================================
-   2. CONTAINER
+   2. FOOTER GRID
    ========================================================== */
 
-.site-footer .container{
+.footer-grid {
 
-    max-width:1200px;
+    max-width: 1200px;
 
-    margin:0 auto;
+    margin: 0 auto;
 
-    padding:0 1.5rem;
+    display: grid;
+
+    grid-template-columns:
+        1.5fr
+        1fr
+        1fr;
+
+    gap: 70px;
+
+    padding-bottom: 36px;
+
 }
 
 
 /* ==========================================================
-   3. FOOTER GRID
+   3. FOOTER COLUMN
    ========================================================== */
 
-.footer-grid{
+.footer-column {
 
-    display:grid;
+    min-width: 0;
 
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-
-    gap:2rem;
-
-    margin-bottom:2.5rem;
 }
 
 
 /* ==========================================================
-   4. FOOTER COLUMN
+   4. FOOTER TITLE
    ========================================================== */
 
-.footer-column{
+.footer-column h4 {
 
-    min-width:0;
+    margin: 0 0 16px;
+
+    color: #ffffff;
+
+    font-size: 1.15rem;
+
+    font-weight: 700;
+
+    line-height: 1.4;
+
 }
 
 
 /* ==========================================================
-   5. FOOTER TITLE
+   5. WEBSITE DESCRIPTION
    ========================================================== */
 
-.footer-column h3{
+.footer-column:first-child p {
 
-    margin-bottom:1rem;
+    max-width: 330px;
 
-    color:#ffffff;
+    margin: 0;
 
-    font-size:1.15rem;
+    color: #c7d5ea;
 
-    font-weight:700;
+    font-size: .95rem;
 
-    letter-spacing:.02em;
+    line-height: 1.7;
+
 }
 
 
 /* ==========================================================
-   6. FOOTER TEXT
+   6. FOOTER LIST
    ========================================================== */
 
-.footer-column p{
+.footer-column ul {
 
-    margin-bottom:.8rem;
+    list-style: none;
 
-    line-height:1.8;
+    margin: 0;
 
-    color:#cbd5e1;
+    padding: 0;
+
+}
+
+
+.footer-column li {
+
+    margin: 0 0 11px;
+
 }
 
 
 /* ==========================================================
-   7. FOOTER LIST
+   7. FOOTER LINKS
    ========================================================== */
 
-.footer-column ul{
+.footer-column a {
 
-    list-style:none;
+    display: inline-flex;
 
-    margin:0;
+    align-items: center;
 
-    padding:0;
+    gap: 8px;
+
+    color: #c7d5ea;
+
+    font-size: .95rem;
+
+    line-height: 1.5;
+
+    text-decoration: none;
+
+    transition:
+        color .2s ease,
+        transform .2s ease;
+
 }
 
-.footer-column li{
 
-    margin-bottom:.7rem;
+.footer-column a:hover {
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    transform: translateX(3px);
+
 }
 
 
 /* ==========================================================
-   8. FOOTER LINKS
+   8. ICONS
    ========================================================== */
 
-.footer-column a{
+.footer-column a i {
 
-    color:#cbd5e1;
+    width: 18px;
 
-    text-decoration:none;
+    text-align: center;
 
-    transition:var(--transition);
-}
+    color: #9fb8df;
 
-.footer-column a:hover{
-
-    color:#ffffff;
 }
 
 
-/* ==========================================================
-   9. FOOTER DIVIDER
-   ========================================================== */
+.footer-column a:hover i {
 
-.footer-divider{
+    color: #ffffff;
 
-    margin:2rem 0;
-
-    border-top:1px solid rgba(255,255,255,.12);
 }
 
 
 /* ==========================================================
-   10. COPYRIGHT
+   9. COPYRIGHT
    ========================================================== */
 
-.footer-copyright{
+.copyright {
 
-    text-align:center;
+    max-width: 1200px;
 
-    font-size:.95rem;
+    margin: 0 auto;
 
-    color:#94a3b8;
+    padding: 18px 0 20px;
 
-    line-height:1.7;
+    border-top: 1px solid rgba(255,255,255,.14);
+
+    color: #9fb0ca;
+
+    font-size: .88rem;
+
+    line-height: 1.5;
+
 }
 
 
 /* ==========================================================
-   11. RESPONSIVE
+   10. RESPONSIVE
    ========================================================== */
 
-@media (max-width:768px){
+@media (max-width: 800px) {
 
-    .site-footer{
+    .footer {
 
-        padding:2.5rem 0 1.5rem;
+        padding: 36px 20px 0;
+
     }
 
-    .footer-grid{
 
-        gap:1.8rem;
-    }
+    .footer-grid {
 
-    .footer-column h3{
+        grid-template-columns:
+            1fr 1fr;
 
-        font-size:1.05rem;
-    }
+        gap: 35px;
 
-    .footer-copyright{
-
-        font-size:.9rem;
     }
 
 }
 
-/* ==========================================================
-   Module 2
-   Social • Back To Top • Utilities • Responsive
-   ========================================================== */
 
+@media (max-width: 550px) {
 
-/* ==========================================================
-   12. SOCIAL LINKS
-   ========================================================== */
+    .footer {
 
-.footer-social{
+        padding: 32px 18px 0;
 
-    display:flex;
-
-    align-items:center;
-
-    gap:.75rem;
-
-    flex-wrap:wrap;
-
-    margin-top:1rem;
-}
-
-.footer-social a{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    width:40px;
-
-    height:40px;
-
-    border-radius:50%;
-
-    background:rgba(255,255,255,.08);
-
-    color:#ffffff;
-
-    text-decoration:none;
-
-    transition:var(--transition);
-}
-
-.footer-social a:hover{
-
-    background:var(--primary);
-
-    transform:translateY(-2px);
-}
-
-
-/* ==========================================================
-   13. BACK TO TOP
-   ========================================================== */
-
-.back-to-top{
-
-    position:fixed;
-
-    right:24px;
-
-    bottom:24px;
-
-    width:46px;
-
-    height:46px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border:none;
-
-    border-radius:50%;
-
-    background:var(--primary);
-
-    color:#ffffff;
-
-    cursor:pointer;
-
-    box-shadow:var(--shadow-md);
-
-    transition:var(--transition);
-
-    z-index:999;
-}
-
-.back-to-top:hover{
-
-    transform:translateY(-3px);
-
-    filter:brightness(1.08);
-}
-
-.back-to-top:active{
-
-    transform:translateY(0);
-}
-
-
-/* ==========================================================
-   14. FOOTER BADGE
-   ========================================================== */
-
-.footer-badge{
-
-    display:inline-block;
-
-    margin-top:.6rem;
-
-    padding:.3rem .75rem;
-
-    border-radius:999px;
-
-    background:rgba(255,255,255,.08);
-
-    color:#cbd5e1;
-
-    font-size:.85rem;
-}
-
-
-/* ==========================================================
-   15. FOOTER LOGO
-   ========================================================== */
-
-.footer-logo{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:.75rem;
-
-    margin-bottom:1rem;
-
-    font-size:1.25rem;
-
-    font-weight:700;
-
-    color:#ffffff;
-}
-
-.footer-logo img{
-
-    width:40px;
-
-    height:40px;
-
-    object-fit:contain;
-}
-
-
-/* ==========================================================
-   16. FOOTER SMALL
-   ========================================================== */
-
-.footer-small{
-
-    font-size:.9rem;
-
-    color:#94a3b8;
-
-    line-height:1.7;
-}
-
-
-/* ==========================================================
-   17. ACCESSIBILITY
-   ========================================================== */
-
-.footer-column a:focus-visible,
-.footer-social a:focus-visible,
-.back-to-top:focus-visible{
-
-    outline:2px solid #ffffff;
-
-    outline-offset:3px;
-}
-
-
-/* ==========================================================
-   18. RESPONSIVE
-   ========================================================== */
-
-@media (max-width:768px){
-
-    .footer-social{
-
-        justify-content:center;
     }
 
-    .back-to-top{
 
-        width:42px;
+    .footer-grid {
 
-        height:42px;
+        grid-template-columns: 1fr;
 
-        right:18px;
+        gap: 28px;
 
-        bottom:18px;
+        padding-bottom: 28px;
+
+    }
+
+
+    .footer-column:first-child p {
+
+        max-width: none;
+
+    }
+
+
+    .copyright {
+
+        padding: 16px 0 18px;
+
+        font-size: .85rem;
+
     }
 
 }
