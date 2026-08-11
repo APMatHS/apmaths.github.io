@@ -1,3 +1,13 @@
+@import url("theme/foundation.css");
+
+@import url("theme/header.css");
+
+@import url("theme/article.css");
+
+@import url("theme/academic.css");
+
+@import url("theme/footer.css");
+
 /* ==========================================================
    APMaths V3.2
    Header & Navigation
