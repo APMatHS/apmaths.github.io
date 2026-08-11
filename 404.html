@@ -1,76 +1,104 @@
----
-permalink: /404.html
-layout: simple
-title: 404 - Không tìm thấy trang | APMaths
----
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<style>
-.error {
-    margin: 60px auto;
-    max-width: 720px;
-    padding: 20px;
-    text-align: center;
-}
+    <title>404 - Không tìm thấy trang | APMaths</title>
 
-.error h1 {
-    margin: 20px 0;
-    font-size: 5rem;
-    line-height: 1;
-    letter-spacing: -2px;
-}
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-.error p {
-    font-size: 1.1rem;
-    line-height: 1.7;
-}
+    <style>
+        .error-page {
+            max-width: 700px;
+            margin: 100px auto;
+            padding: 20px;
+            text-align: center;
+        }
 
-.error a {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 22px;
-    background: #0056b3;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: .3s;
-}
+        .error-page h1 {
+            margin: 0 0 20px;
+            color: var(--primary);
+            font-size: 6rem;
+            line-height: 1;
+        }
 
-.error a:hover {
-    background: #003d80;
-}
-</style>
+        .error-page h2 {
+            margin: 0 0 15px;
+        }
 
-<div class="error">
+        .error-page p {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
 
-<h1>
-    <span style="color:#ff9800;font-family:fantasy;">4</span>
-    &lt;/&gt;
-    <span style="color:#ff9800;font-family:fantasy;">4</span>
-</h1>
+        .countdown {
+            margin-top: 25px;
+            font-weight: 600;
+            color: var(--primary);
+        }
 
-<p>
-<strong>
-<span style="color:#0066cc;font-family:monospace;">Error404()</span> {
-<span style="color:#d32f2f;font-family:monospace;">message =</span>
-<span style="color:#2e7d32;font-family:monospace;">
-"Page not found"
-</span>;
-}
-</strong>
-</p>
+        .home-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 22px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+        }
 
-<h2>Oops! Không tìm thấy trang.</h2>
+        .home-button:hover {
+            opacity: .9;
+            text-decoration: none;
+        }
+    </style>
 
-<p>
-Trang bạn đang tìm kiếm có thể đã được di chuyển,
-đổi tên hoặc không còn tồn tại.
-</p>
+    <script>
+        let seconds = 5;
 
-<p>
-Bạn có thể quay lại <strong>Trang chủ APMaths</strong> để tiếp tục
-khám phá các bài viết, tài liệu và công cụ hỗ trợ học tập Toán học.
-</p>
+        function countdown() {
+            document.getElementById("countdown").textContent = seconds;
 
-<a href="/">← Quay về Trang chủ</a>
+            if (seconds === 0) {
+                window.location.href = "/";
+                return;
+            }
 
-</div>
+            seconds--;
+            setTimeout(countdown, 1000);
+        }
+
+        window.onload = countdown;
+    </script>
+</head>
+
+<body>
+
+    <main class="error-page">
+
+        <h1>404</h1>
+
+        <h2>Không tìm thấy trang</h2>
+
+        <p>
+            Trang bạn đang tìm kiếm không tồn tại,
+            đã được di chuyển hoặc không còn khả dụng.
+        </p>
+
+        <p class="countdown">
+            Tự động chuyển về Trang chủ sau
+            <span id="countdown">5</span> giây...
+        </p>
+
+        <a href="/" class="home-button">
+            <i class="fa fa-home"></i>
+            Về Trang chủ
+        </a>
+
+    </main>
+
+</body>
+</html>
