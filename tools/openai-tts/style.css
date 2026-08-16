@@ -1,350 +1,336 @@
 /* =========================================================
    APMaths - Gemini Text to Speech
-   style.css
+   style.css (Modern Premium UI Overhaul)
    ========================================================= */
 
-/* =========================================================
-   Main Container
-   ========================================================= */
-
-.container {
-    width: min(100% - 48px, 1400px);
-    margin: 0 auto;
+/* ---------------------------------------------------------
+   1. System Variables & Theme Config
+   --------------------------------------------------------- */
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --primary-light: #eef2ff;
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --border-focus: #818cf8;
+    
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --radius-sm: 6px;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+    
+    --transition-fast: all 0.2s ease;
 }
 
-/* =========================================================
-   Header Spacing
-   ========================================================= */
-
-.site-header {
-    padding: 20px 0 16px;
+/* ---------------------------------------------------------
+   2. Global Reset & Base
+   --------------------------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
-.site-header h1 {
-    margin-bottom: 4px;
-}
-
-.site-header p {
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
     margin: 0;
 }
 
-/* =========================================================
-   TTS Card
-   ========================================================= */
-
-.tts-card {
-    margin-top: 14px;
+.container {
+    width: min(100% - 48px, 1320px);
+    margin: 0 auto;
 }
 
-/* =========================================================
-   Main TTS Layout
-   ========================================================= */
+/* ---------------------------------------------------------
+   3. Header Styling
+   --------------------------------------------------------- */
+.site-header {
+    padding: 32px 0 20px;
+    text-align: center;
+}
+
+.site-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--text-main);
+    margin-bottom: 6px;
+}
+
+.site-header p {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    margin: 0;
+}
+
+/* ---------------------------------------------------------
+   4. TTS Main Card & Layout
+   --------------------------------------------------------- */
+.tts-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 24px;
+    margin-top: 16px;
+}
 
 .tts-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.85fr);
+    grid-template-columns: minmax(0, 1.6fr) minmax(340px, 0.9fr);
     gap: 24px;
 }
 
-/* =========================================================
-   Text Area
-   ========================================================= */
+/* ---------------------------------------------------------
+   5. Form Controls (Textarea, Inputs, Selects)
+   --------------------------------------------------------- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 0;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+textarea, input[type="text"], select {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background-color: #ffffff;
+    outline: none;
+    transition: var(--transition-fast);
+}
+
+textarea:focus, input[type="text"]:focus, select:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
 
 #textInput {
     height: 360px;
-    min-height: 360px;
+    min-height: 300px;
     resize: vertical;
+    line-height: 1.6;
 }
-
-/* =========================================================
-   Settings Column
-   ========================================================= */
 
 .settings-column {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
-
-/* =========================================================
-   Form Groups
-   ========================================================= */
-
-.settings-column .form-group {
-    margin-bottom: 0;
-}
-
-/* =========================================================
-   Instructions
-   ========================================================= */
 
 .instructions-input {
-    height: 72px;
-    min-height: 72px;
+    height: 80px;
+    min-height: 70px;
     resize: vertical;
 }
 
-/* =========================================================
-   Bottom Control Row
-   ========================================================= */
-
+/* ---------------------------------------------------------
+   6. Control Row & Sliders
+   --------------------------------------------------------- */
 .control-row {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 4px;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 8px;
+    background: var(--bg-main);
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
 }
-
-/* Speed Control */
 
 .speed-control {
     flex: 1;
     min-width: 0;
 }
 
-/* Action Buttons */
+.speed-control input[type="range"] {
+    width: 100%;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
 
+/* Action Buttons */
 .control-row .actions {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-shrink: 0;
 }
 
-/* =========================================================
-   Audio Output Section
-   ========================================================= */
+button, .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
 
+/* Primary Button Styling */
+button:not(.secondary-button) {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    box-shadow: var(--shadow-sm);
+}
+
+button:not(.secondary-button):hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+button:not(.secondary-button):active {
+    transform: translateY(0);
+}
+
+/* ---------------------------------------------------------
+   7. Audio Player & Download
+   --------------------------------------------------------- */
 .audio-section {
-    margin-top: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
 }
 
 .audio-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+    background: var(--primary-light);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
 }
 
 .audio-row audio {
     flex: 1;
     min-width: 0;
+    height: 40px;
 }
 
 .audio-row .download-button {
     flex-shrink: 0;
-    white-space: nowrap;
+    background-color: #ffffff;
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
 }
 
-/* =========================================================
-   Media Queries — Desktop Height Optimization
-   ========================================================= */
-
-@media (min-width: 900px) and (min-height: 700px) {
-
-    #textInput {
-        height: 350px;
-        min-height: 350px;
-    }
-
-    .instructions-input {
-        height: 68px;
-        min-height: 68px;
-    }
-
+.audio-row .download-button:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
 }
 
-/* =========================================================
-   Media Queries — Smaller Desktop / Laptop
-   ========================================================= */
-
-@media (min-width: 900px) and (max-height: 700px) {
-
-    .site-header {
-        padding: 12px 0 10px;
-    }
-
-    .tts-card {
-        margin-top: 8px;
-    }
-
-    .tts-layout {
-        gap: 18px;
-    }
-
-    #textInput {
-        height: 300px;
-        min-height: 300px;
-    }
-
-    .instructions-input {
-        height: 58px;
-        min-height: 58px;
-    }
-
-}
-
-/* =========================================================
-   Media Queries — Mobile Layout
-   ========================================================= */
-
-@media (max-width: 899px) {
-
-    .container {
-        width: min(100% - 28px, 700px);
-    }
-
-    .tts-layout {
-        grid-template-columns: 1fr;
-    }
-
-    #textInput {
-        height: 280px;
-        min-height: 280px;
-    }
-
-    .control-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .control-row .actions {
-        width: 100%;
-    }
-
-    .control-row button {
-        flex: 1;
-    }
-
-    .audio-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .audio-row .download-button {
-        text-align: center;
-    }
-
-}
-
-
-/* =========================================================
-   APMaths Gemini TTS - Footer
-   ========================================================= */
-
+/* ---------------------------------------------------------
+   8. Footer Styling
+   --------------------------------------------------------- */
 .site-footer {
-    margin-top: 20px;
-    padding: 24px 0 20px;
-
-    border-top: 1px solid var(--border-color, #e5e7eb);
-
-    background: var(--footer-bg, #f8fafc);
-
+    margin-top: 48px;
+    padding: 32px 0 28px;
+    border-top: 1px solid var(--border-color);
+    background: var(--card-bg);
     text-align: center;
 }
-
-
-/* =========================================================
-   Footer Brand
-   ========================================================= */
 
 .footer-brand {
     font-size: 1.15rem;
     font-weight: 700;
-
-    letter-spacing: 0.01em;
-
+    letter-spacing: -0.01em;
+    color: var(--text-main);
     margin-bottom: 8px;
 }
 
-
-/* =========================================================
-   Footer Description
-   ========================================================= */
-
 .footer-description {
-    max-width: 760px;
-
+    max-width: 680px;
     margin: 0 auto;
-
     font-size: 0.88rem;
-
     line-height: 1.6;
-
-    color: var(--muted-text, #64748b);
+    color: var(--text-muted);
 }
-
-
-/* =========================================================
-   Models
-   ========================================================= */
 
 .footer-models {
-    margin-top: 12px;
-
+    margin-top: 14px;
     font-size: 0.82rem;
-
     font-weight: 600;
-
-    color: var(--muted-text, #64748b);
+    color: var(--text-muted);
 }
-
 
 .footer-models span {
     margin: 0 8px;
-
-    opacity: 0.5;
+    opacity: 0.4;
 }
-
-
-/* =========================================================
-   Footer Meta
-   ========================================================= */
 
 .footer-meta {
     display: flex;
-
     justify-content: center;
     align-items: center;
-
     flex-wrap: wrap;
-
-    gap: 8px 18px;
-
-    margin-top: 14px;
-    padding-top: 12px;
-
-    border-top: 1px solid var(--border-color, #e5e7eb);
-
-    font-size: 0.78rem;
-
-    color: var(--muted-text, #64748b);
+    gap: 8px 20px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    color: var(--text-muted);
 }
 
-
 .footer-meta strong {
+    color: var(--text-main);
     font-weight: 600;
 }
 
+/* ---------------------------------------------------------
+   9. Responsive Adaptations
+   --------------------------------------------------------- */
+@media (min-width: 900px) and (max-height: 700px) {
+    .site-header { padding: 16px 0 10px; }
+    .tts-card { margin-top: 8px; padding: 18px; }
+    .tts-layout { gap: 16px; }
+    #textInput { height: 280px; min-height: 280px; }
+    .instructions-input { height: 60px; min-height: 60px; }
+}
 
-/* =========================================================
-   Mobile
-   ========================================================= */
+@media (max-width: 899px) {
+    .container { width: min(100% - 24px, 700px); }
+    .tts-card { padding: 16px; }
+    .tts-layout { grid-template-columns: 1fr; }
+    #textInput { height: 260px; min-height: 240px; }
+    .control-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+    .control-row .actions { width: 100%; }
+    .control-row button { flex: 1; }
+    .audio-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .audio-row .download-button { text-align: center; }
+}
 
 @media (max-width: 600px) {
-
-    .site-footer {
-        padding: 20px 0 16px;
-    }
-
-
-    .footer-description {
-        font-size: 0.84rem;
-    }
-
-
+    .site-footer { padding: 24px 0 20px; }
+    .footer-description { font-size: 0.84rem; }
     .footer-meta {
         flex-direction: column;
-
-        gap: 5px;
+        gap: 6px;
     }
-
 }
