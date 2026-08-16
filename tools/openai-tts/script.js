@@ -71,6 +71,452 @@ let currentController = null;
 
 
 /* =========================================================
+   Gemini TTS Voices
+   ========================================================= */
+
+const GEMINI_VOICES = [
+
+    {
+        value: "Achernar",
+        label: "Achernar — Dịu êm"
+    },
+
+    {
+        value: "Achird",
+        label: "Achird — Thân thiện"
+    },
+
+    {
+        value: "Algenib",
+        label: "Algenib — Khàn"
+    },
+
+    {
+        value: "Algieba",
+        label: "Algieba — Mượt"
+    },
+
+    {
+        value: "Alnilam",
+        label: "Alnilam — Cứng cáp"
+    },
+
+    {
+        value: "Aoede",
+        label: "Aoede — Thoáng"
+    },
+
+    {
+        value: "Autonoe",
+        label: "Autonoe — Tươi sáng"
+    },
+
+    {
+        value: "Callirrhoe",
+        label: "Callirrhoe — Dễ chịu"
+    },
+
+    {
+        value: "Charon",
+        label: "Charon — Thông tin"
+    },
+
+    {
+        value: "Despina",
+        label: "Despina — Mượt"
+    },
+
+    {
+        value: "Enceladus",
+        label: "Enceladus — Hơi thở"
+    },
+
+    {
+        value: "Erinome",
+        label: "Erinome — Rõ ràng"
+    },
+
+    {
+        value: "Fenrir",
+        label: "Fenrir — Mạnh mẽ"
+    },
+
+    {
+        value: "Gacrux",
+        label: "Gacrux — Trưởng thành"
+    },
+
+    {
+        value: "Iapetus",
+        label: "Iapetus — Rõ ràng"
+    },
+
+    {
+        value: "Laomedeia",
+        label: "Laomedeia — Rộn ràng"
+    },
+
+    {
+        value: "Leda",
+        label: "Leda — Trẻ trung"
+    },
+
+    {
+        value: "Orus",
+        label: "Orus — Cứng cáp"
+    },
+
+    {
+        value: "Puck",
+        label: "Puck — Rộn ràng"
+    },
+
+    {
+        value: "Pulcherrima",
+        label: "Pulcherrima — Tiến về phía trước"
+    },
+
+    {
+        value: "Rasalgethi",
+        label: "Rasalgethi — Thông tin"
+    },
+
+    {
+        value: "Sadachbia",
+        label: "Sadachbia — Sinh động"
+    },
+
+    {
+        value: "Sadaltager",
+        label: "Sadaltager — Hiểu biết"
+    },
+
+    {
+        value: "Schedar",
+        label: "Schedar — Cân bằng"
+    },
+
+    {
+        value: "Sulafat",
+        label: "Sulafat — Ấm áp"
+    },
+
+    {
+        value: "Umbriel",
+        label: "Umbriel — Dễ chịu"
+    },
+
+    {
+        value: "Vindemiatrix",
+        label: "Vindemiatrix — Dịu dàng"
+    },
+
+    {
+        value: "Zephyr",
+        label: "Zephyr — Tươi sáng"
+    },
+
+    {
+        value: "Zubenelgenubi",
+        label: "Zubenelgenubi — Tự nhiên"
+    },
+
+    {
+        value: "Kore",
+        label: "Kore — Chắc chắn"
+    }
+
+];
+
+
+/* =========================================================
+   Chirp 3 HD - Vietnamese Voices
+   ========================================================= */
+
+const CHIRP_VOICES = [
+
+    {
+        value: "vi-VN-Chirp3-HD-Achernar",
+        label: "Achernar — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Achird",
+        label: "Achird — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Algenib",
+        label: "Algenib — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Algieba",
+        label: "Algieba — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Alnilam",
+        label: "Alnilam — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Aoede",
+        label: "Aoede — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Autonoe",
+        label: "Autonoe — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Callirrhoe",
+        label: "Callirrhoe — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Charon",
+        label: "Charon — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Despina",
+        label: "Despina — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Enceladus",
+        label: "Enceladus — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Erinome",
+        label: "Erinome — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Fenrir",
+        label: "Fenrir — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Gacrux",
+        label: "Gacrux — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Iapetus",
+        label: "Iapetus — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Kore",
+        label: "Kore — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Laomedeia",
+        label: "Laomedeia — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Leda",
+        label: "Leda — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Orus",
+        label: "Orus — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Puck",
+        label: "Puck — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Pulcherrima",
+        label: "Pulcherrima — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Rasalgethi",
+        label: "Rasalgethi — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Sadachbia",
+        label: "Sadachbia — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Sadaltager",
+        label: "Sadaltager — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Schedar",
+        label: "Schedar — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Sulafat",
+        label: "Sulafat — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Umbriel",
+        label: "Umbriel — Male"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Vindemiatrix",
+        label: "Vindemiatrix — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Zephyr",
+        label: "Zephyr — Female"
+    },
+
+    {
+        value: "vi-VN-Chirp3-HD-Zubenelgenubi",
+        label: "Zubenelgenubi — Male"
+    }
+
+];
+
+
+/* =========================================================
+   Model Types
+   ========================================================= */
+
+const CHIRP_MODEL =
+    "chirp-3-hd";
+
+
+/* =========================================================
+   Update Voice List
+   ========================================================= */
+
+function updateVoiceList() {
+
+    const model =
+        modelSelect.value;
+
+    const previousVoice =
+        voiceSelect.value;
+
+
+    /* =============================================
+       Select voice list
+       ============================================= */
+
+    const voices =
+        model === CHIRP_MODEL
+            ? CHIRP_VOICES
+            : GEMINI_VOICES;
+
+
+    /* =============================================
+       Clear current options
+       ============================================= */
+
+    voiceSelect.innerHTML = "";
+
+
+    /* =============================================
+       Add options
+       ============================================= */
+
+    voices.forEach(
+        voice => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                voice.value;
+
+            option.textContent =
+                voice.label;
+
+            voiceSelect.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    /* =============================================
+       Restore previous voice if possible
+       ============================================= */
+
+    const exists =
+        voices.some(
+            voice =>
+                voice.value === previousVoice
+        );
+
+
+    if (exists) {
+
+        voiceSelect.value =
+            previousVoice;
+
+    } else {
+
+        /*
+         * Gemini:
+         * Achernar mặc định.
+         *
+         * Chirp:
+         * Achernar cũng mặc định nếu có.
+         */
+
+        const achernar =
+            voices.find(
+                voice =>
+                    voice.value ===
+                    (
+                        model === CHIRP_MODEL
+                            ? "vi-VN-Chirp3-HD-Achernar"
+                            : "Achernar"
+                    )
+            );
+
+
+        if (achernar) {
+
+            voiceSelect.value =
+                achernar.value;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   Model Change
+   ========================================================= */
+
+modelSelect.addEventListener(
+    "change",
+    () => {
+
+        updateVoiceList();
+
+        setStatus("");
+
+    }
+);
+
+
+/* =========================================================
    Character Counter
    ========================================================= */
 
@@ -126,8 +572,13 @@ function setStatus(
         "status";
 
     if (type) {
-        status.classList.add(type);
+
+        status.classList.add(
+            type
+        );
+
     }
+
 }
 
 
@@ -145,6 +596,7 @@ function setGeneratingState(
     stopButton.disabled =
         !isGenerating;
 
+
     if (isGenerating) {
 
         generateButton.textContent =
@@ -156,6 +608,7 @@ function setGeneratingState(
             "🔊 Tạo giọng nói";
 
     }
+
 }
 
 
@@ -170,7 +623,7 @@ async function generateSpeech() {
 
 
     /* =============================================
-       Validate text
+       Validate
        ============================================= */
 
     if (!text) {
@@ -183,6 +636,7 @@ async function generateSpeech() {
         textInput.focus();
 
         return;
+
     }
 
 
@@ -219,10 +673,12 @@ async function generateSpeech() {
 
 
     /* =============================================
-       Start loading
+       Loading
        ============================================= */
 
-    setGeneratingState(true);
+    setGeneratingState(
+        true
+    );
 
     setStatus(
         "Đang tạo giọng nói..."
@@ -232,18 +688,21 @@ async function generateSpeech() {
     try {
 
         /* =========================================
-           Request Worker
+           Call Worker
            ========================================= */
 
         const response =
             await fetch(
                 WORKER_URL,
                 {
+
                     method: "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json"
+
                     },
 
                     body: JSON.stringify({
@@ -262,12 +721,13 @@ async function generateSpeech() {
 
                     signal:
                         currentController.signal
+
                 }
             );
 
 
         /* =========================================
-           Handle HTTP error
+           HTTP error
            ========================================= */
 
         if (!response.ok) {
@@ -275,19 +735,26 @@ async function generateSpeech() {
             let errorMessage =
                 `Lỗi HTTP ${response.status}.`;
 
+
             try {
 
                 const errorData =
                     await response.json();
 
-                if (errorData.error) {
+
+                if (
+                    errorData.error
+                ) {
 
                     errorMessage =
                         errorData.error;
 
                 }
 
-                if (errorData.details) {
+
+                if (
+                    errorData.details
+                ) {
 
                     errorMessage +=
                         ` ${errorData.details}`;
@@ -295,7 +762,11 @@ async function generateSpeech() {
                 }
 
             } catch {
-                /* Response is not JSON */
+
+                /*
+                 * Response không phải JSON.
+                 */
+
             }
 
 
@@ -307,7 +778,7 @@ async function generateSpeech() {
 
 
         /* =========================================
-           Get audio
+           Audio
            ========================================= */
 
         const audioBlob =
@@ -342,7 +813,7 @@ async function generateSpeech() {
 
 
         /* =========================================
-           Optional: play automatically
+           Try autoplay
            ========================================= */
 
         try {
@@ -350,10 +821,12 @@ async function generateSpeech() {
             await audioPlayer.play();
 
         } catch {
+
             /*
-             * Trình duyệt có thể chặn
-             * autoplay. Audio vẫn sẵn sàng.
+             * Browser có thể chặn autoplay.
+             * Người dùng vẫn có thể bấm Play.
              */
+
         }
 
 
@@ -386,6 +859,7 @@ async function generateSpeech() {
             error
         );
 
+
         setStatus(
             error.message ||
             "Không thể tạo giọng nói.",
@@ -403,17 +877,18 @@ async function generateSpeech() {
             null;
 
     }
+
 }
 
 
 /* =========================================================
-   Stop
+   Stop Audio
    ========================================================= */
 
 function stopAudio() {
 
     /* =============================================
-       Cancel network request
+       Cancel request
        ============================================= */
 
     if (currentController) {
@@ -427,7 +902,7 @@ function stopAudio() {
 
 
     /* =============================================
-       Stop audio
+       Stop player
        ============================================= */
 
     audioPlayer.pause();
@@ -440,9 +915,11 @@ function stopAudio() {
         false
     );
 
+
     setStatus(
         "Đã dừng."
     );
+
 }
 
 
@@ -493,7 +970,7 @@ audioPlayer.addEventListener(
 
 
 /* =========================================================
-   Create Audio Source
+   Set Audio Source
    ========================================================= */
 
 function setAudioSource(
@@ -501,7 +978,7 @@ function setAudioSource(
 ) {
 
     /* =============================================
-       Remove old audio URL
+       Revoke old URL
        ============================================= */
 
     if (currentAudioUrl) {
@@ -514,7 +991,7 @@ function setAudioSource(
 
 
     /* =============================================
-       Create new URL
+       Create URL
        ============================================= */
 
     currentAudioUrl =
@@ -524,7 +1001,7 @@ function setAudioSource(
 
 
     /* =============================================
-       Set player
+       Audio player
        ============================================= */
 
     audioPlayer.src =
@@ -532,7 +1009,7 @@ function setAudioSource(
 
 
     /* =============================================
-       Set download link
+       Download
        ============================================= */
 
     downloadButton.href =
@@ -583,6 +1060,8 @@ currentYear.textContent =
 /* =========================================================
    Initial State
    ========================================================= */
+
+updateVoiceList();
 
 updateCharacterCount();
 
