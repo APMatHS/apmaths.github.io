@@ -1,432 +1,360 @@
 /* =========================================================
-   APMaths - OpenAI Text to Speech
-   style.css
+   APMaths - Gemini Text to Speech
+   script.js
    ========================================================= */
 
-:root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --background: #f5f7fb;
-    --surface: #ffffff;
-    --border: #dbe1ea;
-    --text: #1f2937;
-    --text-secondary: #6b7280;
-    --success: #15803d;
-    --danger: #dc2626;
-    --radius: 12px;
-    --shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
-}
-
-* {
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    margin: 0;
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-    background: var(--background);
-    color: var(--text);
-    line-height: 1.6;
-}
-
+"use strict";
 
 /* =========================================================
-   Layout
+   Configuration
    ========================================================= */
 
-.container {
-    width: min(100% - 32px, 900px);
-    margin: 0 auto;
-}
-
+const WORKER_URL = "https://apmaths-openai-tts.hoangnam-sp101.workers.dev/";
 
 /* =========================================================
-   Header
+   DOM Elements
    ========================================================= */
 
-.site-header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 28px 0;
-    text-align: center;
-}
-
-.site-header h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-}
-
-.site-header p {
-    margin: 6px 0 0;
-    color: var(--text-secondary);
-    font-size: 15px;
-}
-
+const textInput = document.getElementById("textInput");
+const charCount = document.getElementById("charCount");
+const modelSelect = document.getElementById("modelSelect");
+const voiceSelect = document.getElementById("voiceSelect");
+const profileSelect = document.getElementById("profileSelect");
+const speedRange = document.getElementById("speedRange");
+const speedValue = document.getElementById("speedValue");
+const instructionsInput = document.getElementById("instructionsInput");
+const generateButton = document.getElementById("generateButton");
+const stopButton = document.getElementById("stopButton");
+const status = document.getElementById("status");
+const audioSection = document.getElementById("audioSection");
+const audioPlayer = document.getElementById("audioPlayer");
+const downloadButton = document.getElementById("downloadButton");
+const currentYear = document.getElementById("currentYear");
 
 /* =========================================================
-   Main & TTS Layout
+   State
    ========================================================= */
 
-main {
-    padding: 40px 0;
-}
-
-.tts-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 28px;
-}
-
-.tts-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
-    gap: 28px;
-    align-items: stretch;
-}
-
-.text-column,
-.settings-column {
-    min-width: 0;
-}
-
-.text-column {
-    display: flex;
-    flex-direction: column;
-}
-
-.text-group {
-    height: 100%;
-    margin-bottom: 0;
-}
-
+let currentAudioUrl = null;
+let currentController = null;
 
 /* =========================================================
-   Form Controls
+   Gemini TTS Voices
    ========================================================= */
 
-.form-group {
-    margin-bottom: 22px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 15px;
-}
-
-.optional {
-    color: var(--text-secondary);
-    font-weight: 400;
-    font-size: 13px;
-}
-
-textarea,
-input[type="text"],
-select {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    background: #fff;
-    color: var(--text);
-    font: inherit;
-    outline: none;
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-textarea {
-    min-height: 220px;
-    padding: 14px;
-    resize: vertical;
-    line-height: 1.6;
-}
-
-.text-group textarea {
-    height: 470px;
-    min-height: 0;
-    resize: none;
-}
-
-.instructions-input {
-    resize: none;
-    min-height: 100px;
-}
-
-input[type="text"],
-select {
-    height: 44px;
-    padding: 0 12px;
-}
-
-select {
-    cursor: pointer;
-}
-
-textarea:focus,
-input[type="text"]:focus,
-select:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-.text-info {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 6px;
-    color: var(--text-secondary);
-    font-size: 13px;
-}
-
-.settings-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.settings-column {
-    display: flex;
-    flex-direction: column;
-}
-
-.settings-column .form-group {
-    margin-bottom: 18px;
-}
-
+const GEMINI_VOICES = [
+    { value: "Achernar", label: "Achernar — Dịu êm" },
+    { value: "Achird", label: "Achird — Thân thiện" },
+    { value: "Algenib", label: "Algenib — Khàn" },
+    { value: "Algieba", label: "Algieba — Mượt" },
+    { value: "Alnilam", label: "Alnilam — Cứng cáp" },
+    { value: "Aoede", label: "Aoede — Thoáng" },
+    { value: "Autonoe", label: "Autonoe — Tươi sáng" },
+    { value: "Callirrhoe", label: "Callirrhoe — Dễ chịu" },
+    { value: "Charon", label: "Charon — Thông tin" },
+    { value: "Despina", label: "Despina — Mượt" },
+    { value: "Enceladus", label: "Enceladus — Hơi thở" },
+    { value: "Erinome", label: "Erinome — Rõ ràng" },
+    { value: "Fenrir", label: "Fenrir — Mạnh mẽ" },
+    { value: "Gacrux", label: "Gacrux — Trưởng thành" },
+    { value: "Iapetus", label: "Iapetus — Rõ ràng" },
+    { value: "Laomedeia", label: "Laomedeia — Rộn ràng" },
+    { value: "Leda", label: "Leda — Trẻ trung" },
+    { value: "Orus", label: "Orus — Cứng cáp" },
+    { value: "Puck", label: "Puck — Rộn ràng" },
+    { value: "Pulcherrima", label: "Pulcherrima — Tiến về phía trước" },
+    { value: "Rasalgethi", label: "Rasalgethi — Thông tin" },
+    { value: "Sadachbia", label: "Sadachbia — Sinh động" },
+    { value: "Sadaltager", label: "Sadaltager — Hiểu biết" },
+    { value: "Schedar", label: "Schedar — Cân bằng" },
+    { value: "Sulafat", label: "Sulafat — Ấm áp" },
+    { value: "Umbriel", label: "Umbriel — Dễ chịu" },
+    { value: "Vindemiatrix", label: "Vindemiatrix — Dịu dàng" },
+    { value: "Zephyr", label: "Zephyr — Tươi sáng" },
+    { value: "Zubenelgenubi", label: "Zubenelgenubi — Tự nhiên" },
+    { value: "Kore", label: "Kore — Chắc chắn" }
+];
 
 /* =========================================================
-   Inputs & Range
+   Update Voice List
    ========================================================= */
 
-#speedRange {
-    width: 100%;
-    margin: 11px 0 0;
-    accent-color: var(--primary);
-    cursor: pointer;
-}
+function updateVoiceList() {
+    const previousVoice = voiceSelect.value;
+    const voices = GEMINI_VOICES;
 
-#speedValue {
-    color: var(--primary);
-    font-weight: 600;
-}
+    /* Clear current options */
+    voiceSelect.innerHTML = "";
 
+    /* Add voices */
+    voices.forEach(voice => {
+        const option = document.createElement("option");
+        option.value = voice.value;
+        option.textContent = voice.label;
+        voiceSelect.appendChild(option);
+    });
+
+    /* Restore previous voice */
+    const exists = voices.some(voice => voice.value === previousVoice);
+
+    if (exists) {
+        voiceSelect.value = previousVoice;
+    } else {
+        voiceSelect.value = "Achernar";
+    }
+}
 
 /* =========================================================
-   Buttons & Actions
+   Model Change
    ========================================================= */
 
-.actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-.settings-column .actions {
-    margin-top: auto;
-}
-
-button {
-    min-height: 44px;
-    padding: 0 20px;
-    border: none;
-    border-radius: 9px;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    transition:
-        background 0.2s ease,
-        transform 0.1s ease,
-        opacity 0.2s ease;
-}
-
-button:active {
-    transform: translateY(1px);
-}
-
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.primary-button {
-    background: var(--primary);
-    color: #fff;
-}
-
-.primary-button:hover:not(:disabled) {
-    background: var(--primary-hover);
-}
-
-.secondary-button {
-    background: #eef1f5;
-    color: var(--text);
-}
-
-.secondary-button:hover:not(:disabled) {
-    background: #e2e6ec;
-}
-
+modelSelect.addEventListener("change", () => {
+    updateVoiceList();
+    setStatus("");
+});
 
 /* =========================================================
-   Status, Audio & Download
+   Character Counter
    ========================================================= */
 
-.status {
-    min-height: 24px;
-    margin-top: 16px;
-    font-size: 14px;
-    color: var(--text-secondary);
+function updateCharacterCount() {
+    const count = textInput.value.length;
+    charCount.textContent = `${count.toLocaleString("vi-VN")} ký tự`;
 }
 
-.status.success {
-    color: var(--success);
-}
-
-.status.error {
-    color: var(--danger);
-}
-
-.audio-section {
-    margin-top: 28px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-}
-
-.settings-column .audio-section {
-    margin-top: 18px;
-    padding-top: 16px;
-}
-
-.audio-section h2 {
-    margin: 0 0 14px;
-    font-size: 18px;
-}
-
-.settings-column .audio-section h2 {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-audio {
-    display: block;
-    width: 100%;
-    margin-bottom: 16px;
-}
-
-.settings-column audio {
-    margin-bottom: 10px;
-}
-
-.download-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 42px;
-    padding: 0 18px;
-    border-radius: 9px;
-    background: #eef1f5;
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 600;
-    transition: background 0.2s ease;
-}
-
-.download-button:hover {
-    background: #e2e6ec;
-}
-
+textInput.addEventListener("input", updateCharacterCount);
 
 /* =========================================================
-   Footer
+   Speed
    ========================================================= */
 
-.site-footer {
-    padding: 24px 0 32px;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 13px;
+function updateSpeed() {
+    const speed = Number(speedRange.value);
+    speedValue.textContent = `${speed.toFixed(1)}×`;
 }
 
-.site-footer p {
-    margin: 0;
-}
-
+speedRange.addEventListener("input", updateSpeed);
 
 /* =========================================================
-   Responsive (Sắp xếp theo thứ tự nhỏ dần)
+   Status
    ========================================================= */
 
-@media (max-width: 800px) {
-    .tts-layout {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
+function setStatus(message, type = "") {
+    status.textContent = message;
+    status.className = "status";
 
-    .text-group textarea {
-        height: 260px;
-    }
-
-    .settings-column .actions {
-        margin-top: 0;
+    if (type) {
+        status.classList.add(type);
     }
 }
 
-@media (max-width: 700px) {
-    .container {
-        width: min(100% - 20px, 900px);
-    }
+/* =========================================================
+   Button State
+   ========================================================= */
 
-    .site-header {
-        padding: 22px 0;
-    }
+function setGeneratingState(isGenerating) {
+    generateButton.disabled = isGenerating;
+    stopButton.disabled = !isGenerating;
 
-    .site-header h1 {
-        font-size: 24px;
-    }
-
-    main {
-        padding: 20px 0;
-    }
-
-    .tts-card {
-        padding: 20px;
-    }
-
-    .settings-grid {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .actions {
-        flex-direction: column;
-    }
-
-    button {
-        width: 100%;
+    if (isGenerating) {
+        generateButton.textContent = "⏳ Đang tạo...";
+    } else {
+        generateButton.textContent = "🔊 Tạo giọng nói";
     }
 }
 
-@media (max-width: 500px) {
-    .tts-card {
-        padding: 16px;
+/* =========================================================
+   Generate Speech
+   ========================================================= */
+
+async function generateSpeech() {
+    const text = textInput.value.trim();
+    const profile = profileSelect.value;
+
+    /* Validate */
+    if (!text) {
+        setStatus("Vui lòng nhập văn bản trước khi tạo giọng nói.", "error");
+        textInput.focus();
+        return;
     }
 
-    .text-group textarea {
-        height: 220px;
+    /* Get settings */
+    const model = modelSelect.value;
+    const voice = voiceSelect.value;
+    const speed = Number(speedRange.value);
+    const instructions = instructionsInput.value.trim();
+
+    /* Abort previous request */
+    if (currentController) {
+        currentController.abort();
+    }
+
+    currentController = new AbortController();
+
+    /* Loading */
+    setGeneratingState(true);
+    setStatus("Đang tạo giọng nói...");
+
+    try {
+        /* Call Worker */
+        const response = await fetch(WORKER_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                text,
+                model,
+                voice,
+                profile,
+                speed,
+                instructions
+            }),
+            signal: currentController.signal
+        });
+
+        /* HTTP error */
+        if (!response.ok) {
+            let errorMessage = `Lỗi HTTP ${response.status}.`;
+
+            try {
+                const errorData = await response.json();
+
+                if (errorData.error) {
+                    errorMessage = errorData.error;
+                }
+
+                if (errorData.details) {
+                    errorMessage += ` ${errorData.details}`;
+                }
+            } catch {
+                /* Response không phải JSON. */
+            }
+
+            throw new Error(errorMessage);
+        }
+
+        /* Audio */
+        const audioBlob = await response.blob();
+
+        if (!audioBlob || audioBlob.size === 0) {
+            throw new Error("Không nhận được dữ liệu audio.");
+        }
+
+        /* Set audio */
+        setAudioSource(audioBlob);
+        setStatus("Đã tạo giọng nói thành công.", "success");
+
+        /* Try autoplay */
+        try {
+            await audioPlayer.play();
+        } catch {
+            /* Browser có thể chặn autoplay. Người dùng vẫn có thể bấm Play. */
+        }
+    } catch (error) {
+        /* Abort */
+        if (error.name === "AbortError") {
+            setStatus("Đã dừng tạo giọng nói.");
+            return;
+        }
+
+        /* Error */
+        console.error("TTS error:", error);
+        setStatus(error.message || "Không thể tạo giọng nói.", "error");
+    } finally {
+        setGeneratingState(false);
+        currentController = null;
     }
 }
+
+/* =========================================================
+   Stop Audio
+   ========================================================= */
+
+function stopAudio() {
+    /* Cancel request */
+    if (currentController) {
+        currentController.abort();
+        currentController = null;
+    }
+
+    /* Stop player */
+    audioPlayer.pause();
+    audioPlayer.currentTime = 0;
+
+    setGeneratingState(false);
+    setStatus("Đã dừng.");
+}
+
+/* =========================================================
+   Generate Button
+   ========================================================= */
+
+generateButton.addEventListener("click", generateSpeech);
+
+/* =========================================================
+   Stop Button
+   ========================================================= */
+
+stopButton.addEventListener("click", stopAudio);
+
+/* =========================================================
+   Audio Events
+   ========================================================= */
+
+audioPlayer.addEventListener("play", () => {
+    stopButton.disabled = false;
+});
+
+audioPlayer.addEventListener("ended", () => {
+    stopButton.disabled = true;
+});
+
+/* =========================================================
+   Set Audio Source
+   ========================================================= */
+
+function setAudioSource(blob) {
+    /* Revoke old URL */
+    if (currentAudioUrl) {
+        URL.revokeObjectURL(currentAudioUrl);
+    }
+
+    /* Create URL */
+    currentAudioUrl = URL.createObjectURL(blob);
+
+    /* Audio player */
+    audioPlayer.src = currentAudioUrl;
+
+    /* Download */
+    downloadButton.href = currentAudioUrl;
+    downloadButton.download = "gemini-tts.wav";
+
+    /* Show audio section */
+    audioSection.hidden = false;
+}
+
+/* =========================================================
+   Cleanup
+   ========================================================= */
+
+window.addEventListener("beforeunload", () => {
+    if (currentAudioUrl) {
+        URL.revokeObjectURL(currentAudioUrl);
+    }
+});
+
+/* =========================================================
+   Current Year
+   ========================================================= */
+
+currentYear.textContent = new Date().getFullYear();
+
+/* =========================================================
+   Initial State
+   ========================================================= */
+
+updateVoiceList();
+updateCharacterCount();
+updateSpeed();
+setGeneratingState(false);
