@@ -5,11 +5,10 @@
 
 
 /* ---------------------------------------------------------
-   1. System Variables & Theme Config
+   1. System Variables & Theme
    --------------------------------------------------------- */
 
 :root {
-
     --primary-color: #4f46e5;
     --primary-hover: #4338ca;
     --primary-light: #eef2ff;
@@ -23,11 +22,9 @@
     --border-color: #e2e8f0;
     --border-focus: #818cf8;
 
-
-    --radius-lg: 16px;
+    --radius-lg: 18px;
     --radius-md: 10px;
     --radius-sm: 6px;
-
 
     --shadow-sm:
         0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -37,9 +34,7 @@
         0 2px 4px -1px rgba(0, 0, 0, 0.04);
 
     --shadow-lg:
-        0 10px 15px -3px rgba(0, 0, 0, 0.08),
-        0 4px 6px -2px rgba(0, 0, 0, 0.03);
-
+        0 8px 30px rgba(15, 23, 42, 0.08);
 
     --transition-fast:
         all 0.2s ease;
@@ -66,211 +61,152 @@ html {
 
 
 body {
-
-    background-color:
-        var(--bg-main);
-
-    color:
-        var(--text-main);
+    background-color: var(--bg-main);
+    color: var(--text-main);
 
     font-family:
         "Times New Roman",
         Times,
         serif;
 
-    line-height:
-        1.5;
-
-    margin:
-        0;
+    line-height: 1.5;
+    margin: 0;
 }
 
 
-/*
- * Make all form controls inherit
- * Times New Roman.
- */
+/* Form controls inherit Times New Roman */
 
 button,
 input,
 textarea,
 select {
-    font-family:
-        inherit;
+    font-family: inherit;
 }
 
 
 .container {
-
-    width:
-        min(
-            100% - 48px,
-            1320px
-        );
-
-    margin:
-        0 auto;
+    width: min(92%, 1320px);
+    margin-inline: auto;
 }
 
 
 /* ---------------------------------------------------------
-   3. Header Styling
+   3. Header
    --------------------------------------------------------- */
 
 .site-header {
-
-    padding:
-        32px 0 20px;
-
-    text-align:
-        center;
+    padding: 22px 0 12px;
+    text-align: center;
 }
 
 
 .site-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
 
-    font-size:
-        2rem;
+    letter-spacing: -0.025em;
 
-    font-weight:
-        800;
+    color: var(--text-main);
 
-    letter-spacing:
-        -0.025em;
-
-    color:
-        var(--text-main);
-
-    margin-bottom:
-        6px;
+    margin: 0 0 4px;
 }
 
 
 .site-header p {
+    color: var(--text-muted);
+    font-size: 0.98rem;
 
-    color:
-        var(--text-muted);
-
-    font-size:
-        0.98rem;
-
-    margin:
-        0;
+    margin: 0;
 }
 
 
 /* ---------------------------------------------------------
-   4. TTS Main Card & Layout
+   4. Main TTS Card
    --------------------------------------------------------- */
 
 .tts-card {
+    background: var(--card-bg);
 
-    background:
-        var(--card-bg);
+    border: 1px solid var(--border-color);
 
-    border:
-        1px solid var(--border-color);
+    border-radius: var(--radius-lg);
 
-    border-radius:
-        var(--radius-lg);
+    box-shadow: var(--shadow-lg);
 
-    box-shadow:
-        var(--shadow-lg);
+    padding: 24px;
 
-    padding:
-        24px;
-
-    margin-top:
-        16px;
-}
-
-
-.tts-layout {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        minmax(0, 1.6fr)
-        minmax(340px, 0.9fr);
-
-    gap:
-        24px;
+    margin-top: 8px;
 }
 
 
 /* ---------------------------------------------------------
-   5. Form Controls
+   5. Two-column Layout
+   --------------------------------------------------------- */
+
+.tts-layout {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.65fr)
+        minmax(360px, 0.85fr);
+
+    gap: 28px;
+}
+
+
+/* ---------------------------------------------------------
+   6. Form Groups
    --------------------------------------------------------- */
 
 .form-group {
+    display: flex;
+    flex-direction: column;
 
-    display:
-        flex;
+    gap: 6px;
 
-    flex-direction:
-        column;
-
-    gap:
-        6px;
-
-    margin-bottom:
-        0;
+    margin-bottom: 0;
 }
 
 
 .form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
 
-    font-size:
-        0.85rem;
-
-    font-weight:
-        600;
-
-    color:
-        var(--text-main);
+    color: var(--text-main);
 }
 
+
+/* ---------------------------------------------------------
+   7. Inputs / Textarea / Select
+   --------------------------------------------------------- */
 
 textarea,
 input[type="text"],
 select {
+    width: 100%;
 
-    width:
-        100%;
+    border: 1px solid var(--border-color);
 
-    border:
-        1px solid var(--border-color);
+    border-radius: var(--radius-md);
 
-    border-radius:
-        var(--radius-md);
+    padding: 11px 13px;
 
-    padding:
-        12px 14px;
+    font-size: 0.95rem;
 
-    font-size:
-        0.95rem;
+    color: var(--text-main);
 
-    color:
-        var(--text-main);
+    background-color: #ffffff;
 
-    background-color:
-        #ffffff;
+    outline: none;
 
-    outline:
-        none;
-
-    transition:
-        var(--transition-fast);
+    transition: var(--transition-fast);
 }
 
 
 textarea:focus,
 input[type="text"]:focus,
 select:focus {
-
-    border-color:
-        var(--border-focus);
+    border-color: var(--border-focus);
 
     box-shadow:
         0 0 0 3px
@@ -279,295 +215,323 @@ select:focus {
 
 
 /* ---------------------------------------------------------
-   Main Text Input
+   8. Main Text Input
    --------------------------------------------------------- */
 
 #textInput {
+    height: clamp(280px, 38vh, 360px);
 
-    height:
-        360px;
+    min-height: 280px;
 
-    min-height:
-        300px;
+    resize: vertical;
 
-    resize:
-        vertical;
-
-    line-height:
-        1.6;
+    line-height: 1.6;
 }
 
 
 /* ---------------------------------------------------------
-   Settings Column
+   9. Settings Column
    --------------------------------------------------------- */
 
 .settings-column {
+    display: flex;
 
-    display:
-        flex;
+    flex-direction: column;
 
-    flex-direction:
-        column;
-
-    gap:
-        16px;
+    gap: 14px;
 }
 
 
 /* ---------------------------------------------------------
-   Instructions
+   10. Instructions
    --------------------------------------------------------- */
 
 .instructions-input {
+    height: 72px;
 
-    height:
-        80px;
+    min-height: 64px;
 
-    min-height:
-        70px;
-
-    resize:
-        vertical;
+    resize: vertical;
 }
 
 
 /* ---------------------------------------------------------
-   6. Control Row & Sliders
+   11. Control Row
    --------------------------------------------------------- */
 
 .control-row {
+    display: flex;
 
-    display:
-        flex;
+    align-items: flex-end;
 
-    align-items:
-        flex-end;
+    gap: 14px;
 
-    gap:
-        16px;
+    margin-top: 2px;
 
-    margin-top:
-        8px;
+    background: var(--bg-main);
 
-    background:
-        var(--bg-main);
+    padding: 13px;
 
-    padding:
-        16px;
+    border-radius: var(--radius-md);
 
-    border-radius:
-        var(--radius-md);
-
-    border:
-        1px solid var(--border-color);
+    border: 1px solid var(--border-color);
 }
 
 
 .speed-control {
+    flex: 1;
 
-    flex:
-        1;
-
-    min-width:
-        0;
+    min-width: 0;
 }
 
 
 .speed-control input[type="range"] {
+    width: 100%;
 
-    width:
-        100%;
+    accent-color: var(--primary-color);
 
-    accent-color:
-        var(--primary-color);
-
-    cursor:
-        pointer;
+    cursor: pointer;
 }
 
 
 /* ---------------------------------------------------------
-   Action Buttons
+   12. Action Buttons
    --------------------------------------------------------- */
 
 .control-row .actions {
+    display: flex;
 
-    display:
-        flex;
+    gap: 8px;
 
-    gap:
-        10px;
-
-    flex-shrink:
-        0;
+    flex-shrink: 0;
 }
 
 
 button,
 .button {
+    display: inline-flex;
 
-    display:
-        inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    align-items:
-        center;
+    padding: 9px 16px;
 
-    justify-content:
-        center;
+    font-size: 0.9rem;
+    font-weight: 600;
 
-    padding:
-        10px 18px;
+    border-radius: var(--radius-md);
 
-    font-size:
-        0.9rem;
+    border: 1px solid transparent;
 
-    font-weight:
-        600;
+    cursor: pointer;
 
-    border-radius:
-        var(--radius-md);
+    transition: var(--transition-fast);
 
-    border:
-        1px solid transparent;
-
-    cursor:
-        pointer;
-
-    transition:
-        var(--transition-fast);
-
-    white-space:
-        nowrap;
+    white-space: nowrap;
 }
 
 
 /* ---------------------------------------------------------
-   Primary Button
+   13. Primary Button
    --------------------------------------------------------- */
 
 button:not(.secondary-button) {
+    background-color: var(--primary-color);
 
-    background-color:
-        var(--primary-color);
+    color: #ffffff;
 
-    color:
-        #ffffff;
-
-    box-shadow:
-        var(--shadow-sm);
+    box-shadow: var(--shadow-sm);
 }
 
 
 button:not(.secondary-button):hover {
+    background-color: var(--primary-hover);
 
-    background-color:
-        var(--primary-hover);
+    transform: translateY(-1px);
 
-    transform:
-        translateY(-1px);
-
-    box-shadow:
-        var(--shadow-md);
+    box-shadow: var(--shadow-md);
 }
 
 
 button:not(.secondary-button):active {
-
-    transform:
-        translateY(0);
+    transform: translateY(0);
 }
 
 
 /* ---------------------------------------------------------
-   7. Audio Player & Download
+   14. Secondary Button
+   --------------------------------------------------------- */
+
+button.secondary-button {
+    background-color: #ffffff;
+
+    color: var(--text-muted);
+
+    border-color: var(--border-color);
+}
+
+
+button.secondary-button:hover:not(:disabled) {
+    background-color: #f8fafc;
+
+    color: var(--text-main);
+
+    border-color: #cbd5e1;
+}
+
+
+/* ---------------------------------------------------------
+   15. Disabled Button
+   --------------------------------------------------------- */
+
+button:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+
+    transform: none !important;
+
+    box-shadow: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   16. Status
+   --------------------------------------------------------- */
+
+.status {
+    min-height: 20px;
+
+    margin-top: 2px;
+
+    font-size: 0.85rem;
+
+    color: var(--text-muted);
+}
+
+
+.status.error {
+    color: #dc2626;
+}
+
+
+.status.success {
+    color: #16a34a;
+}
+
+
+/* ---------------------------------------------------------
+   17. Audio Section
    --------------------------------------------------------- */
 
 .audio-section {
+    margin-top: 20px;
 
-    margin-top:
-        20px;
-
-    padding-top:
-        16px;
+    padding-top: 16px;
 
     border-top:
         1px solid var(--border-color);
 }
 
 
+.audio-section h2 {
+    margin: 0 0 8px;
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    color: var(--text-main);
+}
+
+
 .audio-row {
+    display: flex;
 
-    display:
-        flex;
+    align-items: center;
 
-    align-items:
-        center;
+    gap: 12px;
 
-    gap:
-        16px;
+    background: var(--primary-light);
 
-    background:
-        var(--primary-light);
+    padding: 10px 12px;
 
-    padding:
-        12px 16px;
-
-    border-radius:
-        var(--radius-md);
+    border-radius: var(--radius-md);
 }
 
 
 .audio-row audio {
+    flex: 1;
 
-    flex:
-        1;
+    min-width: 0;
 
-    min-width:
-        0;
-
-    height:
-        40px;
-}
-
-
-.audio-row .download-button {
-
-    flex-shrink:
-        0;
-
-    background-color:
-        #ffffff;
-
-    color:
-        var(--primary-color);
-
-    border:
-        1px solid var(--border-color);
-}
-
-
-.audio-row .download-button:hover {
-
-    background-color:
-        var(--primary-color);
-
-    color:
-        #ffffff;
+    height: 40px;
 }
 
 
 /* ---------------------------------------------------------
-   8. Footer Styling
+   18. Download Button
+   --------------------------------------------------------- */
+
+.audio-row .download-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    white-space: nowrap;
+
+    padding: 9px 15px;
+
+    background-color: #ffffff;
+
+    color: var(--primary-color);
+
+    border: 1px solid var(--border-color);
+
+    border-radius: var(--radius-md);
+
+    text-decoration: none;
+
+    font-family: inherit;
+
+    font-size: 0.9rem;
+
+    font-weight: 600;
+
+    transition: var(--transition-fast);
+}
+
+
+.audio-row .download-button:hover {
+    background-color: var(--primary-color);
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    transform: translateY(-1px);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+.audio-row .download-button:active {
+    transform: translateY(0);
+}
+
+
+/* ---------------------------------------------------------
+   19. Footer
    --------------------------------------------------------- */
 
 .site-footer {
+    margin-top: 32px;
 
-    margin-top:
-        48px;
-
-    padding:
-        32px 0 28px;
+    padding: 26px 0 22px;
 
     border-top:
         1px solid var(--border-color);
@@ -575,121 +539,86 @@ button:not(.secondary-button):active {
     background:
         var(--card-bg);
 
-    text-align:
-        center;
+    text-align: center;
 }
 
 
 .footer-brand {
+    font-size: 1.15rem;
 
-    font-size:
-        1.15rem;
+    font-weight: 700;
 
-    font-weight:
-        700;
+    letter-spacing: -0.01em;
 
-    letter-spacing:
-        -0.01em;
+    color: var(--text-main);
 
-    color:
-        var(--text-main);
-
-    margin-bottom:
-        8px;
+    margin-bottom: 8px;
 }
 
 
 .footer-description {
+    max-width: 680px;
 
-    max-width:
-        680px;
+    margin: 0 auto;
 
-    margin:
-        0 auto;
+    font-size: 0.88rem;
 
-    font-size:
-        0.88rem;
+    line-height: 1.6;
 
-    line-height:
-        1.6;
-
-    color:
-        var(--text-muted);
+    color: var(--text-muted);
 }
 
 
 .footer-models {
+    margin-top: 12px;
 
-    margin-top:
-        14px;
+    font-size: 0.82rem;
 
-    font-size:
-        0.82rem;
+    font-weight: 600;
 
-    font-weight:
-        600;
-
-    color:
-        var(--text-muted);
+    color: var(--text-muted);
 }
 
 
 .footer-models span {
+    margin: 0 8px;
 
-    margin:
-        0 8px;
-
-    opacity:
-        0.4;
+    opacity: 0.4;
 }
 
 
 .footer-meta {
+    display: flex;
 
-    display:
-        flex;
+    justify-content: center;
+    align-items: center;
 
-    justify-content:
-        center;
+    flex-wrap: wrap;
 
-    align-items:
-        center;
+    gap: 8px 20px;
 
-    flex-wrap:
-        wrap;
+    margin-top: 16px;
 
-    gap:
-        8px 20px;
-
-    margin-top:
-        20px;
-
-    padding-top:
-        16px;
+    padding-top: 13px;
 
     border-top:
         1px solid var(--border-color);
 
-    font-size:
-        0.8rem;
+    font-size: 0.8rem;
 
-    color:
-        var(--text-muted);
+    color: var(--text-muted);
 }
 
 
 .footer-meta strong {
+    color: var(--text-main);
 
-    color:
-        var(--text-main);
-
-    font-weight:
-        600;
+    font-weight: 600;
 }
 
 
 /* ---------------------------------------------------------
-   9. Responsive - Short Desktop Screens
+   20. Short Desktop Screens
    --------------------------------------------------------- */
 
 @media (
@@ -699,168 +628,154 @@ button:not(.secondary-button):active {
 ) {
 
     .site-header {
-
-        padding:
-            16px 0 10px;
+        padding: 14px 0 8px;
     }
 
 
     .tts-card {
+        margin-top: 6px;
 
-        margin-top:
-            8px;
-
-        padding:
-            18px;
+        padding: 18px;
     }
 
 
     .tts-layout {
-
-        gap:
-            16px;
+        gap: 18px;
     }
 
 
     #textInput {
+        height: 280px;
 
-        height:
-            280px;
-
-        min-height:
-            280px;
+        min-height: 280px;
     }
 
 
     .instructions-input {
+        height: 60px;
 
-        height:
-            60px;
-
-        min-height:
-            60px;
-    }
-
-}
-
-
-/* ---------------------------------------------------------
-   10. Responsive - Tablet / Mobile
-   --------------------------------------------------------- */
-
-@media (
-    max-width: 899px
-) {
-
-    .container {
-
-        width:
-            min(
-                100% - 24px,
-                700px
-            );
+        min-height: 60px;
     }
 
 
-    .tts-card {
-
-        padding:
-            16px;
-    }
-
-
-    .tts-layout {
-
-        grid-template-columns:
-            1fr;
-    }
-
-
-    #textInput {
-
-        height:
-            260px;
-
-        min-height:
-            240px;
+    .settings-column {
+        gap: 11px;
     }
 
 
     .control-row {
-
-        flex-direction:
-            column;
-
-        align-items:
-            stretch;
-
-        gap:
-            14px;
+        padding: 11px;
     }
 
 
-    .control-row .actions {
+    .audio-section {
+        margin-top: 14px;
 
-        width:
-            100%;
+        padding-top: 12px;
     }
 
 
-    .control-row button {
+    .site-footer {
+        margin-top: 20px;
 
-        flex:
-            1;
-    }
-
-
-    .audio-row {
-
-        flex-direction:
-            column;
-
-        align-items:
-            stretch;
-    }
-
-
-    .audio-row .download-button {
-
-        text-align:
-            center;
+        padding: 20px 0 18px;
     }
 
 }
 
 
 /* ---------------------------------------------------------
-   11. Responsive - Small Mobile
+   21. Tablet / Mobile
    --------------------------------------------------------- */
 
-@media (
-    max-width: 600px
-) {
+@media (max-width: 899px) {
+
+    .container {
+        width: min(94%, 700px);
+    }
+
+
+    .site-header {
+        padding: 20px 0 12px;
+    }
+
+
+    .tts-card {
+        padding: 16px;
+
+        margin-top: 6px;
+    }
+
+
+    .tts-layout {
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+    }
+
+
+    #textInput {
+        height: 260px;
+
+        min-height: 240px;
+    }
+
+
+    .control-row {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 12px;
+    }
+
+
+    .control-row .actions {
+        width: 100%;
+    }
+
+
+    .control-row button {
+        flex: 1;
+    }
+
+
+    .audio-row {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .audio-row .download-button {
+        width: 100%;
+
+        text-align: center;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   22. Small Mobile
+   --------------------------------------------------------- */
+
+@media (max-width: 600px) {
 
     .site-footer {
-
-        padding:
-            24px 0 20px;
+        padding: 22px 0 18px;
     }
 
 
     .footer-description {
-
-        font-size:
-            0.84rem;
+        font-size: 0.84rem;
     }
 
 
     .footer-meta {
+        flex-direction: column;
 
-        flex-direction:
-            column;
-
-        gap:
-            6px;
+        gap: 6px;
     }
 
 }
