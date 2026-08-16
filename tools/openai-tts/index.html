@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>OpenAI Text to Speech | APMaths</title>
-    <meta name="description" content="Chuyển văn bản thành giọng nói bằng OpenAI Text to Speech.">
+    <title>Gemini Text to Speech | APMaths</title>
+    <meta
+        name="description"
+        content="Chuyển văn bản thành giọng nói bằng Gemini TTS."
+    >
     <meta name="author" content="APMaths">
 
     <link rel="stylesheet" href="style.css">
@@ -15,175 +18,224 @@
 
     <header class="site-header">
         <div class="container">
-            <h1>OpenAI Text to Speech</h1>
+            <h1>Gemini Text to Speech</h1>
             <p>Chuyển văn bản thành giọng nói</p>
         </div>
     </header>
 
-    
-<main class="container">
 
-    <section class="tts-card">
+    <main class="container">
 
-        <div class="tts-layout">
+        <section class="tts-card">
 
-            <!-- =========================
-                 COLUMN 1: TEXT
-                 ========================= -->
+            <div class="tts-layout">
 
-            <div class="text-column">
 
-                <div class="form-group text-group">
+                <!-- =========================================
+                     COLUMN 1: TEXT
+                     ========================================= -->
 
-                    <label for="textInput">Văn bản</label>
+                <div class="text-column">
 
-                    <textarea
-                        id="textInput"
-                        placeholder="Nhập văn bản bạn muốn chuyển thành giọng nói..."
-                    ></textarea>
+                    <div class="form-group text-group">
 
-                    <div class="text-info">
-                        <span id="charCount">0 ký tự</span>
+                        <label for="textInput">
+                            Văn bản
+                        </label>
+
+                        <textarea
+                            id="textInput"
+                            placeholder="Nhập văn bản bạn muốn chuyển thành giọng nói..."
+                        ></textarea>
+
+                        <div class="text-info">
+                            <span id="charCount">0 ký tự</span>
+                        </div>
+
                     </div>
 
                 </div>
 
+
+                <!-- =========================================
+                     COLUMN 2: SETTINGS
+                     ========================================= -->
+
+                <div class="settings-column">
+
+
+                    <!-- Model -->
+
+                    <div class="form-group">
+
+                        <label for="modelSelect">
+                            Mô hình
+                        </label>
+
+                        <select id="modelSelect">
+
+                            <option value="gemini-2.5-flash-preview-tts">
+                                Gemini 2.5 Flash TTS
+                            </option>
+
+                            <option value="gemini-3.1-flash-tts-preview">
+                                Gemini 3.1 Flash TTS
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Voice -->
+
+                    <div class="form-group">
+
+                        <label for="voiceSelect">
+                            Giọng nói
+                        </label>
+
+                        <select id="voiceSelect">
+
+                            <option value="Achernar">
+                                Achernar (Female)
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Speed -->
+
+                    <div class="form-group">
+
+                        <label for="speedRange">
+
+                            Tốc độ:
+
+                            <span id="speedValue">
+                                1.0×
+                            </span>
+
+                        </label>
+
+                        <input
+                            type="range"
+                            id="speedRange"
+                            min="0.5"
+                            max="2"
+                            step="0.1"
+                            value="1"
+                        >
+
+                    </div>
+
+
+                    <!-- Instructions -->
+
+                    <div class="form-group">
+
+                        <label for="instructionsInput">
+
+                            Hướng dẫn giọng đọc
+
+                            <span class="optional">
+                                (tùy chọn)
+                            </span>
+
+                        </label>
+
+                        <textarea
+                            id="instructionsInput"
+                            class="instructions-input"
+                            rows="4"
+                            placeholder="Ví dụ: Đọc như một giảng viên Toán đại học, rõ ràng, tự nhiên, điềm tĩnh..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- Actions -->
+
+                    <div class="actions">
+
+                        <button
+                            id="generateButton"
+                            class="primary-button"
+                            type="button"
+                        >
+                            🔊 Tạo giọng nói
+                        </button>
+
+                        <button
+                            id="stopButton"
+                            class="secondary-button"
+                            type="button"
+                            disabled
+                        >
+                            ⏹ Dừng
+                        </button>
+
+                    </div>
+
+
+                    <!-- Status -->
+
+                    <div
+                        id="status"
+                        class="status"
+                        aria-live="polite"
+                    ></div>
+
+
+                    <!-- Audio -->
+
+                    <section
+                        id="audioSection"
+                        class="audio-section"
+                        hidden
+                    >
+
+                        <h2>Audio</h2>
+
+                        <audio
+                            id="audioPlayer"
+                            controls
+                            preload="metadata"
+                        ></audio>
+
+                        <a
+                            id="downloadButton"
+                            class="download-button"
+                            href="#"
+                            download="gemini-tts.wav"
+                        >
+                            💾 Tải xuống
+                        </a>
+
+                    </section>
+
+
+                </div>
+
             </div>
 
+        </section>
 
-            <!-- =========================
-                 COLUMN 2: SETTINGS
-                 ========================= -->
-
-            <div class="settings-column">
-
-                <div class="form-group">
-
-                    <label for="voiceSelect">Giọng nói</label>
-
-                    <select id="voiceSelect">
-                        <option value="alloy">Alloy</option>
-                        <option value="ash">Ash</option>
-                        <option value="ballad">Ballad</option>
-                        <option value="coral">Coral</option>
-                        <option value="echo">Echo</option>
-                        <option value="fable">Fable</option>
-                        <option value="nova">Nova</option>
-                        <option value="onyx">Onyx</option>
-                        <option value="sage">Sage</option>
-                        <option value="shimmer">Shimmer</option>
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="speedRange">
-                        Tốc độ:
-                        <span id="speedValue">1.0×</span>
-                    </label>
-
-                    <input
-                        type="range"
-                        id="speedRange"
-                        min="0.5"
-                        max="2"
-                        step="0.1"
-                        value="1"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="instructionsInput">
-                        Hướng dẫn giọng đọc
-                        <span class="optional">(tùy chọn)</span>
-                    </label>
-
-                    <textarea
-                        id="instructionsInput"
-                        class="instructions-input"
-                        rows="4"
-                        placeholder="Ví dụ: Đọc chậm rãi, rõ ràng, phù hợp với bài giảng Toán."
-                    ></textarea>
-
-                </div>
-
-
-                <div class="actions">
-
-                    <button
-                        id="generateButton"
-                        class="primary-button"
-                        type="button"
-                    >
-                        🔊 Tạo giọng nói
-                    </button>
-
-                    <button
-                        id="stopButton"
-                        class="secondary-button"
-                        type="button"
-                        disabled
-                    >
-                        ⏹ Dừng
-                    </button>
-
-                </div>
-
-
-                <div
-                    id="status"
-                    class="status"
-                    aria-live="polite"
-                ></div>
-
-
-                <section
-                    id="audioSection"
-                    class="audio-section"
-                    hidden
-                >
-
-                    <h2>Audio</h2>
-
-                    <audio
-                        id="audioPlayer"
-                        controls
-                        preload="metadata"
-                    ></audio>
-
-                    <a
-                        id="downloadButton"
-                        class="download-button"
-                        href="#"
-                        download="openai-tts.mp3"
-                    >
-                        💾 Tải xuống
-                    </a>
-
-                </section>
-
-            </div>
-
-        </div>
-
-    </section>
-
-</main>
-
-
+    </main>
 
 
     <footer class="site-footer">
+
         <div class="container">
+
             <p>
                 © <span id="currentYear"></span> APMaths
             </p>
+
         </div>
+
     </footer>
 
 
