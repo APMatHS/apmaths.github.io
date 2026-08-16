@@ -376,3 +376,134 @@ audio {
     }
 }
 
+/* =========================================================
+   TTS TWO-COLUMN LAYOUT
+   ========================================================= */
+
+.tts-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+    gap: 28px;
+    align-items: stretch;
+}
+
+
+/* =========================================================
+   Columns
+   ========================================================= */
+
+.text-column,
+.settings-column {
+    min-width: 0;
+}
+
+.text-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.text-group {
+    height: 100%;
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   Main Textarea
+   ========================================================= */
+
+.text-group textarea {
+    height: 470px;
+    min-height: 0;
+    resize: none;
+}
+
+
+/* =========================================================
+   Settings Column
+   ========================================================= */
+
+.settings-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-column .form-group {
+    margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   Instructions
+   ========================================================= */
+
+.instructions-input {
+    resize: none;
+    min-height: 100px;
+}
+
+
+/* =========================================================
+   Actions
+   ========================================================= */
+
+.settings-column .actions {
+    margin-top: auto;
+}
+
+
+/* =========================================================
+   Audio
+   ========================================================= */
+
+.settings-column .audio-section {
+    margin-top: 18px;
+    padding-top: 16px;
+}
+
+.settings-column .audio-section h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.settings-column audio {
+    margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .tts-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .text-group textarea {
+        height: 260px;
+    }
+
+    .settings-column .actions {
+        margin-top: 0;
+    }
+}
+
+
+/* =========================================================
+   Small screens
+   ========================================================= */
+
+@media (max-width: 500px) {
+
+    .tts-card {
+        padding: 16px;
+    }
+
+    .text-group textarea {
+        height: 220px;
+    }
+}
+
