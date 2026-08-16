@@ -1,360 +1,226 @@
 /* =========================================================
    APMaths - Gemini Text to Speech
-   script.js
+   style.css
    ========================================================= */
-
-"use strict";
 
 /* =========================================================
-   Configuration
+   Main Container
    ========================================================= */
 
-const WORKER_URL = "https://apmaths-openai-tts.hoangnam-sp101.workers.dev/";
-
-/* =========================================================
-   DOM Elements
-   ========================================================= */
-
-const textInput = document.getElementById("textInput");
-const charCount = document.getElementById("charCount");
-const modelSelect = document.getElementById("modelSelect");
-const voiceSelect = document.getElementById("voiceSelect");
-const profileSelect = document.getElementById("profileSelect");
-const speedRange = document.getElementById("speedRange");
-const speedValue = document.getElementById("speedValue");
-const instructionsInput = document.getElementById("instructionsInput");
-const generateButton = document.getElementById("generateButton");
-const stopButton = document.getElementById("stopButton");
-const status = document.getElementById("status");
-const audioSection = document.getElementById("audioSection");
-const audioPlayer = document.getElementById("audioPlayer");
-const downloadButton = document.getElementById("downloadButton");
-const currentYear = document.getElementById("currentYear");
-
-/* =========================================================
-   State
-   ========================================================= */
-
-let currentAudioUrl = null;
-let currentController = null;
-
-/* =========================================================
-   Gemini TTS Voices
-   ========================================================= */
-
-const GEMINI_VOICES = [
-    { value: "Achernar", label: "Achernar — Dịu êm" },
-    { value: "Achird", label: "Achird — Thân thiện" },
-    { value: "Algenib", label: "Algenib — Khàn" },
-    { value: "Algieba", label: "Algieba — Mượt" },
-    { value: "Alnilam", label: "Alnilam — Cứng cáp" },
-    { value: "Aoede", label: "Aoede — Thoáng" },
-    { value: "Autonoe", label: "Autonoe — Tươi sáng" },
-    { value: "Callirrhoe", label: "Callirrhoe — Dễ chịu" },
-    { value: "Charon", label: "Charon — Thông tin" },
-    { value: "Despina", label: "Despina — Mượt" },
-    { value: "Enceladus", label: "Enceladus — Hơi thở" },
-    { value: "Erinome", label: "Erinome — Rõ ràng" },
-    { value: "Fenrir", label: "Fenrir — Mạnh mẽ" },
-    { value: "Gacrux", label: "Gacrux — Trưởng thành" },
-    { value: "Iapetus", label: "Iapetus — Rõ ràng" },
-    { value: "Laomedeia", label: "Laomedeia — Rộn ràng" },
-    { value: "Leda", label: "Leda — Trẻ trung" },
-    { value: "Orus", label: "Orus — Cứng cáp" },
-    { value: "Puck", label: "Puck — Rộn ràng" },
-    { value: "Pulcherrima", label: "Pulcherrima — Tiến về phía trước" },
-    { value: "Rasalgethi", label: "Rasalgethi — Thông tin" },
-    { value: "Sadachbia", label: "Sadachbia — Sinh động" },
-    { value: "Sadaltager", label: "Sadaltager — Hiểu biết" },
-    { value: "Schedar", label: "Schedar — Cân bằng" },
-    { value: "Sulafat", label: "Sulafat — Ấm áp" },
-    { value: "Umbriel", label: "Umbriel — Dễ chịu" },
-    { value: "Vindemiatrix", label: "Vindemiatrix — Dịu dàng" },
-    { value: "Zephyr", label: "Zephyr — Tươi sáng" },
-    { value: "Zubenelgenubi", label: "Zubenelgenubi — Tự nhiên" },
-    { value: "Kore", label: "Kore — Chắc chắn" }
-];
-
-/* =========================================================
-   Update Voice List
-   ========================================================= */
-
-function updateVoiceList() {
-    const previousVoice = voiceSelect.value;
-    const voices = GEMINI_VOICES;
-
-    /* Clear current options */
-    voiceSelect.innerHTML = "";
-
-    /* Add voices */
-    voices.forEach(voice => {
-        const option = document.createElement("option");
-        option.value = voice.value;
-        option.textContent = voice.label;
-        voiceSelect.appendChild(option);
-    });
-
-    /* Restore previous voice */
-    const exists = voices.some(voice => voice.value === previousVoice);
-
-    if (exists) {
-        voiceSelect.value = previousVoice;
-    } else {
-        voiceSelect.value = "Achernar";
-    }
+.container {
+    width: min(100% - 48px, 1400px);
+    margin: 0 auto;
 }
 
 /* =========================================================
-   Model Change
+   Header Spacing
    ========================================================= */
 
-modelSelect.addEventListener("change", () => {
-    updateVoiceList();
-    setStatus("");
-});
-
-/* =========================================================
-   Character Counter
-   ========================================================= */
-
-function updateCharacterCount() {
-    const count = textInput.value.length;
-    charCount.textContent = `${count.toLocaleString("vi-VN")} ký tự`;
+.site-header {
+    padding: 20px 0 16px;
 }
 
-textInput.addEventListener("input", updateCharacterCount);
-
-/* =========================================================
-   Speed
-   ========================================================= */
-
-function updateSpeed() {
-    const speed = Number(speedRange.value);
-    speedValue.textContent = `${speed.toFixed(1)}×`;
+.site-header h1 {
+    margin-bottom: 4px;
 }
 
-speedRange.addEventListener("input", updateSpeed);
-
-/* =========================================================
-   Status
-   ========================================================= */
-
-function setStatus(message, type = "") {
-    status.textContent = message;
-    status.className = "status";
-
-    if (type) {
-        status.classList.add(type);
-    }
+.site-header p {
+    margin: 0;
 }
 
 /* =========================================================
-   Button State
+   TTS Card
    ========================================================= */
 
-function setGeneratingState(isGenerating) {
-    generateButton.disabled = isGenerating;
-    stopButton.disabled = !isGenerating;
-
-    if (isGenerating) {
-        generateButton.textContent = "⏳ Đang tạo...";
-    } else {
-        generateButton.textContent = "🔊 Tạo giọng nói";
-    }
+.tts-card {
+    margin-top: 14px;
 }
 
 /* =========================================================
-   Generate Speech
+   Main TTS Layout
    ========================================================= */
 
-async function generateSpeech() {
-    const text = textInput.value.trim();
-    const profile = profileSelect.value;
-
-    /* Validate */
-    if (!text) {
-        setStatus("Vui lòng nhập văn bản trước khi tạo giọng nói.", "error");
-        textInput.focus();
-        return;
-    }
-
-    /* Get settings */
-    const model = modelSelect.value;
-    const voice = voiceSelect.value;
-    const speed = Number(speedRange.value);
-    const instructions = instructionsInput.value.trim();
-
-    /* Abort previous request */
-    if (currentController) {
-        currentController.abort();
-    }
-
-    currentController = new AbortController();
-
-    /* Loading */
-    setGeneratingState(true);
-    setStatus("Đang tạo giọng nói...");
-
-    try {
-        /* Call Worker */
-        const response = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                text,
-                model,
-                voice,
-                profile,
-                speed,
-                instructions
-            }),
-            signal: currentController.signal
-        });
-
-        /* HTTP error */
-        if (!response.ok) {
-            let errorMessage = `Lỗi HTTP ${response.status}.`;
-
-            try {
-                const errorData = await response.json();
-
-                if (errorData.error) {
-                    errorMessage = errorData.error;
-                }
-
-                if (errorData.details) {
-                    errorMessage += ` ${errorData.details}`;
-                }
-            } catch {
-                /* Response không phải JSON. */
-            }
-
-            throw new Error(errorMessage);
-        }
-
-        /* Audio */
-        const audioBlob = await response.blob();
-
-        if (!audioBlob || audioBlob.size === 0) {
-            throw new Error("Không nhận được dữ liệu audio.");
-        }
-
-        /* Set audio */
-        setAudioSource(audioBlob);
-        setStatus("Đã tạo giọng nói thành công.", "success");
-
-        /* Try autoplay */
-        try {
-            await audioPlayer.play();
-        } catch {
-            /* Browser có thể chặn autoplay. Người dùng vẫn có thể bấm Play. */
-        }
-    } catch (error) {
-        /* Abort */
-        if (error.name === "AbortError") {
-            setStatus("Đã dừng tạo giọng nói.");
-            return;
-        }
-
-        /* Error */
-        console.error("TTS error:", error);
-        setStatus(error.message || "Không thể tạo giọng nói.", "error");
-    } finally {
-        setGeneratingState(false);
-        currentController = null;
-    }
+.tts-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.85fr);
+    gap: 24px;
 }
 
 /* =========================================================
-   Stop Audio
+   Text Area
    ========================================================= */
 
-function stopAudio() {
-    /* Cancel request */
-    if (currentController) {
-        currentController.abort();
-        currentController = null;
-    }
-
-    /* Stop player */
-    audioPlayer.pause();
-    audioPlayer.currentTime = 0;
-
-    setGeneratingState(false);
-    setStatus("Đã dừng.");
+#textInput {
+    height: 360px;
+    min-height: 360px;
+    resize: vertical;
 }
 
 /* =========================================================
-   Generate Button
+   Settings Column
    ========================================================= */
 
-generateButton.addEventListener("click", generateSpeech);
-
-/* =========================================================
-   Stop Button
-   ========================================================= */
-
-stopButton.addEventListener("click", stopAudio);
-
-/* =========================================================
-   Audio Events
-   ========================================================= */
-
-audioPlayer.addEventListener("play", () => {
-    stopButton.disabled = false;
-});
-
-audioPlayer.addEventListener("ended", () => {
-    stopButton.disabled = true;
-});
-
-/* =========================================================
-   Set Audio Source
-   ========================================================= */
-
-function setAudioSource(blob) {
-    /* Revoke old URL */
-    if (currentAudioUrl) {
-        URL.revokeObjectURL(currentAudioUrl);
-    }
-
-    /* Create URL */
-    currentAudioUrl = URL.createObjectURL(blob);
-
-    /* Audio player */
-    audioPlayer.src = currentAudioUrl;
-
-    /* Download */
-    downloadButton.href = currentAudioUrl;
-    downloadButton.download = "gemini-tts.wav";
-
-    /* Show audio section */
-    audioSection.hidden = false;
+.settings-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 /* =========================================================
-   Cleanup
+   Form Groups
    ========================================================= */
 
-window.addEventListener("beforeunload", () => {
-    if (currentAudioUrl) {
-        URL.revokeObjectURL(currentAudioUrl);
+.settings-column .form-group {
+    margin-bottom: 0;
+}
+
+/* =========================================================
+   Instructions
+   ========================================================= */
+
+.instructions-input {
+    height: 72px;
+    min-height: 72px;
+    resize: vertical;
+}
+
+/* =========================================================
+   Bottom Control Row
+   ========================================================= */
+
+.control-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+/* Speed Control */
+
+.speed-control {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Action Buttons */
+
+.control-row .actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* =========================================================
+   Audio Output Section
+   ========================================================= */
+
+.audio-section {
+    margin-top: 12px;
+}
+
+.audio-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.audio-row audio {
+    flex: 1;
+    min-width: 0;
+}
+
+.audio-row .download-button {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   Media Queries — Desktop Height Optimization
+   ========================================================= */
+
+@media (min-width: 900px) and (min-height: 700px) {
+
+    #textInput {
+        height: 350px;
+        min-height: 350px;
     }
-});
+
+    .instructions-input {
+        height: 68px;
+        min-height: 68px;
+    }
+
+}
 
 /* =========================================================
-   Current Year
+   Media Queries — Smaller Desktop / Laptop
    ========================================================= */
 
-currentYear.textContent = new Date().getFullYear();
+@media (min-width: 900px) and (max-height: 700px) {
+
+    .site-header {
+        padding: 12px 0 10px;
+    }
+
+    .tts-card {
+        margin-top: 8px;
+    }
+
+    .tts-layout {
+        gap: 18px;
+    }
+
+    #textInput {
+        height: 300px;
+        min-height: 300px;
+    }
+
+    .instructions-input {
+        height: 58px;
+        min-height: 58px;
+    }
+
+}
 
 /* =========================================================
-   Initial State
+   Media Queries — Mobile Layout
    ========================================================= */
 
-updateVoiceList();
-updateCharacterCount();
-updateSpeed();
-setGeneratingState(false);
+@media (max-width: 899px) {
+
+    .container {
+        width: min(100% - 28px, 700px);
+    }
+
+    .tts-layout {
+        grid-template-columns: 1fr;
+    }
+
+    #textInput {
+        height: 280px;
+        min-height: 280px;
+    }
+
+    .control-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .control-row .actions {
+        width: 100%;
+    }
+
+    .control-row button {
+        flex: 1;
+    }
+
+    .audio-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .audio-row .download-button {
+        text-align: center;
+    }
+
+}
