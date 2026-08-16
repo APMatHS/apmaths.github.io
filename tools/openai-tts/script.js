@@ -1,5 +1,5 @@
 /* =========================================================
-   APMaths - OpenAI Text to Speech
+   APMaths - Gemini Text to Speech
    script.js
    ========================================================= */
 
@@ -7,29 +7,58 @@
 
 
 /* =========================================================
+   Configuration
+   ========================================================= */
+
+const WORKER_URL =
+    "https://apmaths-openai-tts.hoangnam-sp101.workers.dev/";
+
+
+/* =========================================================
    DOM Elements
    ========================================================= */
 
-const textInput = document.getElementById("textInput");
-const charCount = document.getElementById("charCount");
+const textInput =
+    document.getElementById("textInput");
 
-const voiceSelect = document.getElementById("voiceSelect");
+const charCount =
+    document.getElementById("charCount");
 
-const speedRange = document.getElementById("speedRange");
-const speedValue = document.getElementById("speedValue");
+const modelSelect =
+    document.getElementById("modelSelect");
 
-const instructionsInput = document.getElementById("instructionsInput");
+const voiceSelect =
+    document.getElementById("voiceSelect");
 
-const generateButton = document.getElementById("generateButton");
-const stopButton = document.getElementById("stopButton");
+const speedRange =
+    document.getElementById("speedRange");
 
-const status = document.getElementById("status");
+const speedValue =
+    document.getElementById("speedValue");
 
-const audioSection = document.getElementById("audioSection");
-const audioPlayer = document.getElementById("audioPlayer");
-const downloadButton = document.getElementById("downloadButton");
+const instructionsInput =
+    document.getElementById("instructionsInput");
 
-const currentYear = document.getElementById("currentYear");
+const generateButton =
+    document.getElementById("generateButton");
+
+const stopButton =
+    document.getElementById("stopButton");
+
+const status =
+    document.getElementById("status");
+
+const audioSection =
+    document.getElementById("audioSection");
+
+const audioPlayer =
+    document.getElementById("audioPlayer");
+
+const downloadButton =
+    document.getElementById("downloadButton");
+
+const currentYear =
+    document.getElementById("currentYear");
 
 
 /* =========================================================
@@ -38,6 +67,8 @@ const currentYear = document.getElementById("currentYear");
 
 let currentAudioUrl = null;
 
+let currentController = null;
+
 
 /* =========================================================
    Character Counter
@@ -45,13 +76,18 @@ let currentAudioUrl = null;
 
 function updateCharacterCount() {
 
-    const count = textInput.value.length;
+    const count =
+        textInput.value.length;
 
     charCount.textContent =
         `${count.toLocaleString("vi-VN")} ký tự`;
 }
 
-textInput.addEventListener("input", updateCharacterCount);
+
+textInput.addEventListener(
+    "input",
+    updateCharacterCount
+);
 
 
 /* =========================================================
@@ -60,26 +96,65 @@ textInput.addEventListener("input", updateCharacterCount);
 
 function updateSpeed() {
 
-    const speed = Number(speedRange.value);
+    const speed =
+        Number(speedRange.value);
 
-    speedValue.textContent = `${speed.toFixed(1)}×`;
+    speedValue.textContent =
+        `${speed.toFixed(1)}×`;
 }
 
-speedRange.addEventListener("input", updateSpeed);
+
+speedRange.addEventListener(
+    "input",
+    updateSpeed
+);
 
 
 /* =========================================================
    Status
    ========================================================= */
 
-function setStatus(message, type = "") {
+function setStatus(
+    message,
+    type = ""
+) {
 
-    status.textContent = message;
+    status.textContent =
+        message;
 
-    status.className = "status";
+    status.className =
+        "status";
 
     if (type) {
         status.classList.add(type);
+    }
+}
+
+
+/* =========================================================
+   Button State
+   ========================================================= */
+
+function setGeneratingState(
+    isGenerating
+) {
+
+    generateButton.disabled =
+        isGenerating;
+
+    stopButton.disabled =
+        !isGenerating;
+
+    if (isGenerating) {
+
+        generateButton.textContent =
+            "⏳ Đang tạo...";
+
+    } else {
+
+        generateButton.textContent =
+            "🔊 Tạo giọng nói";
+
     }
 }
 
@@ -90,7 +165,13 @@ function setStatus(message, type = "") {
 
 async function generateSpeech() {
 
-    const text = textInput.value.trim();
+    const text =
+        textInput.value.trim();
+
+
+    /* =============================================
+       Validate text
+       ============================================= */
 
     if (!text) {
 
@@ -105,60 +186,263 @@ async function generateSpeech() {
     }
 
 
-    const voice = voiceSelect.value;
-    const speed = Number(speedRange.value);
-    const instructions = instructionsInput.value.trim();
+    /* =============================================
+       Get settings
+       ============================================= */
+
+    const model =
+        modelSelect.value;
+
+    const voice =
+        voiceSelect.value;
+
+    const speed =
+        Number(speedRange.value);
+
+    const instructions =
+        instructionsInput.value.trim();
 
 
-    /*
-     * -------------------------------------------------------
-     * TODO:
-     * Gọi backend của APMaths.
-     *
-     * Ví dụ:
-     *
-     * const response = await fetch("/api/tts", {
-     *     method: "POST",
-     *     headers: {
-     *         "Content-Type": "application/json"
-     *     },
-     *     body: JSON.stringify({
-     *         text,
-     *         voice,
-     *         speed,
-     *         instructions
-     *     })
-     * });
-     *
-     * Backend sẽ gọi OpenAI TTS API và trả về audio.
-     * -------------------------------------------------------
-     */
+    /* =============================================
+       Abort previous request
+       ============================================= */
 
+    if (currentController) {
+
+        currentController.abort();
+
+    }
+
+
+    currentController =
+        new AbortController();
+
+
+    /* =============================================
+       Start loading
+       ============================================= */
+
+    setGeneratingState(true);
 
     setStatus(
-        "Chức năng OpenAI TTS sẽ được kết nối ở bước tiếp theo."
+        "Đang tạo giọng nói..."
     );
 
-    console.log("TTS request:", {
-        text,
-        voice,
-        speed,
-        instructions
-    });
+
+    try {
+
+        /* =========================================
+           Request Worker
+           ========================================= */
+
+        const response =
+            await fetch(
+                WORKER_URL,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        text,
+
+                        model,
+
+                        voice,
+
+                        speed,
+
+                        instructions
+
+                    }),
+
+                    signal:
+                        currentController.signal
+                }
+            );
+
+
+        /* =========================================
+           Handle HTTP error
+           ========================================= */
+
+        if (!response.ok) {
+
+            let errorMessage =
+                `Lỗi HTTP ${response.status}.`;
+
+            try {
+
+                const errorData =
+                    await response.json();
+
+                if (errorData.error) {
+
+                    errorMessage =
+                        errorData.error;
+
+                }
+
+                if (errorData.details) {
+
+                    errorMessage +=
+                        ` ${errorData.details}`;
+
+                }
+
+            } catch {
+                /* Response is not JSON */
+            }
+
+
+            throw new Error(
+                errorMessage
+            );
+
+        }
+
+
+        /* =========================================
+           Get audio
+           ========================================= */
+
+        const audioBlob =
+            await response.blob();
+
+
+        if (
+            !audioBlob ||
+            audioBlob.size === 0
+        ) {
+
+            throw new Error(
+                "Không nhận được dữ liệu audio."
+            );
+
+        }
+
+
+        /* =========================================
+           Set audio
+           ========================================= */
+
+        setAudioSource(
+            audioBlob
+        );
+
+
+        setStatus(
+            "Đã tạo giọng nói thành công.",
+            "success"
+        );
+
+
+        /* =========================================
+           Optional: play automatically
+           ========================================= */
+
+        try {
+
+            await audioPlayer.play();
+
+        } catch {
+            /*
+             * Trình duyệt có thể chặn
+             * autoplay. Audio vẫn sẵn sàng.
+             */
+        }
+
+
+    } catch (error) {
+
+        /* =========================================
+           Abort
+           ========================================= */
+
+        if (
+            error.name ===
+            "AbortError"
+        ) {
+
+            setStatus(
+                "Đã dừng tạo giọng nói."
+            );
+
+            return;
+
+        }
+
+
+        /* =========================================
+           Error
+           ========================================= */
+
+        console.error(
+            "TTS error:",
+            error
+        );
+
+        setStatus(
+            error.message ||
+            "Không thể tạo giọng nói.",
+            "error"
+        );
+
+
+    } finally {
+
+        setGeneratingState(
+            false
+        );
+
+        currentController =
+            null;
+
+    }
 }
 
 
 /* =========================================================
-   Stop Audio
+   Stop
    ========================================================= */
 
 function stopAudio() {
 
+    /* =============================================
+       Cancel network request
+       ============================================= */
+
+    if (currentController) {
+
+        currentController.abort();
+
+        currentController =
+            null;
+
+    }
+
+
+    /* =============================================
+       Stop audio
+       ============================================= */
+
     audioPlayer.pause();
 
-    audioPlayer.currentTime = 0;
+    audioPlayer.currentTime =
+        0;
 
-    stopButton.disabled = true;
+
+    setGeneratingState(
+        false
+    );
+
+    setStatus(
+        "Đã dừng."
+    );
 }
 
 
@@ -189,7 +473,10 @@ stopButton.addEventListener(
 audioPlayer.addEventListener(
     "play",
     () => {
-        stopButton.disabled = false;
+
+        stopButton.disabled =
+            false;
+
     }
 );
 
@@ -197,39 +484,71 @@ audioPlayer.addEventListener(
 audioPlayer.addEventListener(
     "ended",
     () => {
-        stopButton.disabled = true;
+
+        stopButton.disabled =
+            true;
+
     }
 );
 
 
 /* =========================================================
-   Create Audio
+   Create Audio Source
    ========================================================= */
 
-function setAudioSource(blob) {
+function setAudioSource(
+    blob
+) {
 
-    /*
-     * Xóa URL audio cũ nếu có.
-     */
+    /* =============================================
+       Remove old audio URL
+       ============================================= */
 
     if (currentAudioUrl) {
-        URL.revokeObjectURL(currentAudioUrl);
+
+        URL.revokeObjectURL(
+            currentAudioUrl
+        );
+
     }
 
 
-    /*
-     * Tạo URL mới.
-     */
+    /* =============================================
+       Create new URL
+       ============================================= */
 
-    currentAudioUrl = URL.createObjectURL(blob);
+    currentAudioUrl =
+        URL.createObjectURL(
+            blob
+        );
 
-    audioPlayer.src = currentAudioUrl;
 
-    downloadButton.href = currentAudioUrl;
+    /* =============================================
+       Set player
+       ============================================= */
 
-    audioSection.hidden = false;
+    audioPlayer.src =
+        currentAudioUrl;
 
-    stopButton.disabled = false;
+
+    /* =============================================
+       Set download link
+       ============================================= */
+
+    downloadButton.href =
+        currentAudioUrl;
+
+    downloadButton.download =
+        "gemini-tts.wav";
+
+
+    /* =============================================
+       Show audio section
+       ============================================= */
+
+    audioSection.hidden =
+        false;
+
 }
 
 
@@ -242,7 +561,11 @@ window.addEventListener(
     () => {
 
         if (currentAudioUrl) {
-            URL.revokeObjectURL(currentAudioUrl);
+
+            URL.revokeObjectURL(
+                currentAudioUrl
+            );
+
         }
 
     }
@@ -253,7 +576,8 @@ window.addEventListener(
    Current Year
    ========================================================= */
 
-currentYear.textContent = new Date().getFullYear();
+currentYear.textContent =
+    new Date().getFullYear();
 
 
 /* =========================================================
@@ -261,4 +585,7 @@ currentYear.textContent = new Date().getFullYear();
    ========================================================= */
 
 updateCharacterCount();
+
 updateSpeed();
+
+setGeneratingState(false);
