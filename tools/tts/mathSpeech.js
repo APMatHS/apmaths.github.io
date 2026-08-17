@@ -209,28 +209,42 @@ function latexToSpeech(expression) {
        \int_{0}^{1}
        --------------------------------------------------------- */
 
-    s = s.replace(
-        /\\int_\{([^{}]+)\}\^\{([^{}]+)\}/g,
-        (_, lower, upper) => {
-            return (
-                `tích phân từ ` +
-                `${latexToSpeech(lower)} đến ` +
-                `${latexToSpeech(upper)} `
-            );
-        }
-    );
+   /* ---------------------------------------------------------
+   Definite integrals
 
-    s = s.replace(
-        /\\int_([A-Za-z0-9+\-]+)\^([A-Za-z0-9+\-]+)/g,
-        (_, lower, upper) => {
-            return (
-                `tích phân từ ` +
-                `${latexToSpeech(lower)} đến ` +
-                `${latexToSpeech(upper)} `
-            );
-        }
-    );
+   \int_0^1
+   \int_{0}^{1}
+   \int\limits_0^1
+   \int\limits_{0}^{1}
 
+   → tích phân từ không đến một
+   --------------------------------------------------------- */
+
+s = s.replace(
+    /\\int(?:\\limits)?\s*_\s*\{([^{}]*)\}\s*\^\s*\{([^{}]*)\}/g,
+    (_, lower, upper) => {
+
+        return (
+            ` tích phân từ ` +
+            `${latexToSpeech(lower)} ` +
+            `đến ` +
+            `${latexToSpeech(upper)} `
+        );
+    }
+);
+
+s = s.replace(
+    /\\int(?:\\limits)?\s*_\s*([A-Za-z0-9+\-]+)\s*\^\s*([A-Za-z0-9+\-]+)/g,
+    (_, lower, upper) => {
+
+        return (
+            ` tích phân từ ` +
+            `${latexToSpeech(lower)} ` +
+            `đến ` +
+            `${latexToSpeech(upper)} `
+        );
+    }
+);
 
     /* ---------------------------------------------------------
        Sums with limits
