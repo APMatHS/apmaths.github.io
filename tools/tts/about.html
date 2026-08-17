@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hướng dẫn sử dụng APMaths Text to Speech</title>
+<style>
+:root{--p:#4f46e5;--pl:#eef2ff;--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;font-family:"Times New Roman",Times,serif}
+body{margin:0;background:var(--bg);color:var(--text);font-size:17px;line-height:1.7}
+.container{width:min(94%,1050px);margin:auto}
+header{text-align:center;padding:38px 0 25px}
+header h1{margin:0 0 8px;font-size:clamp(1.8rem,4vw,2.6rem)}
+header p{margin:0;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 30px rgba(15,23,42,.08);padding:clamp(20px,4vw,34px);margin-bottom:24px}
+h2{margin-top:0;font-size:1.55rem;border-bottom:1px solid var(--border);padding-bottom:10px}
+h3{margin-top:28px;font-size:1.2rem}
+.toc{background:var(--pl);border:1px solid #c7d2fe;border-radius:10px;padding:18px 22px}
+.toc a{color:var(--p);text-decoration:none}
+.toc a:hover{text-decoration:underline}
+code{font-family:Consolas,"Courier New",monospace;background:#f1f5f9;padding:2px 6px;border-radius:5px}
+pre{overflow-x:auto;background:#0f172a;color:#f8fafc;padding:16px;border-radius:10px;line-height:1.55;font-size:.9rem}
+.example,.note,.success,.warning{border-radius:10px;padding:14px 17px;margin:16px 0}
+.example{background:#f8fafc;border:1px solid var(--border);border-left:4px solid var(--p)}
+.note{background:#fffbeb;border:1px solid #fde68a}
+.success{background:#f0fdf4;border:1px solid #bbf7d0}
+.warning{background:#fef2f2;border:1px solid #fecaca}
+table{width:100%;border-collapse:collapse;margin:16px 0}
+th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}
+th{background:var(--pl)}
+li{margin:7px 0}
+footer{text-align:center;color:var(--muted);padding:24px 0 40px}
+@media(max-width:650px){body{font-size:16px}.card{padding:20px 17px}table{display:block;overflow-x:auto}pre{font-size:.82rem}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+<h1>Hướng dẫn sử dụng APMaths Text to Speech</h1>
+<p>Công cụ chuyển văn bản và công thức Toán thành giọng nói</p>
+</header>
+
+<section class="card">
+<h2>Mục lục</h2>
+<nav class="toc">
+<ol>
+<li><a href="#intro">Giới thiệu</a></li>
+<li><a href="#interface">Các thành phần trên trang</a></li>
+<li><a href="#input">Nhập văn bản</a></li>
+<li><a href="#math">Nhập công thức Toán</a></li>
+<li><a href="#rules">Quy tắc đọc Toán</a></li>
+<li><a href="#engine">Chọn Engine</a></li>
+<li><a href="#voice">Model, Voice và Instructions</a></li>
+<li><a href="#speed">Tốc độ đọc</a></li>
+<li><a href="#audio">Tạo, nghe và tải Audio</a></li>
+<li><a href="#mobile">Sử dụng trên điện thoại</a></li>
+<li><a href="#trouble">Lỗi thường gặp</a></li>
+<li><a href="#workflow">Quy trình sử dụng đề nghị</a></li>
+</ol>
+</nav>
+</section>
+
+<section id="intro" class="card">
+<h2>1. Giới thiệu</h2>
+<p><strong>APMaths Text to Speech</strong> là công cụ chuyển văn bản thành giọng nói, được thiết kế cho nội dung giảng dạy Toán.</p>
+<p>Trang hỗ trợ văn bản thông thường kết hợp với công thức Toán như đại số, giải tích, đạo hàm, tích phân, giới hạn, vector và ma trận.</p>
+<div class="success"><strong>Nguyên tắc:</strong> công thức được xử lý qua <code>mathSpeech.js</code> trước khi gửi tới hệ thống TTS, nhằm tạo cách đọc tự nhiên hơn.</div>
+</section>
+
+<section id="interface" class="card">
+<h2>2. Các thành phần trên trang</h2>
+<ol>
+<li><strong>Ô nhập văn bản:</strong> nhập hoặc dán nội dung cần đọc.</li>
+<li><strong>Instructions:</strong> mô tả phong cách đọc mong muốn.</li>
+<li><strong>Model:</strong> chọn model phù hợp với Engine.</li>
+<li><strong>Voice:</strong> chọn giọng đọc.</li>
+<li><strong>Profile:</strong> lựa chọn phong cách nếu giao diện cung cấp.</li>
+<li><strong>Speed:</strong> điều chỉnh tốc độ.</li>
+<li><strong>Engine:</strong> chọn hệ thống TTS.</li>
+<li><strong>Generate:</strong> tạo Audio.</li>
+<li><strong>Audio:</strong> nghe và tải file.</li>
+</ol>
+</section>
+
+<section id="input" class="card">
+<h2>3. Nhập văn bản</h2>
+<p>Có thể gõ trực tiếp hoặc dán văn bản từ tài liệu khác.</p>
+<div class="example">Cho hàm số $f(x)=x^2+2x+1$. Tính đạo hàm của hàm số tại $x=\frac{1}{2}$.</div>
+<div class="note"><strong>Khuyến nghị:</strong> sau khi dán Equation từ Word, nên kiểm tra lại nội dung trước khi tạo Audio.</div>
+</section>
+
+<section id="math" class="card">
+<h2>4. Nhập công thức Toán</h2>
+<p>Ưu tiên dùng LaTeX inline bằng dấu <code>$...$</code>. Một số ký hiệu Unicode và plain text cũng được xử lý.</p>
+
+<h3>Hàm số</h3>
+<pre>Cho hàm số $f(x)=x^2+2x+1$.</pre>
+<div class="example">Cho hàm số f x bằng x bình phương cộng hai x cộng một.</div>
+
+<h3>Phân số</h3>
+<pre>$\frac{1}{2}$</pre>
+<div class="example">một phần hai</div>
+<pre>$\frac{x+1}{x-1}$</pre>
+<div class="example">phân số x cộng một trên x trừ một</div>
+
+<h3>Tích phân</h3>
+<pre>$\int_{0}^{1} 3\sin\sqrt{x}\,dx$</pre>
+<div class="example">tích phân từ không đến một, ba sin căn bậc hai của x d x</div>
+
+<h3>Giới hạn</h3>
+<pre>$\lim_{x\to0} f(x)$</pre>
+<div class="example">giới hạn khi x tiến tới không f x</div>
+
+<h3>Đạo hàm</h3>
+<pre>$f'(x)=2x$</pre>
+<div class="example">f phẩy x bằng hai x</div>
+<pre>$f''(x)=2$</pre>
+<div class="example">f hai phẩy x bằng hai</div>
+</section>
+
+<section id="rules" class="card">
+<h2>5. Quy tắc đọc công thức Toán</h2>
+<table>
+<thead><tr><th>Công thức</th><th>Cách đọc</th></tr></thead>
+<tbody>
+<tr><td><code>f(x)</code></td><td>f x</td></tr>
+<tr><td><code>g(t)</code></td><td>g t</td></tr>
+<tr><td><code>2x</code></td><td>hai x</td></tr>
+<tr><td><code>3ab</code></td><td>ba a b</td></tr>
+<tr><td><code>2·x</code></td><td>hai nhân x</td></tr>
+<tr><td><code>x²</code></td><td>x bình phương</td></tr>
+<tr><td><code>x³</code></td><td>x lập phương</td></tr>
+<tr><td><code>xⁿ</code></td><td>x mũ n</td></tr>
+<tr><td><code>f'(x)</code></td><td>f phẩy x</td></tr>
+<tr><td><code>f''(x)</code></td><td>f hai phẩy x</td></tr>
+<tr><td><code>dx</code></td><td>d x</td></tr>
+<tr><td><code>1/2</code></td><td>một phần hai</td></tr>
+<tr><td><code>x → 0</code></td><td>x tiến tới không</td></tr>
+<tr><td><code>x ∈ R</code></td><td>x thuộc R</td></tr>
+<tr><td><code>x ≤ 2</code></td><td>x nhỏ hơn hoặc bằng hai</td></tr>
+</tbody>
+</table>
+
+<h3>Ma trận</h3>
+<pre>\begin{pmatrix}
+1 & 2 \\
+3 & 4
+\end{pmatrix}</pre>
+<div class="example">ma trận hai hàng hai cột, hàng thứ nhất một hai, hàng thứ hai ba bốn</div>
+
+<h3>Vector</h3>
+<pre>$\vec{v}=(1,2,3)$</pre>
+<div class="example">vector v một hai ba</div>
+</section>
+
+<section id="engine" class="card">
+<h2>6. Chọn Engine</h2>
+<h3>Gemini TTS</h3>
+<p>Phù hợp khi ưu tiên giọng đọc tự nhiên và khả năng điều khiển phong cách bằng Instructions.</p>
+<h3>Google Cloud TTS</h3>
+<p>Phù hợp khi sử dụng hệ thống Google Cloud TTS thông qua backend đã cấu hình.</p>
+<div class="note">Cùng một nội dung đã qua xử lý Toán có thể được thử với các Engine khác nhau để so sánh.</div>
+</section>
+
+<section id="voice" class="card">
+<h2>7. Model, Voice và Instructions</h2>
+<p><strong>Model</strong> phải tương ứng với Engine. <strong>Voice</strong> quyết định giọng đọc. Với cấu hình Cloud TTS hiện tại, Achernar đã được dùng làm voice mặc định cho cấu hình Chirp.</p>
+<h3>Instructions</h3>
+<p>Có thể yêu cầu cách đọc như một giảng viên Toán tiếng Việt:</p>
+<pre>Read naturally as a Vietnamese mathematics lecturer.
+Speak mathematical expressions clearly and fluently.</pre>
+<div class="warning">Nếu voice phát âm sai ngôn ngữ, cần kiểm tra voice và language code ở backend; không nên chỉ sửa nội dung văn bản.</div>
+</section>
+
+<section id="speed" class="card">
+<h2>8. Tốc độ đọc</h2>
+<ul>
+<li><strong>Chậm:</strong> phù hợp với định nghĩa, định lý và công thức dài.</li>
+<li><strong>Bình thường:</strong> phù hợp với phần lớn nội dung.</li>
+<li><strong>Nhanh:</strong> phù hợp với nội dung ngắn.</li>
+</ul>
+<p>Nếu công thức đọc chưa rõ, nên sửa cách biểu diễn công thức trước khi thay đổi tốc độ.</p>
+</section>
+
+<section id="audio" class="card">
+<h2>9. Tạo, nghe và tải Audio</h2>
+<ol>
+<li>Nhập văn bản.</li>
+<li>Kiểm tra công thức.</li>
+<li>Chọn Engine.</li>
+<li>Chọn Model và Voice.</li>
+<li>Điều chỉnh Instructions nếu cần.</li>
+<li>Chọn Speed.</li>
+<li>Nhấn nút tạo Audio.</li>
+<li>Chờ xử lý.</li>
+</ol>
+<h3>Nghe Audio</h3>
+<p>Khi tạo thành công, khu vực Audio xuất hiện. Có thể Play, Pause, tua lại và điều chỉnh âm lượng bằng trình phát của thiết bị.</p>
+<h3>Tải Audio</h3>
+<p>Nhấn nút <strong>↓ Tải xuống</strong> để lưu file âm thanh.</p>
+<div class="note">Trên điện thoại, trình phát Audio sử dụng bộ điều khiển native của trình duyệt.</div>
+</section>
+
+<section id="mobile" class="card">
+<h2>10. Sử dụng trên điện thoại</h2>
+<p>Trang được thiết kế responsive. Trên màn hình nhỏ, các khu vực điều khiển chuyển thành bố cục dọc để dễ thao tác.</p>
+<ul>
+<li>Dùng chế độ dọc khi nhập văn bản.</li>
+<li>Kiểm tra công thức trước khi tạo Audio.</li>
+<li>Sử dụng thanh Play của trình duyệt để nghe.</li>
+<li>Nút <strong>↓ Tải xuống</strong> nằm riêng bên dưới Audio để dễ bấm.</li>
+</ul>
+</section>
+
+<section id="trouble" class="card">
+<h2>11. Một số lỗi thường gặp</h2>
+<h3>Công thức bị đọc như LaTeX</h3>
+<p>Kiểm tra công thức có nằm trong dạng được <code>mathSpeech.js</code> hỗ trợ hay không.</p>
+<h3>Tích phân đọc sai cận</h3>
+<pre>\int_{0}^{1}</pre>
+<p>Kiểm tra lại nội dung Equation sau khi dán.</p>
+<h3>Căn bậc hai đọc không đúng</h3>
+<pre>\sqrt{x}
+\sqrt{\mathrm{x}}</pre>
+<p>Kiểm tra lại dạng công thức mà clipboard tạo ra.</p>
+<h3>Voice đọc sai ngôn ngữ</h3>
+<p>Kiểm tra Voice và language code ở backend.</p>
+<h3>Không nghe được Audio</h3>
+<ul>
+<li>Kiểm tra Audio đã tạo thành công.</li>
+<li>Kiểm tra âm lượng thiết bị.</li>
+<li>Thử Play lại.</li>
+<li>Thử tải file và mở bằng trình phát khác.</li>
+</ul>
+</section>
+
+<section id="workflow" class="card">
+<h2>12. Quy trình sử dụng đề nghị</h2>
+<ol>
+<li><strong>Soạn nội dung.</strong></li>
+<li><strong>Kiểm tra công thức</strong>, nhất là phân số, căn, tích phân, đạo hàm, giới hạn và ma trận.</li>
+<li><strong>Chọn Engine, Model và Voice.</strong></li>
+<li><strong>Điều chỉnh Instructions và Speed.</strong></li>
+<li><strong>Tạo Audio.</strong></li>
+<li><strong>Nghe lại toàn bộ.</strong></li>
+<li><strong>Sửa công thức hoặc quy tắc mathSpeech.js</strong> nếu cách đọc chưa tự nhiên.</li>
+<li><strong>Tạo lại Audio</strong> và tải file khi đạt yêu cầu.</li>
+</ol>
+<div class="success"><strong>Nguyên tắc:</strong> nếu một công thức đọc chưa tự nhiên, ưu tiên sửa lớp xử lý Toán trước khi cố ép TTS bằng Instructions.</div>
+</section>
+
+<section class="card">
+<h2>Tóm tắt nhanh</h2>
+<table>
+<thead><tr><th>Nội dung</th><th>Khuyến nghị</th></tr></thead>
+<tbody>
+<tr><td>Văn bản</td><td>Nhập hoặc dán trực tiếp.</td></tr>
+<tr><td>Công thức</td><td>Ưu tiên <code>$...$</code>.</td></tr>
+<tr><td>Hàm số</td><td><code>f(x)</code> → f x.</td></tr>
+<tr><td>Phân số</td><td><code>\frac{1}{2}</code> → một phần hai.</td></tr>
+<tr><td>Tích phân</td><td><code>\int_0^1</code> → tích phân từ không đến một.</td></tr>
+<tr><td>Đạo hàm</td><td><code>f'(x)</code> → f phẩy x.</td></tr>
+<tr><td>Ma trận</td><td>Đọc theo hàng và cột.</td></tr>
+<tr><td>Audio</td><td>Nghe thử trước khi tải.</td></tr>
+</tbody>
+</table>
+</section>
+
+<footer>APMaths Text to Speech · Hướng dẫn sử dụng</footer>
+</div>
+</body>
+</html>
