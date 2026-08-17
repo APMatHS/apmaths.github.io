@@ -169,7 +169,13 @@ function setGeneratingState(isGenerating) {
    ========================================================= */
 
 async function generateSpeech() {
-    const text = textInput.value.trim();
+    const originalText = textInput.value.trim();
+
+   const text =
+    APMathsMathSpeech.mathTextToSpeech(
+        originalText
+    );
+   
     const profile = profileSelect.value;
 
     /* Validate */
