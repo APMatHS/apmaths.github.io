@@ -214,25 +214,66 @@ async function generateSpeech() {
         });
 
         /* HTTP error */
-        if (!response.ok) {
-            let errorMessage = `Lỗi HTTP ${response.status}.`;
 
-            try {
-                const errorData = await response.json();
+if (!response.ok) {
 
-                if (errorData.error) {
-                    errorMessage = errorData.error;
-                }
+    let errorMessage =
+        `Lỗi HTTP ${response.status}.`;
 
-                if (errorData.details) {
-                    errorMessage += ` ${errorData.details}`;
-                }
-            } catch {
-                /* Response không phải JSON. */
+    try {
+
+        const errorData =
+            await response.json();
+
+        if (
+            typeof errorData.details === "object" &&
+            errorData.details !== null
+        ) {
+
+            const geminiError =
+                errorData.details.error;
+
+            if (
+                geminiError &&
+                geminiError.message
+            ) {
+
+                errorMessage =
+                    geminiError.message;
+
+            } else {
+
+                errorMessage +=
+                    ` ${JSON.stringify(
+                        errorData.details
+                    )}`;
+
             }
 
-            throw new Error(errorMessage);
+        } else if (
+            errorData.details
+        ) {
+
+            errorMessage +=
+                ` ${errorData.details}`;
+
+        } else if (
+            errorData.error
+        ) {
+
+            errorMessage =
+                errorData.error;
+
         }
+
+    } catch {
+
+        /* Response không phải JSON. */
+
+    }
+
+    throw new Error(errorMessage);
+}
 
         /* Audio */
         const audioBlob = await response.blob();
