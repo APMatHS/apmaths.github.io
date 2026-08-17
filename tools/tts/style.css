@@ -741,18 +741,29 @@ button:disabled {
 
 
     .audio-row {
-        flex-direction: column;
+    flex-direction: column;
 
-        align-items: stretch;
-    }
+    align-items: stretch;
 
+    gap: 10px;
+}
 
-    .audio-row .download-button {
-        width: 100%;
+.audio-row audio {
+    display: block;
 
-        text-align: center;
-    }
+    width: 100%;
 
+    min-width: 100%;
+
+    height: 40px;
+
+    flex: none;
+}
+
+.audio-row .download-button {
+    width: 100%;
+
+    text-align: center;
 }
 
 
