@@ -225,7 +225,7 @@ s = s.replace(
     (_, lower, upper) => {
 
         return (
-            ` tích phân từ ` +
+            ` tích phân, từ ` +
             `${latexToSpeech(lower)} ` +
             `đến ` +
             `${latexToSpeech(upper)} `
@@ -238,7 +238,7 @@ s = s.replace(
     (_, lower, upper) => {
 
         return (
-            ` tích phân từ ` +
+            ` tích phân, từ ` +
             `${latexToSpeech(lower)} ` +
             `đến ` +
             `${latexToSpeech(upper)} `
