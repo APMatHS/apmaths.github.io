@@ -18,6 +18,7 @@ const WORKER_URL = "https://apmaths-openai-tts.hoangnam-sp101.workers.dev/";
 const textInput = document.getElementById("textInput");
 const charCount = document.getElementById("charCount");
 const modelSelect = document.getElementById("modelSelect");
+const engineSelect = document.getElementById("engineSelect");
 const voiceSelect = document.getElementById("voiceSelect");
 const profileSelect = document.getElementById("profileSelect");
 const speedRange = document.getElementById("speedRange");
@@ -180,6 +181,7 @@ async function generateSpeech() {
 
     /* Get settings */
     const model = modelSelect.value;
+   const engine = engineSelect.value;
     const voice = voiceSelect.value;
     const speed = Number(speedRange.value);
     const instructions = instructionsInput.value.trim();
@@ -203,6 +205,7 @@ async function generateSpeech() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
+                engine,
                 text,
                 model,
                 voice,
