@@ -76,6 +76,40 @@ const GEMINI_VOICES = [
     { value: "Kore", label: "Kore — Chắc chắn" }
 ];
 
+const CLOUD_VOICES = [
+    // Cloud TTS thường
+    { value: "Achernar", label: "Achernar — Dịu êm" },
+    { value: "Achird", label: "Achird — Thân thiện" },
+    { value: "Algenib", label: "Algenib — Khàn" },
+    { value: "Algieba", label: "Algieba — Mượt" },
+    { value: "Alnilam", label: "Alnilam — Cứng cáp" },
+    { value: "Aoede", label: "Aoede — Thoáng" },
+    { value: "Autonoe", label: "Autonoe — Tươi sáng" },
+    { value: "Callirrhoe", label: "Callirrhoe — Dễ chịu" },
+    { value: "Charon", label: "Charon — Thông tin" },
+    { value: "Despina", label: "Despina — Mượt" },
+    { value: "Enceladus", label: "Enceladus — Hơi thở" },
+    { value: "Erinome", label: "Erinome — Rõ ràng" },
+    { value: "Fenrir", label: "Fenrir — Mạnh mẽ" },
+    { value: "Gacrux", label: "Gacrux — Trưởng thành" },
+    { value: "Iapetus", label: "Iapetus — Rõ ràng" },
+    { value: "Laomedeia", label: "Laomedeia — Rộn ràng" },
+    { value: "Leda", label: "Leda — Trẻ trung" },
+    { value: "Orus", label: "Orus — Cứng cáp" },
+    { value: "Puck", label: "Puck — Rộn ràng" },
+    { value: "Pulcherrima", label: "Pulcherrima — Tiến về phía trước" },
+    { value: "Rasalgethi", label: "Rasalgethi — Thông tin" },
+    { value: "Sadachbia", label: "Sadachbia — Sinh động" },
+    { value: "Sadaltager", label: "Sadaltager — Hiểu biết" },
+    { value: "Schedar", label: "Schedar — Cân bằng" },
+    { value: "Sulafat", label: "Sulafat — Ấm áp" },
+    { value: "Umbriel", label: "Umbriel — Dễ chịu" },
+    { value: "Vindemiatrix", label: "Vindemiatrix — Dịu dàng" },
+    { value: "Zephyr", label: "Zephyr — Tươi sáng" },
+    { value: "Zubenelgenubi", label: "Zubenelgenubi — Tự nhiên" },
+    { value: "Kore", label: "Kore — Chắc chắn" }
+];
+
 const CHIRP_VOICES = [
     {
         value: "vi-VN-Chirp3-HD-Charon",
@@ -95,8 +129,7 @@ function updateVoiceList() {
             ? CLOUD_VOICES
             : GEMINI_VOICES;
 
-    voiceSelect.innerHTML = "";
-
+   
     voices.forEach(voice => {
         const option = document.createElement("option");
 
