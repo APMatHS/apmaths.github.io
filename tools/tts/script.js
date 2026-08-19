@@ -76,7 +76,7 @@ const GEMINI_VOICES = [
     { value: "Kore", label: "Kore — Chắc chắn" }
 ];
 
-const CLOUD_VOICES = [
+const CHIRP_VOICES = [
     {
         value: "vi-VN-Chirp3-HD-Charon",
         label: "Charon — Chirp 3 HD"
