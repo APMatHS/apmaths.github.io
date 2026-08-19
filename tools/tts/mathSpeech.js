@@ -26,358 +26,178 @@
 
 "use strict";
 
-
 /* =========================================================
    Public API
    ========================================================= */
 
 function mathTextToSpeech(text) {
-
-    if (
-        typeof text !== "string" ||
-        !text.trim()
-    ) {
+    if (typeof text !== "string" || !text.trim()) {
         return text || "";
     }
 
     let result = text;
 
-
     /* ---------------------------------------------------------
        1. LaTeX inline: $...$
        --------------------------------------------------------- */
-
-    result = result.replace(
-        /\$([^$]+)\$/g,
-        (_, expression) => {
-            return latexToSpeech(expression);
-        }
-    );
-
+    result = result.replace(/\$([^$]+)\$/g, (_, expression) => {
+        return latexToSpeech(expression);
+    });
 
     /* ---------------------------------------------------------
        2. LaTeX inline: \(...\)
        --------------------------------------------------------- */
-
-    result = result.replace(
-        /\\\(([\s\S]*?)\\\)/g,
-        (_, expression) => {
-            return latexToSpeech(expression);
-        }
-    );
-
+    result = result.replace(/\\\(([\s\S]*?)\\\)/g, (_, expression) => {
+        return latexToSpeech(expression);
+    });
 
     /* ---------------------------------------------------------
        3. Unicode mathematical notation
        --------------------------------------------------------- */
-
     result = normalizeUnicodeMath(result);
-
 
     /* ---------------------------------------------------------
        4. Plain mathematical notation
        --------------------------------------------------------- */
-
     result = normalizePlainMath(result);
-
 
     return cleanup(result);
 }
-
 
 /* =========================================================
    LaTeX → Natural Vietnamese Speech
    ========================================================= */
 
 function latexToSpeech(expression) {
-
     let s = String(expression || "").trim();
 
     if (!s) {
         return "";
     }
 
-
     /* ---------------------------------------------------------
        Matrix / vector phải xử lý trước các phép thay thế khác.
        --------------------------------------------------------- */
-
     s = convertLatexMatrices(s);
-
     s = convertLatexVectors(s);
-
 
     /* ---------------------------------------------------------
        Remove visual formatting commands.
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\left|\\right/g,
-        ""
-    );
-
-    s = s.replace(
-        /\\[,;:!]/g,
-        " "
-    );
-
-    s = s.replace(
-        /\\quad|\\qquad/g,
-        " "
-    );
-
-    s = s.replace(
-        /\\text\s*\{([^{}]*)\}/g,
-        "$1"
-    );
-
-    s = s.replace(
-        /\\mathrm\s*\{([^{}]*)\}/g,
-        "$1"
-    );
-
-    s = s.replace(
-        /\\mathbf\s*\{([^{}]*)\}/g,
-        "$1"
-    );
-
+    s = s.replace(/\\left|\\right/g, "");
+    s = s.replace(/\\[,;:!]/g, " ");
+    s = s.replace(/\\quad|\\qquad/g, " ");
+    s = s.replace(/\\text\s*\{([^{}]*)\}/g, "$1");
+    s = s.replace(/\\mathrm\s*\{([^{}]*)\}/g, "$1");
+    s = s.replace(/\\mathbf\s*\{([^{}]*)\}/g, "$1");
 
     /* ---------------------------------------------------------
        Derivatives
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /([A-Za-zÀ-ỹ])\s*''\s*\(([^()]*)\)/g,
-        "$1 hai phẩy $2"
-    );
-
-    s = s.replace(
-        /([A-Za-zÀ-ỹ])\s*'\s*\(([^()]*)\)/g,
-        "$1 phẩy $2"
-    );
-
-    s = s.replace(
-        /([A-Za-zÀ-ỹ])''\b/g,
-        "$1 hai phẩy"
-    );
-
-    s = s.replace(
-        /([A-Za-zÀ-ỹ])'\b/g,
-        "$1 phẩy"
-    );
-
+    s = s.replace(/([A-Za-zÀ-ỹ])\s*''\s*\(([^()]*)\)/g, "$1 hai phẩy $2");
+    s = s.replace(/([A-Za-zÀ-ỹ])\s*'\s*\(([^()]*)\)/g, "$1 phẩy $2");
+    s = s.replace(/([A-Za-zÀ-ỹ])''\b/g, "$1 hai phẩy");
+    s = s.replace(/([A-Za-zÀ-ỹ])'\b/g, "$1 phẩy");
 
     /* ---------------------------------------------------------
        Fractions: \frac{a}{b}
        --------------------------------------------------------- */
-
     s = replaceFracCommands(s);
-
 
     /* ---------------------------------------------------------
        Square root
        --------------------------------------------------------- */
-
-    s = replaceBracedCommand(
-        s,
-        "sqrt",
-        value => {
-            return `căn bậc hai của ${latexToSpeech(value)}`;
-        }
-    );
-
+    s = replaceBracedCommand(s, "sqrt", value => {
+        return `căn bậc hai của ${latexToSpeech(value)}`;
+    });
 
     /* ---------------------------------------------------------
        N-th root
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\sqrt\s*\[([^\]]+)\]\s*\{([^{}]*)\}/g,
-        (_, n, value) => {
-            return (
-                `căn bậc ${latexToSpeech(n)} ` +
-                `của ${latexToSpeech(value)}`
-            );
-        }
-    );
-
+    s = s.replace(/\\sqrt\s*\[([^\]]+)\]\s*\{([^{}]*)\}/g, (_, n, value) => {
+        return `căn bậc ${latexToSpeech(n)} của ${latexToSpeech(value)}`;
+    });
 
     /* ---------------------------------------------------------
-       Integrals with limits
-
+       Definite integrals
        \int_0^1
        \int_{0}^{1}
+       \int\limits_0^1
+       \int\limits_{0}^{1}
+       → tích phân từ không đến một
        --------------------------------------------------------- */
+    s = s.replace(/\\int(?:\\limits)?\s*_\s*\{([^{}]*)\}\s*\^\s*\{([^{}]*)\}/g, (_, lower, upper) => {
+        return ` tích phân, từ ${latexToSpeech(lower)} đến ${latexToSpeech(upper)} `;
+    });
 
-   /* ---------------------------------------------------------
-   Definite integrals
-
-   \int_0^1
-   \int_{0}^{1}
-   \int\limits_0^1
-   \int\limits_{0}^{1}
-
-   → tích phân từ không đến một
-   --------------------------------------------------------- */
-
-s = s.replace(
-    /\\int(?:\\limits)?\s*_\s*\{([^{}]*)\}\s*\^\s*\{([^{}]*)\}/g,
-    (_, lower, upper) => {
-
-        return (
-            ` tích phân, từ ` +
-            `${latexToSpeech(lower)} ` +
-            `đến ` +
-            `${latexToSpeech(upper)} `
-        );
-    }
-);
-
-s = s.replace(
-    /\\int(?:\\limits)?\s*_\s*([A-Za-z0-9+\-]+)\s*\^\s*([A-Za-z0-9+\-]+)/g,
-    (_, lower, upper) => {
-
-        return (
-            ` tích phân, từ ` +
-            `${latexToSpeech(lower)} ` +
-            `đến ` +
-            `${latexToSpeech(upper)} `
-        );
-    }
-);
+    s = s.replace(/\\int(?:\\limits)?\s*_\s*([A-Za-z0-9+\-]+)\s*\^\s*([A-Za-z0-9+\-]+)/g, (_, lower, upper) => {
+        return ` tích phân, từ ${latexToSpeech(lower)} đến ${latexToSpeech(upper)} `;
+    });
 
     /* ---------------------------------------------------------
        Sums with limits
-
        \sum_{i=1}^{n}
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\sum_\{([^{}]+)\}\^\{([^{}]+)\}/g,
-        (_, lower, upper) => {
-            return (
-                `tổng từ ${latexToSpeech(lower)} ` +
-                `đến ${latexToSpeech(upper)} `
-            );
-        }
-    );
-
+    s = s.replace(/\\sum_\{([^{}]+)\}\^\{([^{}]+)\}/g, (_, lower, upper) => {
+        return `tổng từ ${latexToSpeech(lower)} đến ${latexToSpeech(upper)} `;
+    });
 
     /* ---------------------------------------------------------
        Products with limits
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\prod_\{([^{}]+)\}\^\{([^{}]+)\}/g,
-        (_, lower, upper) => {
-            return (
-                `tích từ ${latexToSpeech(lower)} ` +
-                `đến ${latexToSpeech(upper)} `
-            );
-        }
-    );
-
+    s = s.replace(/\\prod_\{([^{}]+)\}\^\{([^{}]+)\}/g, (_, lower, upper) => {
+        return `tích từ ${latexToSpeech(lower)} đến ${latexToSpeech(upper)} `;
+    });
 
     /* ---------------------------------------------------------
        Limits
-
        \lim_{x\to0}
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\lim_\{([^{}]+)\}/g,
-        (_, condition) => {
-            return (
-                `giới hạn khi ` +
-                `${latexToSpeech(condition)} `
-            );
-        }
-    );
-
+    s = s.replace(/\\lim_\{([^{}]+)\}/g, (_, condition) => {
+        return `giới hạn khi ${latexToSpeech(condition)} `;
+    });
 
     /* ---------------------------------------------------------
        Arrows
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\to/g,
-        " tiến tới "
-    );
-
-    s = s.replace(
-        /\\rightarrow/g,
-        " tiến tới "
-    );
-
-    s = s.replace(
-        /\\longrightarrow/g,
-        " tiến tới "
-    );
-
+    s = s.replace(/\\to/g, " tiến tới ");
+    s = s.replace(/\\rightarrow/g, " tiến tới ");
+    s = s.replace(/\\longrightarrow/g, " tiến tới ");
 
     /* ---------------------------------------------------------
        Calculus symbols
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\partial/g,
-        " đạo hàm riêng "
-    );
-
-    s = s.replace(
-        /\\nabla/g,
-        " nabla "
-    );
-
-    s = s.replace(
-        /\\infty/g,
-        " vô cùng "
-    );
-
+    s = s.replace(/\\partial/g, " đạo hàm riêng ");
+    s = s.replace(/\\nabla/g, " nabla ");
+    s = s.replace(/\\infty/g, " vô cùng ");
 
     /* ---------------------------------------------------------
        Trigonometric functions
        --------------------------------------------------------- */
-
     const functions = {
-
         "\\arcsin": "arc sin",
         "\\arccos": "arc cos",
         "\\arctan": "arc tan",
-
         "\\sin": "sin",
         "\\cos": "cos",
         "\\tan": "tan",
         "\\cot": "cot",
-
         "\\sinh": "sinh",
         "\\cosh": "cosh",
         "\\tanh": "tanh",
-
         "\\ln": "ln",
         "\\log": "log",
         "\\exp": "exp"
-
     };
 
-
-    for (
-        const [latex, spoken]
-        of Object.entries(functions)
-    ) {
-        s = s.replaceAll(
-            latex,
-            spoken
-        );
+    for (const [latex, spoken] of Object.entries(functions)) {
+        s = s.replaceAll(latex, spoken);
     }
-
 
     /* ---------------------------------------------------------
        Greek letters
        --------------------------------------------------------- */
-
     const greek = {
-
         "\\alpha": "alpha",
         "\\beta": "beta",
         "\\gamma": "gamma",
@@ -388,7 +208,6 @@ s = s.replace(
         "\\eta": "eta",
         "\\theta": "theta",
         "\\vartheta": "theta",
-
         "\\iota": "iota",
         "\\kappa": "kappa",
         "\\lambda": "lambda",
@@ -396,7 +215,6 @@ s = s.replace(
         "\\nu": "nu",
         "\\xi": "xi",
         "\\pi": "pi",
-
         "\\rho": "rho",
         "\\sigma": "sigma",
         "\\tau": "tau",
@@ -405,7 +223,6 @@ s = s.replace(
         "\\chi": "chi",
         "\\psi": "psi",
         "\\omega": "omega",
-
         "\\Gamma": "Gamma",
         "\\Delta": "Delta",
         "\\Theta": "Theta",
@@ -416,268 +233,107 @@ s = s.replace(
         "\\Phi": "Phi",
         "\\Psi": "Psi",
         "\\Omega": "Omega"
-
     };
 
-
-    for (
-        const [latex, spoken]
-        of Object.entries(greek)
-    ) {
-        s = s.replaceAll(
-            latex,
-            spoken
-        );
+    for (const [latex, spoken] of Object.entries(greek)) {
+        s = s.replaceAll(latex, spoken);
     }
 
     /* ---------------------------------------------------------
        Number sets
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\mathbb\s*\{R\}/g,
-        "R"
-    );
-
-    s = s.replace(
-        /\\mathbb\s*\{N\}/g,
-        "N"
-    );
-
-    s = s.replace(
-        /\\mathbb\s*\{Z\}/g,
-        "Z"
-    );
-
-    s = s.replace(
-        /\\mathbb\s*\{Q\}/g,
-        "Q"
-    );
-
-    s = s.replace(
-        /\\mathbb\s*\{C\}/g,
-        "C"
-    );
-
+    s = s.replace(/\\mathbb\s*\{R\}/g, "R");
+    s = s.replace(/\\mathbb\s*\{N\}/g, "N");
+    s = s.replace(/\\mathbb\s*\{Z\}/g, "Z");
+    s = s.replace(/\\mathbb\s*\{Q\}/g, "Q");
+    s = s.replace(/\\mathbb\s*\{C\}/g, "C");
 
     /* ---------------------------------------------------------
        Relations
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\leq|\\le/g,
-        " nhỏ hơn hoặc bằng "
-    );
-
-    s = s.replace(
-        /\\geq|\\ge/g,
-        " lớn hơn hoặc bằng "
-    );
-
-    s = s.replace(
-        /\\neq/g,
-        " khác "
-    );
-
-    s = s.replace(
-        /\\approx/g,
-        " xấp xỉ "
-    );
-
-    s = s.replace(
-        /\\equiv/g,
-        " đồng nhất "
-    );
-
-    s = s.replace(
-        /\\sim/g,
-        " tương đương "
-    );
-
-    s = s.replace(
-        /\\in/g,
-        " thuộc "
-    );
-
-    s = s.replace(
-        /\\notin/g,
-        " không thuộc "
-    );
-
-    s = s.replace(
-        /\\subseteq/g,
-        " là tập con của "
-    );
-
-    s = s.replace(
-        /\\subset/g,
-        " là tập con thực sự của "
-    );
-
+    s = s.replace(/\\leq|\\le/g, " nhỏ hơn hoặc bằng ");
+    s = s.replace(/\\geq|\\ge/g, " lớn hơn hoặc bằng ");
+    s = s.replace(/\\neq/g, " khác ");
+    s = s.replace(/\\approx/g, " xấp xỉ ");
+    s = s.replace(/\\equiv/g, " đồng nhất ");
+    s = s.replace(/\\sim/g, " tương đương ");
+    s = s.replace(/\\in/g, " thuộc ");
+    s = s.replace(/\\notin/g, " không thuộc ");
+    s = s.replace(/\\subseteq/g, " là tập con của ");
+    s = s.replace(/\\subset/g, " là tập con thực sự của ");
 
     /* ---------------------------------------------------------
        Set operations
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\cup/g,
-        " hợp "
-    );
-
-    s = s.replace(
-        /\\cap/g,
-        " giao "
-    );
-
-    s = s.replace(
-        /\\emptyset/g,
-        " tập rỗng "
-    );
-
+    s = s.replace(/\\cup/g, " hợp ");
+    s = s.replace(/\\cap/g, " giao ");
+    s = s.replace(/\\emptyset/g, " tập rỗng ");
 
     /* ---------------------------------------------------------
        Operators
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\cdot|\\times/g,
-        " nhân "
-    );
-
-    s = s.replace(
-        /·|×/g,
-        " nhân "
-    );
-
-    s = s.replace(
-        /\+/g,
-        " cộng "
-    );
-
-    s = s.replace(
-        /−|–|—/g,
-        " trừ "
-    );
-
-    s = s.replace(
-        /\*/g,
-        " nhân "
-    );
-
-    s = s.replace(
-        /=/g,
-        " bằng "
-    );
-
+    s = s.replace(/\\cdot|\\times/g, " nhân ");
+    s = s.replace(/·|×/g, " nhân ");
+    s = s.replace(/\+/g, " cộng ");
+    s = s.replace(/−|–|—/g, " trừ ");
+    s = s.replace(/\*/g, " nhân ");
+    s = s.replace(/=/g, " bằng ");
 
     /* ---------------------------------------------------------
        Superscripts
-
        x^2 -> x bình phương
        x^3 -> x lập phương
        x^n -> x mũ n
        --------------------------------------------------------- */
-
     s = replaceSuperscripts(s);
-
 
     /* ---------------------------------------------------------
        Subscripts
-
        x_1 -> x chỉ số một
        a_n -> a chỉ số n
        --------------------------------------------------------- */
-
     s = replaceSubscripts(s);
-
 
     /* ---------------------------------------------------------
        Function notation
-
        f(x) -> f x
        g(t) -> g t
-
        Không đọc "mở ngoặc / đóng ngoặc".
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /([A-Za-zÀ-ỹ])\s*\(\s*([^(),]+)\s*\)/g,
-        (_, name, argument) => {
-            return (
-                `${name} ` +
-                `${latexToSpeech(argument)}`
-            );
-        }
-    );
-
+    s = s.replace(/([A-Za-zÀ-ỹ])\s*\(\s*([^(),]+)\s*\)/g, (_, name, argument) => {
+        return `${name} ${latexToSpeech(argument)}`;
+    });
 
     /* ---------------------------------------------------------
        Derivative notation sau khi xử lý f(x)
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /([A-Za-zÀ-ỹ])\s+hai\s+phẩy\s+([A-Za-zÀ-ỹ0-9]+)/g,
-        "$1 hai phẩy $2"
-    );
-
-    s = s.replace(
-        /([A-Za-zÀ-ỹ])\s+phẩy\s+([A-Za-zÀ-ỹ0-9]+)/g,
-        "$1 phẩy $2"
-    );
-
+    s = s.replace(/([A-Za-zÀ-ỹ])\s+hai\s+phẩy\s+([A-Za-zÀ-ỹ0-9]+)/g, "$1 hai phẩy $2");
+    s = s.replace(/([A-Za-zÀ-ỹ])\s+phẩy\s+([A-Za-zÀ-ỹ0-9]+)/g, "$1 phẩy $2");
 
     /* ---------------------------------------------------------
        Absolute value
-
        |x| -> giá trị tuyệt đối của x
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\|([^|]+)\|/g,
-        (_, value) => {
-            return (
-                `giá trị tuyệt đối của ` +
-                `${latexToSpeech(value)}`
-            );
-        }
-    );
-
+    s = s.replace(/\|([^|]+)\|/g, (_, value) => {
+        return `giá trị tuyệt đối của ${latexToSpeech(value)}`;
+    });
 
     /* ---------------------------------------------------------
        Parentheses that remain
-
        At this point they are mathematical grouping.
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\(/g,
-        " mở ngoặc "
-    );
-
-    s = s.replace(
-        /\)/g,
-        " đóng ngoặc "
-    );
-
+    s = s.replace(/\(/g, " mở ngoặc ");
+    s = s.replace(/\)/g, " đóng ngoặc ");
 
     /* ---------------------------------------------------------
        Braces
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /[{}]/g,
-        " "
-    );
-
+    s = s.replace(/[{}]/g, " ");
 
     /* ---------------------------------------------------------
        Commas / semicolons
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /,/g,
-        " , "
-    );
+    s = s.replace(/,/g, " , ");
 
 
    /* =========================================================
@@ -685,927 +341,377 @@ s = s.replace(
    ========================================================= */
 
 /* det(A) -> định thức của A */
-s = s.replace(
-    /\\det\s*\(\s*([^()]*)\s*\)/g,
-    (_, value) => {
-        return `định thức của ${latexToSpeech(value)}`;
-    }
-);
-
+s = s.replace(/\\det\s*\(\s*([^()]*)\s*\)/g, (_, value) => {
+    return `định thức của ${latexToSpeech(value)}`;
+});
 
 /* operatorname{rank}(A) -> hạng của A */
-s = s.replace(
-    /\\operatorname\s*\{rank\}\s*\(\s*([^()]*)\s*\)/g,
-    (_, value) => {
-        return `hạng của ${latexToSpeech(value)}`;
-    }
-);
-
+s = s.replace(/\\operatorname\s*\{rank\}\s*\(\s*([^()]*)\s*\)/g, (_, value) => {
+    return `hạng của ${latexToSpeech(value)}`;
+});
 
 /* ker(A) -> hạt nhân của A */
-s = s.replace(
-    /\\ker\s*\(\s*([^()]*)\s*\)/g,
-    (_, value) => {
-        return `hạt nhân của ${latexToSpeech(value)}`;
-    }
-);
-
+s = s.replace(/\\ker\s*\(\s*([^()]*)\s*\)/g, (_, value) => {
+    return `hạt nhân của ${latexToSpeech(value)}`;
+});
 
 /* dim(V) -> số chiều của V */
-s = s.replace(
-    /\\dim\s*\(\s*([^()]*)\s*\)/g,
-    (_, value) => {
-        return `số chiều của ${latexToSpeech(value)}`;
-    }
-);
-
+s = s.replace(/\\dim\s*\(\s*([^()]*)\s*\)/g, (_, value) => {
+    return `số chiều của ${latexToSpeech(value)}`;
+});
 
 /* operatorname{tr}(A) -> vết của A */
-s = s.replace(
-    /\\operatorname\s*\{tr\}\s*\(\s*([^()]*)\s*\)/g,
-    (_, value) => {
-        return `vết của ${latexToSpeech(value)}`;
-    }
-);
-
+s = s.replace(/\\operatorname\s*\{tr\}\s*\(\s*([^()]*)\s*\)/g, (_, value) => {
+    return `vết của ${latexToSpeech(value)}`;
+});
 
 /* operatorname{Im}(A) -> ảnh của A */
-s = s.replace(
-    /\\operatorname\s*\{Im\}\s*\(\s*([^()]*)\s*\)/g,
-    (_, value) => {
-        return `ảnh của ${latexToSpeech(value)}`;
-    }
-);
-
+s = s.replace(/\\operatorname\s*\{Im\}\s*\(\s*([^()]*)\s*\)/g, (_, value) => {
+    return `ảnh của ${latexToSpeech(value)}`;
+});
 
 /* operatorname{diag}(1,2,3) -> ma trận đường chéo ... */
-s = s.replace(
-    /\\operatorname\s*\{diag\}\s*\(\s*([^()]*)\s*\)/g,
-    (_, value) => {
-        return `ma trận đường chéo ${latexToSpeech(value)}`;
-    }
-);
+s = s.replace(/\\operatorname\s*\{diag\}\s*\(\s*([^()]*)\s*\)/g, (_, value) => {
+    return `ma trận đường chéo ${latexToSpeech(value)}`;
+});
 
    /* =========================================================
    Matrix Operations
    ========================================================= */
 
 /* A \oplus B -> A tổng trực tiếp B */
-s = s.replace(
-    /\\oplus/g,
-    " tổng trực tiếp "
-);
-
+s = s.replace(/\\oplus/g, " tổng trực tiếp ");
 
 /* A \otimes B -> A tích tensor B */
-s = s.replace(
-    /\\otimes/g,
-    " tích tensor "
-);
+s = s.replace(/\\otimes/g, " tích tensor ");
 
    /* =========================================================
    Set Difference and Logic
    ========================================================= */
 
 /* A \setminus B -> A trừ B */
-s = s.replace(
-    /\\setminus/g,
-    " trừ "
-);
-
+s = s.replace(/\\setminus/g, " trừ ");
 
 /* \forall -> với mọi */
-s = s.replace(
-    /\\forall/g,
-    " với mọi "
-);
-
+s = s.replace(/\\forall/g, " với mọi ");
 
 /* \exists -> tồn tại */
-s = s.replace(
-    /\\exists/g,
-    " tồn tại "
-);
-
+s = s.replace(/\\exists/g, " tồn tại ");
 
 /* P \Rightarrow Q -> P suy ra Q */
-s = s.replace(
-    /\\Rightarrow/g,
-    " suy ra "
-);
-
+s = s.replace(/\\Rightarrow/g, " suy ra ");
 
 /* P \Leftrightarrow Q -> P khi và chỉ khi Q */
-s = s.replace(
-    /\\Leftrightarrow/g,
-    " khi và chỉ khi "
-);
-
+s = s.replace(/\\Leftrightarrow/g, " khi và chỉ khi ");
 
    /* =========================================================
    Norm and Inner Product
    ========================================================= */
 
 /* \lVert x \rVert -> chuẩn của x */
-s = s.replace(
-    /\\lVert\s*([^\\]+?)\s*\\rVert/g,
-    (_, value) => {
-        return `chuẩn của ${latexToSpeech(value)}`;
-    }
-);
-
+s = s.replace(/\\lVert\s*([^\\]+?)\s*\\rVert/g, (_, value) => {
+    return `chuẩn của ${latexToSpeech(value)}`;
+});
 
 /* \langle x,y \rangle -> tích vô hướng của x và y */
-s = s.replace(
-    /\\langle\s*([^,]+)\s*,\s*([^\\]+?)\s*\\rangle/g,
-    (_, left, right) => {
-        return (
-            `tích vô hướng của ` +
-            `${latexToSpeech(left)} và ${latexToSpeech(right)}`
-        );
-    }
-);
+s = s.replace(/\\langle\s*([^,]+)\s*,\s*([^\\]+?)\s*\\rangle/g, (_, left, right) => {
+    return `tích vô hướng của ${latexToSpeech(left)} và ${latexToSpeech(right)}`;
+});
 
    /* =========================================================
    Standard Number Sets
    ========================================================= */
 
-s = s.replace(
-    /\\mathbb\s*\{N\}/g,
-    " tập số tự nhiên "
-);
+s = s.replace(/\\mathbb\s*\{N\}/g, " tập số tự nhiên ");
+s = s.replace(/\\mathbb\s*\{Z\}/g, " tập số nguyên ");
+s = s.replace(/\\mathbb\s*\{Q\}/g, " tập số hữu tỉ ");
+s = s.replace(/\\mathbb\s*\{R\}/g, " tập số thực ");
+s = s.replace(/\\mathbb\s*\{C\}/g, " tập số phức ");
 
-s = s.replace(
-    /\\mathbb\s*\{Z\}/g,
-    " tập số nguyên "
-);
-
-s = s.replace(
-    /\\mathbb\s*\{Q\}/g,
-    " tập số hữu tỉ "
-);
-
-s = s.replace(
-    /\\mathbb\s*\{R\}/g,
-    " tập số thực "
-);
-
-s = s.replace(
-    /\\mathbb\s*\{C\}/g,
-    " tập số phức "
-);
-
-   
     /* ---------------------------------------------------------
        Remove unknown LaTeX commands
        --------------------------------------------------------- */
-
-    s = s.replace(
-        /\\[a-zA-Z]+/g,
-        " "
-    );
-
+    s = s.replace(/\\[a-zA-Z]+/g, " ");
 
     /* ---------------------------------------------------------
        Convert numbers into Vietnamese pronunciation
        for common small integers.
        --------------------------------------------------------- */
-
     s = convertSmallNumbers(s);
-
 
     return cleanup(s);
 }
-
 
 /* =========================================================
    Fractions
    ========================================================= */
 
 function replaceFracCommands(text) {
-
     let result = text;
-
     let changed = true;
-
 
     /*
      * Lặp lại để xử lý các fraction lồng nhau đơn giản.
      */
-
     while (changed) {
-
         changed = false;
+        const pattern = /\\(?:frac|dfrac|tfrac)\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g;
 
-        const pattern =
-            /\\(?:frac|dfrac|tfrac)\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g;
+        const next = result.replace(pattern, (_, numerator, denominator) => {
+            changed = true;
+            const n = latexToSpeech(numerator);
+            const d = latexToSpeech(denominator);
 
-        const next =
-            result.replace(
-                pattern,
-                (_, numerator, denominator) => {
+            /*
+             * 1/2, 1/3...
+             * đọc tự nhiên "một phần hai".
+             */
+            if (isSimpleNumerator(n) && isSimpleDenominator(d)) {
+                return `${n} phần ${d}`;
+            }
 
-                    changed = true;
-
-                    const n =
-                        latexToSpeech(
-                            numerator
-                        );
-
-                    const d =
-                        latexToSpeech(
-                            denominator
-                        );
-
-
-                    /*
-                     * 1/2, 1/3...
-                     * đọc tự nhiên "một phần hai".
-                     */
-
-                    if (
-                        isSimpleNumerator(n) &&
-                        isSimpleDenominator(d)
-                    ) {
-
-                        return (
-                            `${n} phần ${d}`
-                        );
-                    }
-
-
-                    return (
-                        `phân số ${n} trên ${d}`
-                    );
-                }
-            );
-
+            return `phân số ${n} trên ${d}`;
+        });
 
         result = next;
     }
 
-
     return result;
 }
 
-
 function isSimpleNumerator(value) {
-
-    return /^[a-zA-ZÀ-ỹ0-9 ]+$/.test(
-        String(value).trim()
-    );
+    return /^[a-zA-ZÀ-ỹ0-9 ]+$/.test(String(value).trim());
 }
-
 
 function isSimpleDenominator(value) {
-
-    return /^[a-zA-ZÀ-ỹ0-9 ]+$/.test(
-        String(value).trim()
-    );
+    return /^[a-zA-ZÀ-ỹ0-9 ]+$/.test(String(value).trim());
 }
-
 
 /* =========================================================
    Generic \command{...}
    ========================================================= */
 
-function replaceBracedCommand(
-    text,
-    command,
-    callback
-) {
+function replaceBracedCommand(text, command, callback) {
+    const pattern = new RegExp("\\\\" + command + "\\s*\\{([^{}]*)\\}", "g");
 
-    const pattern =
-        new RegExp(
-            "\\\\" +
-            command +
-            "\\s*\\{([^{}]*)\\}",
-            "g"
-        );
-
-
-    return text.replace(
-        pattern,
-        (_, value) => {
-            return callback(value);
-        }
-    );
+    return text.replace(pattern, (_, value) => {
+        return callback(value);
+    });
 }
-
 
 /* =========================================================
    Superscripts
    ========================================================= */
 
 function replaceSuperscripts(text) {
-
     let result = text;
 
-
     /* x^{2} */
-
-    result = result.replace(
-        /([A-Za-zÀ-ỹ0-9]+)\s*\^\s*\{([^{}]+)\}/g,
-        (_, base, exponent) => {
-
-            return (
-                `${base} ` +
-                `${exponentSpeech(exponent)}`
-            );
-        }
-    );
-
+    result = result.replace(/([A-Za-zÀ-ỹ0-9]+)\s*\^\s*\{([^{}]+)\}/g, (_, base, exponent) => {
+        return `${base} ${exponentSpeech(exponent)}`;
+    });
 
     /* x^2 */
-
-    result = result.replace(
-        /([A-Za-zÀ-ỹ0-9]+)\s*\^\s*([A-Za-zÀ-ỹ0-9]+)/g,
-        (_, base, exponent) => {
-
-            return (
-                `${base} ` +
-                `${exponentSpeech(exponent)}`
-            );
-        }
-    );
-
+    result = result.replace(/([A-Za-zÀ-ỹ0-9]+)\s*\^\s*([A-Za-zÀ-ỹ0-9]+)/g, (_, base, exponent) => {
+        return `${base} ${exponentSpeech(exponent)}`;
+    });
 
     return result;
 }
 
-
 function exponentSpeech(exponent) {
-
-    const value =
-        String(exponent).trim();
-
+    const value = String(exponent).trim();
 
     if (value === "2") {
         return "bình phương";
     }
 
-
     if (value === "3") {
         return "lập phương";
     }
 
-
-    return (
-        `mũ ${convertSmallNumberWord(value)}`
-    );
+    return `mũ ${convertSmallNumberWord(value)}`;
 }
 
 
 /* =========================================================
-   Subscripts
+   Fractions, Integrals, Roots & Core Operators
    ========================================================= */
 
-function replaceSubscripts(text) {
-
+function convertLatexStructure(text) {
     let result = text;
 
-
+    /* \frac{a}{b} -> a trên b */
     result = result.replace(
-        /([A-Za-zÀ-ỹ])_\{([^{}]+)\}/g,
-        (_, base, subscript) => {
-
-            return (
-                `${base} chỉ số ` +
-                `${convertSmallNumberWord(subscript)}`
-            );
-        }
+        /\\frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g,
+        (_, num, den) => `${latexToSpeech(num)} trên ${latexToSpeech(den)}`
     );
 
-
+    /* \sqrt{x} -> căn bậc hai của x | \sqrt[n]{x} -> căn bậc n của x */
     result = result.replace(
-        /([A-Za-zÀ-ỹ])_([A-Za-zÀ-ỹ0-9]+)/g,
-        (_, base, subscript) => {
-
-            return (
-                `${base} chỉ số ` +
-                `${convertSmallNumberWord(subscript)}`
-            );
-        }
+        /\\sqrt\s*\[\s*([^{}\]]+)\s*\]\s*\{([^{}]*)\}/g,
+        (_, root, val) => `căn bậc ${latexToSpeech(root)} của ${latexToSpeech(val)}`
+    );
+    result = result.replace(
+        /\\sqrt\s*\{([^{}]*)\}/g,
+        (_, val) => `căn bậc hai của ${latexToSpeech(val)}`
     );
 
+    /* \int_{a}^{b} -> tích phân từ a đến b */
+    result = result.replace(
+        /\\int_\{([^{}]*)\}\^\{([^{}]*)\}/g,
+        (_, lower, upper) => `tích phân từ ${latexToSpeech(lower)} đến ${latexToSpeech(upper)}`
+    );
+    result = result.replace(/\\int/g, " tích phân ");
+
+    /* \lim_{x \to a} -> giới hạn khi x tiến đến a */
+    result = result.replace(
+        /\\lim_\{([^{}]*)\\to\s*([^{}]*)\}/g,
+        (_, varName, target) => `giới hạn khi ${latexToSpeech(varName)} tiến đến ${latexToSpeech(target)}`
+    );
+
+    /* \sum_{i=1}^{n} -> tổng từ i=1 đến n */
+    result = result.replace(
+        /\\sum_\{([^{}]*)\}\^\{([^{}]*)\}/g,
+        (_, lower, upper) => `tổng từ ${latexToSpeech(lower)} đến ${latexToSpeech(upper)}`
+    );
 
     return result;
 }
 
-
-/* =========================================================
-   Unicode Math
-   ========================================================= */
-
-function normalizeUnicodeMath(text) {
-
-    let result =
-        String(text || "");
-
-
-    /* Powers */
-
-    result = result.replace(
-        /([A-Za-zÀ-ỹ0-9])²/g,
-        "$1^2"
-    );
-
-    result = result.replace(
-        /([A-Za-zÀ-ỹ0-9])³/g,
-        "$1^3"
-    );
-
-    result = result.replace(
-        /([A-Za-zÀ-ỹ0-9])⁴/g,
-        "$1^4"
-    );
-
-    result = result.replace(
-        /([A-Za-zÀ-ỹ0-9])⁵/g,
-        "$1^5"
-    );
-
-
-    /* Relations */
-
-    result = result.replace(
-        /≤/g,
-        " nhỏ hơn hoặc bằng "
-    );
-
-    result = result.replace(
-        /≥/g,
-        " lớn hơn hoặc bằng "
-    );
-
-    result = result.replace(
-        /≠/g,
-        " khác "
-    );
-
-    result = result.replace(
-        /≈/g,
-        " xấp xỉ "
-    );
-
-
-    /* Multiplication */
-
-    result = result.replace(
-        /×/g,
-        " nhân "
-    );
-
-
-    /* Minus */
-
-    result = result.replace(
-        /−/g,
-        " trừ "
-    );
-
-
-    return result;
-}
-
-/* =========================================================
-   Plain Mathematical Text
-   ========================================================= */
-
-function normalizePlainMath(text) {
-
-    let result =
-        String(text || "");
-
-
-    /* ---------------------------------------------------------
-       Common multiplication notation
-
-       2*x
-       2·x
-       --------------------------------------------------------- */
-
-    result = result.replace(
-        /(\d+)\s*\*\s*([A-Za-zÀ-ỹ])/g,
-        (_, number, variable) => {
-
-            return (
-                `${convertSmallNumberWord(number)} ` +
-                `nhân ${variable}`
-            );
-        }
-    );
-
-
-    result = result.replace(
-        /(\d+)\s*·\s*([A-Za-zÀ-ỹ])/g,
-        (_, number, variable) => {
-
-            return (
-                `${convertSmallNumberWord(number)} ` +
-                `nhân ${variable}`
-            );
-        }
-    );
-
-
-    /* ---------------------------------------------------------
-       Unicode multiplication
-       --------------------------------------------------------- */
-
-    result = result.replace(
-        /×/g,
-        " nhân "
-    );
-
-
-    /* ---------------------------------------------------------
-       Powers
-       --------------------------------------------------------- */
-
-    result =
-        replaceSuperscripts(result);
-
-
-    /* ---------------------------------------------------------
-       Common relation symbols
-       --------------------------------------------------------- */
-
-    result = result.replace(
-        /≤/g,
-        " nhỏ hơn hoặc bằng "
-    );
-
-    result = result.replace(
-        /≥/g,
-        " lớn hơn hoặc bằng "
-    );
-
-    result = result.replace(
-        /≠/g,
-        " khác "
-    );
-
-
-    /* ---------------------------------------------------------
-       Plain f(x), g(x), ...
-       --------------------------------------------------------- */
-
-    result = result.replace(
-        /([A-Za-zÀ-ỹ])\s*\(\s*([^(),]+)\s*\)/g,
-        (_, name, argument) => {
-
-            return (
-                `${name} ` +
-                `${argument}`
-            );
-        }
-    );
-
-
-    /*
-     * f'(x)
-     */
-
-    result = result.replace(
-        /([A-Za-zÀ-ỹ])'\s*\(\s*([^()]*)\s*\)/g,
-        (_, name, argument) => {
-
-            return (
-                `${name} phẩy ${argument}`
-            );
-        }
-    );
-
-
-    /*
-     * f''(x)
-     */
-
-    result = result.replace(
-        /([A-Za-zÀ-ỹ])''\s*\(\s*([^()]*)\s*\)/g,
-        (_, name, argument) => {
-
-            return (
-                `${name} hai phẩy ${argument}`
-            );
-        }
-    );
-
-
-    return result;
-}
-
-
-/* =========================================================
-   Vectors
-   ========================================================= */
-
-function convertLatexVectors(text) {
-
+function replaceSuperscripts(text) {
     let result = text;
 
-
-    /* \vec{v} */
-
+    /* x^{2} -> x bình phương | x^{3} -> x lập phương | x^{n} -> x mũ n */
     result = result.replace(
-        /\\vec\s*\{([^{}]*)\}/g,
-        (_, value) => {
-
-            return (
-                `vector ${latexToSpeech(value)}`
-            );
-        }
+        /([A-Za-zÀ-ỹ0-9])\^\{2\}/g,
+        "$1 bình phương"
+    );
+    result = result.replace(
+        /([A-Za-zÀ-ỹ0-9])\^\{3\}/g,
+        "$1 lập phương"
+    );
+    result = result.replace(
+        /([A-Za-zÀ-ỹ0-9])\^\{([^{}]+)\}/g,
+        (_, base, exp) => `${base} mũ ${convertSmallNumberWord(exp)}`
     );
 
-
-    /* \overrightarrow{AB} */
-
+    /* x^2, x^3, x^n */
     result = result.replace(
-        /\\overrightarrow\s*\{([^{}]*)\}/g,
-        (_, value) => {
-
-            return (
-                `vector ${latexToSpeech(value)}`
-            );
-        }
+        /([A-Za-zÀ-ỹ0-9])\^2\b/g,
+        "$1 bình phương"
     );
-
-
-    /* \mathbf{v} */
-
     result = result.replace(
-        /\\mathbf\s*\{([^{}]*)\}/g,
-        (_, value) => {
-
-            return (
-                `vector ${latexToSpeech(value)}`
-            );
-        }
+        /([A-Za-zÀ-ỹ0-9])\^3\b/g,
+        "$1 lập phương"
     );
-
+    result = result.replace(
+        /([A-Za-zÀ-ỹ0-9])\^([A-Za-zÀ-ỹ0-9]+)/g,
+        (_, base, exp) => `${base} mũ ${convertSmallNumberWord(exp)}`
+    );
 
     return result;
 }
 
-
 /* =========================================================
-   Matrices
+   LaTeX Main Converter
    ========================================================= */
 
-function convertLatexMatrices(text) {
+function latexToSpeech(latex) {
+    if (!latex) return "";
 
-    let result = text;
+    let result = String(latex);
 
+    // 1. Loại bỏ môi trường bao ngoài (như $...$ hoặc \[...\])
+    result = result.replace(/^\$+|\$+$|^\\\[|\\\]$/g, "").trim();
 
-    const environments = [
-        "pmatrix",
-        "bmatrix",
-        "Bmatrix",
-        "vmatrix",
-        "Vmatrix",
-        "matrix"
-    ];
+    // 2. Chuyển đổi Ma trận và Vector
+    result = convertLatexMatrices(result);
+    result = convertLatexVectors(result);
 
+    // 3. Chuyển đổi cấu trúc LaTeX phức tạp (phân số, căn, tích phân...)
+    result = convertLatexStructure(result);
 
-    for (
-        const environment
-        of environments
-    ) {
+    // 4. Chuyển đổi chỉ số trên và chỉ số dưới
+    result = replaceSuperscripts(result);
+    result = replaceSubscripts(result);
 
-        const pattern =
-            new RegExp(
-                "\\\\begin\\{" +
-                environment +
-                "\\}" +
-                "([\\s\\S]*?)" +
-                "\\\\end\\{" +
-                environment +
-                "\\}",
-                "g"
-            );
-
-
-        result =
-            result.replace(
-                pattern,
-                (_, content) => {
-
-                    return matrixToSpeech(
-                        content
-                    );
-                }
-            );
-    }
-
-
-    return result;
-}
-
-
-function matrixToSpeech(content) {
-
-    const rows =
-        String(content)
-            .split(/\\\\/);
-
-
-    const cleanRows =
-        rows
-            .map(
-                row =>
-                    row
-                        .split("&")
-                        .map(
-                            cell =>
-                                latexToSpeech(
-                                    cell
-                                )
-                        )
-                        .map(
-                            cell =>
-                                cleanup(cell)
-                        )
-            )
-            .filter(
-                row =>
-                    row.some(
-                        cell =>
-                            cell.length > 0
-                    )
-            );
-
-
-    if (!cleanRows.length) {
-        return "ma trận";
-    }
-
-
-    const rowCount =
-        cleanRows.length;
-
-
-    const columnCount =
-        Math.max(
-            ...cleanRows.map(
-                row => row.length
-            )
-        );
-
-
-    const spokenRows =
-        cleanRows.map(
-            (row, index) => {
-
-                const values =
-                    row.filter(
-                        value =>
-                            value.length > 0
-                    );
-
-
-                return (
-                    `hàng thứ ${index + 1} ` +
-                    values.join(" , ")
-                );
-            }
-        );
-
-
-    return (
-        `ma trận ${rowCount} hàng ` +
-        `${columnCount} cột, ` +
-        spokenRows.join("; ")
-    );
-}
-
-
-/* =========================================================
-   Small Number Conversion
-   ========================================================= */
-
-function convertSmallNumbers(text) {
-
-    const numbers = {
-
-        "0": "không",
-        "1": "một",
-        "2": "hai",
-        "3": "ba",
-        "4": "bốn",
-        "5": "năm",
-        "6": "sáu",
-        "7": "bảy",
-        "8": "tám",
-        "9": "chín",
-        "10": "mười",
-        "11": "mười một",
-        "12": "mười hai",
-        "13": "mười ba",
-        "14": "mười bốn",
-        "15": "mười lăm",
-        "16": "mười sáu",
-        "17": "mười bảy",
-        "18": "mười tám",
-        "19": "mười chín",
-        "20": "hai mươi"
-
+    // 5. Các ký hiệu LaTeX phổ biến
+    const latexSymbols = {
+        "\\\\alpha": "al-pha",
+        "\\\\beta": "bê-ta",
+        "\\\\gamma": "gam-ma",
+        "\\\\delta": "del-ta",
+        "\\\\pi": "pi",
+        "\\\\theta": "thê-ta",
+        "\\\\infty": "vô cực",
+        "\\\\pm": "cộng trừ",
+        "\\\\times": "nhân",
+        "\\\\div": "chia",
+        "\\\\cdot": "nhân",
+        "\\\\leq": "nhỏ hơn hoặc bằng",
+        "\\\\geq": "lớn hơn hoặc bằng",
+        "\\\\neq": "khác",
+        "\\\\approx": "xấp xỉ",
+        "\\\\to": "tiến đến",
+        "\\\\in": "thuộc",
+        "\\\\notin": "không thuộc",
+        "\\\\subset": "tập con của",
+        "\\\\forall": "với mọi",
+        "\\\\exists": "tồn tại"
     };
 
+    for (const [sym, spoken] of Object.entries(latexSymbols)) {
+        result = result.replace(new RegExp(sym, "g"), ` ${spoken} `);
+    }
 
-    return String(text || "")
-        .replace(
-            /\b(20|1[0-9]|[0-9])\b/g,
-            match =>
-                numbers[match] || match
-        );
+    // 6. Dọn dẹp ký tự thừa còn sót
+    result = result.replace(/[\{\}\\]/g, " ");
+
+    return cleanup(result);
 }
-
-
-function convertSmallNumberWord(value) {
-
-    const numbers = {
-
-        "0": "không",
-        "1": "một",
-        "2": "hai",
-        "3": "ba",
-        "4": "bốn",
-        "5": "năm",
-        "6": "sáu",
-        "7": "bảy",
-        "8": "tám",
-        "9": "chín",
-        "10": "mười",
-        "11": "mười một",
-        "12": "mười hai",
-        "13": "mười ba",
-        "14": "mười bốn",
-        "15": "mười lăm",
-        "16": "mười sáu",
-        "17": "mười bảy",
-        "18": "mười tám",
-        "19": "mười chín",
-        "20": "hai mươi"
-
-    };
-
-
-    const key =
-        String(value)
-            .trim();
-
-
-    return (
-        numbers[key] ||
-        key
-    );
-}
-
 
 /* =========================================================
-   Cleanup
+   Main Entry Point
    ========================================================= */
 
-function cleanup(text) {
+function mathTextToSpeech(text) {
+    if (!text) return "";
 
-    return String(text || "")
-        .replace(
-            /[ \t]+/g,
-            " "
-        )
-        .replace(
-            /\s+([,.!?;:])/g,
-            "$1"
-        )
-        .replace(
-            /([,.!?;:])([^\s])/g,
-            "$1 $2"
-        )
-        .replace(
-            /\s{2,}/g,
-            " "
-        )
-        .trim();
+    let result = String(text);
+
+    // Step 1: Chuẩn hóa Unicode Math cơ bản
+    result = normalizeUnicodeMath(result);
+
+    // Step 2: Tìm và xử lý các đoạn công thức LaTeX ($...$ hoặc \[...\])
+    result = result.replace(/\$\$(.*?)\$\$/g, (_, math) => latexToSpeech(math));
+    result = result.replace(/\$(.*?)\$/g, (_, math) => latexToSpeech(math));
+    result = result.replace(/\\\[(.*?)\\\]/g, (_, math) => latexToSpeech(math));
+
+    // Step 3: Chuẩn hóa toán dạng văn bản thuần còn lại
+    result = normalizePlainMath(result);
+
+    // Step 4: Chuyển đổi số nhỏ thành chữ nói tự nhiên
+    result = convertSmallNumbers(result);
+
+    // Step 5: Dọn dẹp khoảng trắng & dấu câu
+    return cleanup(result);
 }
 
-
 /* =========================================================
-   Public Namespace
+   Public Namespace Export
    ========================================================= */
 
 window.APMathsMathSpeech = {
-
     mathTextToSpeech,
-
     latexToSpeech,
-
     normalizePlainMath,
-
     normalizeUnicodeMath,
-
     convertLatexMatrices,
-
-    convertLatexVectors
-
+    convertLatexVectors,
+    replaceSuperscripts,
+    replaceSubscripts,
+    convertSmallNumbers,
+    convertSmallNumberWord,
+    cleanup
 };
