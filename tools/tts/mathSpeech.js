@@ -680,6 +680,182 @@ s = s.replace(
     );
 
 
+   /* =========================================================
+   Named Linear Algebra Operators
+   ========================================================= */
+
+/* det(A) -> định thức của A */
+s = s.replace(
+    /\\det\s*\(\s*([^()]*)\s*\)/g,
+    (_, value) => {
+        return `định thức của ${latexToSpeech(value)}`;
+    }
+);
+
+
+/* operatorname{rank}(A) -> hạng của A */
+s = s.replace(
+    /\\operatorname\s*\{rank\}\s*\(\s*([^()]*)\s*\)/g,
+    (_, value) => {
+        return `hạng của ${latexToSpeech(value)}`;
+    }
+);
+
+
+/* ker(A) -> hạt nhân của A */
+s = s.replace(
+    /\\ker\s*\(\s*([^()]*)\s*\)/g,
+    (_, value) => {
+        return `hạt nhân của ${latexToSpeech(value)}`;
+    }
+);
+
+
+/* dim(V) -> số chiều của V */
+s = s.replace(
+    /\\dim\s*\(\s*([^()]*)\s*\)/g,
+    (_, value) => {
+        return `số chiều của ${latexToSpeech(value)}`;
+    }
+);
+
+
+/* operatorname{tr}(A) -> vết của A */
+s = s.replace(
+    /\\operatorname\s*\{tr\}\s*\(\s*([^()]*)\s*\)/g,
+    (_, value) => {
+        return `vết của ${latexToSpeech(value)}`;
+    }
+);
+
+
+/* operatorname{Im}(A) -> ảnh của A */
+s = s.replace(
+    /\\operatorname\s*\{Im\}\s*\(\s*([^()]*)\s*\)/g,
+    (_, value) => {
+        return `ảnh của ${latexToSpeech(value)}`;
+    }
+);
+
+
+/* operatorname{diag}(1,2,3) -> ma trận đường chéo ... */
+s = s.replace(
+    /\\operatorname\s*\{diag\}\s*\(\s*([^()]*)\s*\)/g,
+    (_, value) => {
+        return `ma trận đường chéo ${latexToSpeech(value)}`;
+    }
+);
+
+   /* =========================================================
+   Matrix Operations
+   ========================================================= */
+
+/* A \oplus B -> A tổng trực tiếp B */
+s = s.replace(
+    /\\oplus/g,
+    " tổng trực tiếp "
+);
+
+
+/* A \otimes B -> A tích tensor B */
+s = s.replace(
+    /\\otimes/g,
+    " tích tensor "
+);
+
+   /* =========================================================
+   Set Difference and Logic
+   ========================================================= */
+
+/* A \setminus B -> A trừ B */
+s = s.replace(
+    /\\setminus/g,
+    " trừ "
+);
+
+
+/* \forall -> với mọi */
+s = s.replace(
+    /\\forall/g,
+    " với mọi "
+);
+
+
+/* \exists -> tồn tại */
+s = s.replace(
+    /\\exists/g,
+    " tồn tại "
+);
+
+
+/* P \Rightarrow Q -> P suy ra Q */
+s = s.replace(
+    /\\Rightarrow/g,
+    " suy ra "
+);
+
+
+/* P \Leftrightarrow Q -> P khi và chỉ khi Q */
+s = s.replace(
+    /\\Leftrightarrow/g,
+    " khi và chỉ khi "
+);
+
+
+   /* =========================================================
+   Norm and Inner Product
+   ========================================================= */
+
+/* \lVert x \rVert -> chuẩn của x */
+s = s.replace(
+    /\\lVert\s*([^\\]+?)\s*\\rVert/g,
+    (_, value) => {
+        return `chuẩn của ${latexToSpeech(value)}`;
+    }
+);
+
+
+/* \langle x,y \rangle -> tích vô hướng của x và y */
+s = s.replace(
+    /\\langle\s*([^,]+)\s*,\s*([^\\]+?)\s*\\rangle/g,
+    (_, left, right) => {
+        return (
+            `tích vô hướng của ` +
+            `${latexToSpeech(left)} và ${latexToSpeech(right)}`
+        );
+    }
+);
+
+   /* =========================================================
+   Standard Number Sets
+   ========================================================= */
+
+s = s.replace(
+    /\\mathbb\s*\{N\}/g,
+    " tập số tự nhiên "
+);
+
+s = s.replace(
+    /\\mathbb\s*\{Z\}/g,
+    " tập số nguyên "
+);
+
+s = s.replace(
+    /\\mathbb\s*\{Q\}/g,
+    " tập số hữu tỉ "
+);
+
+s = s.replace(
+    /\\mathbb\s*\{R\}/g,
+    " tập số thực "
+);
+
+s = s.replace(
+    /\\mathbb\s*\{C\}/g,
+    " tập số phức "
+);
+
+   
     /* ---------------------------------------------------------
        Remove unknown LaTeX commands
        --------------------------------------------------------- */
