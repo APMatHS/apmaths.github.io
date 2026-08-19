@@ -76,13 +76,49 @@ const GEMINI_VOICES = [
     { value: "Kore", label: "Kore — Chắc chắn" }
 ];
 
+const CLOUD_VOICES = [
+    {
+        value: "vi-VN-Chirp3-HD-Charon",
+        label: "Charon — Chirp 3 HD"
+    }
+];
+
 /* =========================================================
    Update Voice List
    ========================================================= */
 
 function updateVoiceList() {
     const previousVoice = voiceSelect.value;
-    const voices = GEMINI_VOICES;
+
+    const voices =
+        engineSelect.value === "cloud"
+            ? CLOUD_VOICES
+            : GEMINI_VOICES;
+
+    voiceSelect.innerHTML = "";
+
+    voices.forEach(voice => {
+        const option = document.createElement("option");
+
+        option.value = voice.value;
+        option.textContent = voice.label;
+
+        voiceSelect.appendChild(option);
+    });
+
+    const exists =
+        voices.some(
+            voice =>
+                voice.value === previousVoice
+        );
+
+    if (exists) {
+        voiceSelect.value = previousVoice;
+    } else {
+        voiceSelect.value =
+            voices[0]?.value || "";
+    }
+}
 
     /* Clear current options */
     voiceSelect.innerHTML = "";
@@ -110,6 +146,11 @@ function updateVoiceList() {
    ========================================================= */
 
 modelSelect.addEventListener("change", () => {
+    updateVoiceList();
+    setStatus("");
+});
+
+engineSelect.addEventListener("change", () => {
     updateVoiceList();
     setStatus("");
 });
@@ -365,22 +406,24 @@ audioPlayer.addEventListener("ended", () => {
    ========================================================= */
 
 function setAudioSource(blob) {
-    /* Revoke old URL */
     if (currentAudioUrl) {
         URL.revokeObjectURL(currentAudioUrl);
     }
 
-    /* Create URL */
-    currentAudioUrl = URL.createObjectURL(blob);
+    currentAudioUrl =
+        URL.createObjectURL(blob);
 
-    /* Audio player */
-    audioPlayer.src = currentAudioUrl;
+    audioPlayer.src =
+        currentAudioUrl;
 
-    /* Download */
-    downloadButton.href = currentAudioUrl;
-    downloadButton.download = "gemini-tts.wav";
+    downloadButton.href =
+        currentAudioUrl;
 
-    /* Show audio section */
+    downloadButton.download =
+        engineSelect.value === "cloud"
+            ? "chirp-3-tts.mp3"
+            : "gemini-tts.wav";
+
     audioSection.hidden = false;
 }
 
