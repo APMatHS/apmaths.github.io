@@ -119,27 +119,10 @@ function updateVoiceList() {
             voices[0]?.value || "";
     }
 }
-
     /* Clear current options */
     voiceSelect.innerHTML = "";
 
-    /* Add voices */
-    voices.forEach(voice => {
-        const option = document.createElement("option");
-        option.value = voice.value;
-        option.textContent = voice.label;
-        voiceSelect.appendChild(option);
-    });
-
-    /* Restore previous voice */
-    const exists = voices.some(voice => voice.value === previousVoice);
-
-    if (exists) {
-        voiceSelect.value = previousVoice;
-    } else {
-        voiceSelect.value = "Achernar";
-    }
-}
+ 
 
 /* =========================================================
    Model Change
@@ -227,9 +210,16 @@ async function generateSpeech() {
     }
 
     /* Get settings */
-    const model = modelSelect.value;
    const engine = engineSelect.value;
-    const voice = voiceSelect.value;
+
+const model =
+    engine === "cloud"
+        ? "chirp-3-hd"
+        : modelSelect.value;
+
+const voice = voiceSelect.value;
+
+   
     const speed = Number(speedRange.value);
     const instructions = instructionsInput.value.trim();
 
