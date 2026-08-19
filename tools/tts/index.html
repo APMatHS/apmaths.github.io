@@ -1,423 +1,129 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>APMaths Text to Speech</title>
-
-    <meta
-        name="description"
-        content="Chuyển văn bản thành giọng nói bằng Gemini TTS."
-    >
-
-    <meta
-        name="author"
-        content="APMaths"
-    >
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <meta name="description" content="Chuyển văn bản thành giọng nói bằng Gemini TTS.">
+    <meta name="author" content="APMaths">
+    <link rel="stylesheet" href="style.css">
 </head>
-
-
 <body>
 
-
-    <!-- =================================================
-         HEADER
-         ================================================= -->
-
     <header class="site-header">
-
         <div class="container">
-
-            <h1>
-                APMaths Text to Speech
-            </h1>
-
-            <p>
-                Chuyển văn bản thành giọng nói sử dụng Gemini
-            </p>
-
+            <h1>APMaths Text to Speech</h1>
+            <p>Chuyển văn bản thành giọng nói sử dụng Gemini</p>
         </div>
-
     </header>
 
-
-    <!-- =================================================
-         MAIN
-         ================================================= -->
-
     <main class="container">
-
         <section class="tts-card">
-
             <div class="tts-layout">
 
-
-                <!-- =========================================
-                     COLUMN 1: TEXT + AUDIO
-                     ========================================= -->
-
+                <!-- COLUMN 1: TEXT + AUDIO -->
                 <div class="text-column">
-
-
-                    <!-- =====================================
-                         Text Input
-                         ===================================== -->
-
                     <div class="form-group text-group">
-
-                        <label for="textInput">
-                            Văn bản
-                        </label>
-
-                        <textarea
-                            id="textInput"
-                            placeholder="Nhập văn bản bạn muốn chuyển thành giọng nói..."
-                        ></textarea>
-
+                        <label for="textInput">Văn bản</label>
+                        <textarea id="textInput" placeholder="Nhập văn bản bạn muốn chuyển thành giọng nói..."></textarea>
                         <div class="text-info">
-
-                            <span id="charCount">
-                                0 ký tự
-                            </span>
-
+                            <span id="charCount">0 ký tự</span>
                         </div>
-
                     </div>
 
-
-                    <!-- =====================================
-                         Audio
-                         ===================================== -->
-
-                    <section
-                        id="audioSection"
-                        class="audio-section"
-                        hidden
-                    >
-
-                        <h2>
-                            Audio
-                        </h2>
-
+                    <section id="audioSection" class="audio-section" hidden>
+                        <h2>Audio</h2>
                         <div class="audio-row">
-
-                            <audio
-                                id="audioPlayer"
-                                controls
-                                preload="metadata"
-                            ></audio>
-                            <a
-    id="downloadButton"
-    class="download-button"
-    href="#"
-    download="gemini-tts.wav"
->
-    ↓ Tải xuống
-</a>
-
+                            <audio id="audioPlayer" controls preload="metadata"></audio>
+                            <a id="downloadButton" class="download-button" href="#" download="gemini-tts.wav">↓ Tải xuống</a>
                         </div>
-
                     </section>
-
-
                 </div>
 
-
-                <!-- =========================================
-                     COLUMN 2: SETTINGS
-                     ========================================= -->
-
+                <!-- COLUMN 2: SETTINGS -->
                 <div class="settings-column">
-
-                    <!-- =====================================
-                        Engine
-                         ===================================== -->
-
+                    <div class="form-group">
+                        <label for="engineSelect">Engine</label>
+                        <select id="engineSelect">
+                            <option value="cloud">Google Cloud TTS — Chirp 3 HD</option>
+                            <option value="gemini">Gemini API — tạm ngưng</option>
+                        </select>
+                    </div>
 
                     <div class="form-group">
-
-    <label for="engineSelect">
-        Engine
-    </label>
-
-    <select id="engineSelect">
-        <option value="cloud">
-            Google Cloud TTS
-        </option>
-        <option value="gemini">
-            Gemini API (out of credit)
-        </option>
-
-    </select>
-
-</div>
-
-
-                    <!-- =====================================
-                         Model
-                         ===================================== -->
-
-                    <div class="form-group">
-
-                        <label for="modelSelect">
-                            Mô hình
-                        </label>
-
+                        <label for="modelSelect">Model</label>
                         <select id="modelSelect">
-
-                            <option
-                                value="gemini-3.1-flash-tts-preview"
-                            >
-                                Gemini 3.1 Flash TTS
-                            </option>
-
-                            <option
-                                value="gemini-2.5-flash-preview-tts"
-                            >
-                                Gemini 2.5 Flash TTS
-                            </option>
-
+                            <option value="chirp-3-hd">Chirp 3 HD</option>
+                            <option value="gemini-3.1-flash-tts-preview">Gemini 3.1 Flash TTS</option>
+                            <option value="gemini-2.5-flash-preview-tts">Gemini 2.5 Flash TTS</option>
                         </select>
-
                     </div>
 
-
-                    <!-- =====================================
-                         Voice
-                         ===================================== -->
-
                     <div class="form-group">
-
-                        <label for="voiceSelect">
-                            Giọng nói
-                        </label>
-
+                        <label for="voiceSelect">Giọng nói</label>
                         <select id="voiceSelect"></select>
-
                     </div>
 
-
-                    <!-- =====================================
-                         Lecturer Profile
-                         ===================================== -->
-
                     <div class="form-group">
-
-                        <label for="profileSelect">
-                            Phong cách giảng viên
-                        </label>
-
+                        <label for="profileSelect">Phong cách giảng viên</label>
                         <select id="profileSelect">
-
-                            <option value="math">
-                                Giảng viên Toán — APMaths
-                            </option>
-
-                            <option value="physics">
-                                Giảng viên Vật lý — APMaths
-                            </option>
-
-                            <option value="philosophy">
-                                Giảng viên Triết — APMaths
-                            </option>
-
-                            <option value="english">
-                                Giảng viên Tiếng Anh — APMaths
-                            </option>
-
+                            <option value="math">Giảng viên Toán — APMaths</option>
+                            <option value="physics">Giảng viên Vật lý — APMaths</option>
+                            <option value="philosophy">Giảng viên Triết — APMaths</option>
+                            <option value="english">Giảng viên Tiếng Anh — APMaths</option>
                         </select>
-
                     </div>
-
-
-                    <!-- =====================================
-                         Additional Instructions
-                         ===================================== -->
 
                     <div class="form-group">
-
                         <label for="instructionsInput">
-
-                            Hướng dẫn thêm
-
-                            <span class="optional">
-                                (tùy chọn)
-                            </span>
-
+                            Hướng dẫn thêm <span class="optional">(tùy chọn)</span>
                         </label>
-
-                        <textarea
-                            id="instructionsInput"
-                            class="instructions-input"
-                            rows="4"
-                            placeholder="Ví dụ: Đọc như một giảng viên Toán đại học, rõ ràng, tự nhiên, điềm tĩnh..."
-                        ></textarea>
-
+                        <textarea id="instructionsInput" class="instructions-input" rows="4" placeholder="Ví dụ: Đọc như một giảng viên Toán đại học, rõ ràng, tự nhiên, điềm tĩnh..."></textarea>
                     </div>
-
-
-                    <!-- =====================================
-                         Speed + Actions
-                         ===================================== -->
 
                     <div class="control-row">
-
-
-                        <!-- Speed -->
-
                         <div class="speed-control">
-
                             <label for="speedRange">
-
-                                Tốc độ:
-
-                                <span id="speedValue">
-                                    1.0×
-                                </span>
-
+                                Tốc độ: <span id="speedValue">1.0×</span>
                             </label>
-
-                            <input
-                                type="range"
-                                id="speedRange"
-                                min="0.5"
-                                max="2"
-                                step="0.1"
-                                value="1"
-                            >
-
+                            <input type="range" id="speedRange" min="0.5" max="2" step="0.1" value="1">
                         </div>
-
-
-                        <!-- Actions -->
 
                         <div class="actions">
-
-                            <button
-                                id="generateButton"
-                                class="primary-button"
-                                type="button"
-                            >
-                                🔊 Tạo
-                            </button>
-
-
-                            <button
-                                id="stopButton"
-                                class="secondary-button"
-                                type="button"
-                                disabled
-                            >
-                                ⏹ Dừng
-                            </button>
-
+                            <button id="generateButton" class="primary-button" type="button">🔊 Tạo</button>
+                            <button id="stopButton" class="secondary-button" type="button" disabled>⏹ Dừng</button>
                         </div>
-
-
                     </div>
 
-
-                    <!-- =====================================
-                         Status
-                         ===================================== -->
-
-                    <div
-                        id="status"
-                        class="status"
-                        aria-live="polite"
-                    ></div>
-
-
+                    <div id="status" class="status" aria-live="polite"></div>
                 </div>
 
             </div>
-
         </section>
-
     </main>
 
-
-    <!-- =================================================
-         FOOTER
-         ================================================= -->
-
     <footer class="site-footer">
-
         <div class="container">
-
-
             <div class="footer-brand">
                 APMaths Gemini TTS. <a href="huong-dan.html" target="_blank" rel="noreferrer">Hướng dẫn sử dụng</a>
             </div>
-
-
             <p class="footer-description">
-
                 Công cụ chuyển văn bản thành âm thanh bằng công nghệ Gemini.
                 Hỗ trợ đọc tiếng Việt, tiếng Anh và đặc biệt phù hợp với
                 nội dung có công thức Toán viết dưới dạng $...$.
-
             </p>
-
-
             <div class="footer-models">
-
-                Gemini 2.5 Flash TTS
-
-                <span>·</span>
-
-                Gemini 3.1 Flash TTS
-
+                Gemini 2.5 Flash TTS <span>·</span> Gemini 3.1 Flash TTS
             </div>
-
-
             <div class="footer-meta">
-
-                <span>
-                    Phát triển bởi
-                    <strong>
-                        Phan Hoàng Nam
-                    </strong>
-                </span>
-
-                <span>
-                    Phiên bản V1
-                </span>
-
-                <span>
-                    ©
-                    <span id="currentYear"></span>
-                    APMaths
-                </span>
-
+                <span>Phát triển bởi <strong>Phan Hoàng Nam</strong></span>
+                <span>Phiên bản V1</span>
+                <span>© <span id="currentYear"></span> APMaths</span>
             </div>
-
-
         </div>
-
     </footer>
 
-
-    <!-- =================================================
-         JavaScript
-         ================================================= -->
     <script src="mathSpeech.js"></script>
     <script src="script.js"></script>
-
-
 </body>
-
 </html>
