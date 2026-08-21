@@ -59,7 +59,7 @@
         /* Header */
         header { background: #ffffff; border-bottom: 1px solid #e5e7eb; }
         .header-inner {
-            min-height: 66px;
+            min-height: 56px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -159,6 +159,47 @@
             .buttons { flex-direction: column; }
             button { width: 100%; }
             .options { justify-content: space-between; }
+
+        /* =====================================
+   Compact layout - đưa nút lên cao hơn
+   ===================================== */
+
+main {
+    padding-top: 26px;
+}
+
+.hero {
+    margin-bottom: 20px;
+}
+
+.hero h1 {
+    margin-bottom: 6px;
+    font-size: clamp(28px, 4vw, 38px);
+}
+
+.hero p {
+    line-height: 1.5;
+}
+
+.qr-card {
+    padding: 22px 28px;
+}
+
+textarea {
+    min-height: 95px;
+}
+
+.input-info {
+    margin-top: 4px;
+}
+
+.options {
+    margin-top: 12px;
+}
+
+.buttons {
+    margin-top: 12px;
+}
         }
     </style>
 </head>
