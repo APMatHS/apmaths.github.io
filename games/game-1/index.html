@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071019">
+  <meta name="description" content="Game mê cung sinh tồn: tìm đường, tránh quái vật và tận dụng các ô an toàn.">
+  <title>Game 1 — Mê cung bóng tối</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main id="game-app" class="game-app">
+    <header class="game-header">
+      <div class="brand" aria-label="Game 1">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <div>
+          <p class="brand__eyebrow">GAME 1</p>
+          <h1 class="brand__title">Mê cung bóng tối</h1>
+        </div>
+      </div>
+
+      <div class="status-bar" aria-label="Trạng thái trò chơi">
+        <div class="status-item" title="Số mạng còn lại">
+          <span class="status-item__label">Mạng</span>
+          <div id="lives" class="lives" aria-label="3 mạng">
+            <span class="heart">♥</span>
+            <span class="heart">♥</span>
+            <span class="heart">♥</span>
+          </div>
+        </div>
+        <div class="status-item status-item--optional">
+          <span class="status-item__label">Ô an toàn</span>
+          <strong id="safe-count" class="status-item__value">0</strong>
+        </div>
+        <div class="status-item status-item--score status-item--optional">
+          <span class="status-item__label">Bước</span>
+          <strong id="move-count" class="status-item__value">0</strong>
+        </div>
+        <div class="status-item status-item--score">
+          <span class="status-item__label">Thời gian</span>
+          <strong id="time-count" class="status-item__value">00:00</strong>
+        </div>
+        <button id="pause-button" class="icon-button" type="button" aria-label="Tạm dừng trò chơi" title="Tạm dừng">
+          <span aria-hidden="true">Ⅱ</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="game-shell" aria-label="Khu vực trò chơi">
+      <div id="game-stage" class="game-stage">
+        <canvas id="game-canvas" aria-label="Mê cung của Game 1">
+          Trình duyệt của bạn không hỗ trợ Canvas.
+        </canvas>
+
+        <div id="loading-screen" class="screen screen--visible" role="status" aria-live="polite">
+          <div class="screen__panel">
+            <div class="loader" aria-hidden="true"></div>
+            <p>Đang tạo mê cung…</p>
+          </div>
+        </div>
+
+        <div id="start-screen" class="screen" role="dialog" aria-modal="true" aria-labelledby="start-title">
+          <div class="screen__panel screen__panel--large">
+            <p class="screen__eyebrow">Bạn có 3 mạng</p>
+            <h2 id="start-title">Thoát khỏi mê cung</h2>
+            <p class="screen__description">Tìm lối ra, ghi nhớ các ô SAFE và tránh tầm nhìn của quái vật.</p>
+            <ul class="rules">
+              <li><span class="rule-icon rule-icon--player"></span>Di chuyển từng ô bằng phím mũi tên, WASD hoặc chuột.</li>
+              <li><span class="rule-icon rule-icon--safe"></span>Ô SAFE là điểm trở lại gần nhất khi mất mạng.</li>
+              <li><span class="rule-icon rule-icon--monster"></span>Tường có thể che tầm nhìn 4 ô của quái vật.</li>
+            </ul>
+            <button id="start-button" class="primary-button" type="button">Bắt đầu</button>
+          </div>
+        </div>
+
+        <div id="pause-screen" class="screen" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+          <div class="screen__panel">
+            <p class="screen__eyebrow">Game 1</p>
+            <h2 id="pause-title">Đã tạm dừng</h2>
+            <button id="resume-button" class="primary-button" type="button">Tiếp tục</button>
+          </div>
+        </div>
+
+        <div id="result-screen" class="screen" role="dialog" aria-modal="true" aria-labelledby="result-title">
+          <div class="screen__panel">
+            <p id="result-eyebrow" class="screen__eyebrow">Kết quả</p>
+            <h2 id="result-title">Bạn đã thoát!</h2>
+            <p id="result-message" class="screen__description">Mê cung không thể giữ chân bạn.</p>
+            <p id="result-score" class="result-score"></p>
+            <button id="restart-button" class="primary-button" type="button">Chơi lại</button>
+          </div>
+        </div>
+
+        <div id="score-entry-screen" class="screen" role="dialog" aria-modal="true" aria-labelledby="score-entry-title">
+          <form id="score-entry-form" class="screen__panel score-form">
+            <p class="screen__eyebrow">Kỷ lục mới</p>
+            <h2 id="score-entry-title">Bạn vào Top 10!</h2>
+            <p id="score-entry-summary" class="screen__description"></p>
+            <label for="player-name">Tên hiển thị</label>
+            <input id="player-name" name="playerName" type="text" maxlength="20" autocomplete="nickname" required placeholder="Nhập tên của bạn">
+            <p id="score-entry-error" class="form-error" role="alert"></p>
+            <div class="button-row">
+              <button id="skip-score-button" class="secondary-button" type="button">Bỏ qua</button>
+              <button id="save-score-button" class="primary-button" type="submit">Lưu kỷ lục</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="leaderboard-screen" class="screen" role="dialog" aria-modal="true" aria-labelledby="leaderboard-title">
+          <div class="screen__panel leaderboard-panel">
+            <p class="screen__eyebrow">Game 1</p>
+            <h2 id="leaderboard-title">Kỷ lục mọi thời đại</h2>
+            <div id="leaderboard-content" class="leaderboard-content" aria-live="polite">Đang tải…</div>
+            <button id="close-leaderboard-button" class="secondary-button" type="button">Đóng</button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="game-footer">
+        <p><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> hoặc <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> để di chuyển</p>
+        <button id="leaderboard-button" class="leaderboard-link" type="button">🏆 Kỷ lục mọi thời đại</button>
+      </footer>
+    </section>
+  </main>
+
+  <noscript>Game 1 cần JavaScript để hoạt động.</noscript>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

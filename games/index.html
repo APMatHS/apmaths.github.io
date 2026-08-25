@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games | APMaths</title>
+    <meta name="description" content="Các trò chơi trực tuyến miễn phí trên APMaths.">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+        .container {
+            width: min(1100px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .header-inner {
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111827;
+            text-decoration: none;
+        }
+        .brand span {
+            color: #2563eb;
+        }
+        .games-link {
+            text-decoration: none;
+            color: #4b5563;
+            font-size: 15px;
+        }
+        .games-link:hover {
+            color: #2563eb;
+        }
+
+        /* Main */
+        main {
+            min-height: calc(100vh - 129px);
+            padding: 32px 0 56px;
+        }
+        .hero {
+            text-align: center;
+            margin-bottom: 26px;
+        }
+        .hero h1 {
+            margin: 0 0 5px;
+            font-size: clamp(30px, 5vw, 44px);
+            line-height: 1.15;
+            color: #111827;
+        }
+        .hero p {
+            margin: 0 auto;
+            max-width: 680px;
+            line-height: 1.5;
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        /* Games */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .game-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 210px;
+            padding: 24px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        }
+        a.game-card:hover {
+            transform: translateY(-4px);
+            border-color: #bfdbfe;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        }
+        .game-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #eff6ff;
+            font-size: 25px;
+            margin-bottom: 18px;
+        }
+        .game-card h2 {
+            margin: 0 0 9px;
+            font-size: 19px;
+            color: #111827;
+        }
+        .game-card p {
+            margin: 0;
+            line-height: 1.6;
+            color: #6b7280;
+            font-size: 14px;
+            flex: 1;
+        }
+        .open-game {
+            margin-top: 18px;
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Developing */
+        .game-card.developing {
+            position: relative;
+            cursor: default;
+        }
+        .game-card.developing .game-icon {
+            background: #f3f4f6;
+            filter: grayscale(1);
+            opacity: 0.75;
+        }
+        .game-card.developing .open-game {
+            color: #9ca3af;
+        }
+        .badge {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: #fff7ed;
+            color: #c2410c;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+        .footer-inner {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 560px) {
+            .container {
+                width: min(100% - 22px, 1100px);
+            }
+            .header-inner {
+                min-height: 62px;
+            }
+            .brand {
+                font-size: 20px;
+            }
+            main {
+                padding: 25px 0 42px;
+            }
+            .hero {
+                margin-bottom: 22px;
+            }
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .game-card {
+                min-height: auto;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-inner">
+            <a href="/" class="brand">AP<span>Maths</span></a>
+            <a href="/games/" class="games-link">Trò chơi</a>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1>Games</h1>
+                <p>Các trò chơi nhỏ giúp thư giãn, khám phá và rèn luyện tư duy.</p>
+            </section>
+
+            <section class="games-grid" aria-label="Danh sách trò chơi">
+                <!-- Game 1 -->
+                <a class="game-card" href="/games/game-1/" target="_blank" rel="noopener noreferrer">
+                    <div class="game-icon">🧭</div>
+                    <h2>Mê cung bóng tối</h2>
+                    <p>Tìm đường thoát khỏi mê cung, sử dụng các ô SAFE và tránh tầm nhìn của quái vật.</p>
+                    <div class="open-game">Chơi ngay →</div>
+                </a>
+
+                <!-- Game 2 -->
+                <article class="game-card developing">
+                    <span class="badge">Đang phát triển</span>
+                    <div class="game-icon">🎮</div>
+                    <h2>Game 2</h2>
+                    <p>Một trò chơi mới đang được xây dựng và sẽ xuất hiện trong phiên bản tiếp theo.</p>
+                    <div class="open-game">Chưa có</div>
+                </article>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-inner">APMaths · Trò chơi trực tuyến</div>
+    </footer>
+</body>
+</html>
