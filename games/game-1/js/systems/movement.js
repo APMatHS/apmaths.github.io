@@ -33,6 +33,7 @@ export function updatePlayerMovement(state, now) {
 }
 
 export function updateMonsterMovement(state, now) {
+  const hadAnimations = state.monsterAnimations.length > 0;
   state.monsterAnimations = state.monsterAnimations.filter(animation => {
     const monster = state.monsters.find(item => item.id === animation.id);
     if (!monster) return false;
@@ -47,4 +48,5 @@ export function updateMonsterMovement(state, now) {
     }
     return true;
   });
+  return hadAnimations && state.monsterAnimations.length === 0;
 }

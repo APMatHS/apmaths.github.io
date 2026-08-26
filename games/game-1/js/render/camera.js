@@ -2,7 +2,7 @@ import { CONFIG } from '../config.js';
 
 export function resizeCanvas(canvas) {
   const rect = canvas.getBoundingClientRect();
-  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const ratio = Math.min(window.devicePixelRatio || 1, CONFIG.MAX_DPR);
   const width = Math.max(1, Math.round(rect.width * ratio));
   const height = Math.max(1, Math.round(rect.height * ratio));
   if (canvas.width !== width || canvas.height !== height) {

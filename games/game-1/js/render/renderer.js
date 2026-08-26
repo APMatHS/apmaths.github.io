@@ -39,13 +39,12 @@ function drawCell(ctx, cell, camera, now) {
   }
   const w = CONFIG.WALL_WIDTH;
   ctx.lineWidth = w; ctx.lineCap = 'square'; ctx.strokeStyle = CONFIG.COLORS.wall;
-  ctx.shadowColor = CONFIG.COLORS.wallGlow; ctx.shadowBlur = 3;
   ctx.beginPath();
   if (cell.walls.top) { ctx.moveTo(x, y); ctx.lineTo(x + size, y); }
   if (cell.walls.right) { ctx.moveTo(x + size, y); ctx.lineTo(x + size, y + size); }
   if (cell.walls.bottom) { ctx.moveTo(x + size, y + size); ctx.lineTo(x, y + size); }
   if (cell.walls.left) { ctx.moveTo(x, y + size); ctx.lineTo(x, y); }
-  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.stroke();
 }
 
 function drawPlayer(ctx, player, camera, state, now) {
@@ -70,13 +69,21 @@ function drawMonster(ctx, monster, camera, now) {
   const y = monster.renderY * size + size / 2 - camera.y;
   ctx.save(); ctx.translate(x, y);
   const r = size * (0.22 + pulse(now + monster.id * 400, 0.006) * 0.035);
-  ctx.fillStyle = CONFIG.COLORS.monster; ctx.shadowColor = CONFIG.COLORS.monster; ctx.shadowBlur = monster.alerted ? 22 : 10;
+  ctx.fillStyle = CONFIG.COLORS.monster; ctx.shadowColor = CONFIG.COLORS.monster; ctx.shadowBlur = monster.alerted ? 14 : 7;
   ctx.beginPath();
   ctx.moveTo(-r, r * 0.75); ctx.quadraticCurveTo(-r * 1.15, -r * 0.7, 0, -r);
   ctx.quadraticCurveTo(r * 1.15, -r * 0.7, r, r * 0.75);
   ctx.lineTo(r * 0.45, r * 0.48); ctx.lineTo(0, r * 0.82); ctx.lineTo(-r * 0.45, r * 0.48); ctx.closePath(); ctx.fill();
   ctx.shadowBlur = 0; ctx.fillStyle = '#24040a';
   ctx.beginPath(); ctx.arc(-r * 0.34, -r * 0.12, 2.2, 0, Math.PI * 2); ctx.arc(r * 0.34, -r * 0.12, 2.2, 0, Math.PI * 2); ctx.fill();
+  if (monster.alerted) {
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#fff4c7';
+    ctx.font = `900 ${Math.floor(size * 0.42)}px system-ui`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('!', 0, -size * 0.48);
+  }
   ctx.restore();
 }
 
@@ -86,7 +93,7 @@ export function createRenderer(canvas) {
     if (!state.maze || !state.player) return;
     const viewport = resizeCanvas(canvas);
     ctx.setTransform(viewport.ratio, 0, 0, viewport.ratio, 0, 0);
-    updateCamera(state.camera, state.player, viewport, state.maze);
+    updateCamera(state.camera, state.player, viewport, state.maze, state.animation ? 0.18 : 1);
     ctx.fillStyle = '#03070b'; ctx.fillRect(0, 0, viewport.width, viewport.height);
     const range = visibleRange(state.camera, viewport, state.maze);
     for (let y = range.minY; y <= range.maxY; y += 1) {
