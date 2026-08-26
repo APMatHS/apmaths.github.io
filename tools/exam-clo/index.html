@@ -1,99 +1,105 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chấm thi CLO</title>
+    <meta name="description" content="EXAM-CLO - Công cụ hỗ trợ chấm thi trắc nghiệm và tổng hợp kết quả theo chuẩn đầu ra học phần CLO.">
+    <title>Chấm thi CLO | EXAM-CLO</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Bắt đầu Container chính gom toàn bộ trang web -->
-    <div class="container">
-        <h1>CHẤM THI CLO</h1>
-        
-        <!-- Khối chứa 2 card nạp file -->
-        <div class="upload-grid">
-            <div class="card">
-                <h3>File UnT</h3>
-                <input type="file" id="untFile" accept=".xlsx,.xls">
+    <main class="page-shell">
+        <section class="app-card">
+            <header class="hero">
+                <div class="brand-badge">EXAM-CLO</div>
+                <h1>Chấm thi theo CLO</h1>
+                <p>Đọc dữ liệu UnT, đối chiếu đáp án và xuất kết quả theo chuẩn đầu ra học phần.</p>
+            </header>
+
+            <section class="upload-grid" aria-label="Chọn dữ liệu chấm thi">
+                <label class="upload-card" for="untFile">
+                    <div class="upload-card__top">
+                        <span class="step-badge">1</span>
+                        <div>
+                            <h2>File UnT</h2>
+                            <p>Chứa SBD, mã đề và câu trả lời.</p>
+                        </div>
+                    </div>
+                    <input type="file" id="untFile" accept=".xlsx,.xls">
+                    <span class="file-state" id="untFileState">Chưa chọn file</span>
+                </label>
+
+                <label class="upload-card" for="answerFile">
+                    <div class="upload-card__top">
+                        <span class="step-badge">2</span>
+                        <div>
+                            <h2>Đáp án + CLO</h2>
+                            <p>Số câu phải khớp với file UnT.</p>
+                        </div>
+                    </div>
+                    <input type="file" id="answerFile" accept=".xlsx,.xls">
+                    <span class="file-state" id="answerFileState">Chưa chọn file</span>
+                </label>
+            </section>
+
+            <section class="quick-guide" aria-labelledby="quickGuideTitle">
+                <div class="quick-guide__header">
+                    <div>
+                        <span class="section-kicker">HƯỚNG DẪN NHANH</span>
+                        <h2 id="quickGuideTitle">Chỉ cần 3 bước</h2>
+                    </div>
+                    <a class="sample-link" href="Dap-an.xlsx" download>Tải file đáp án mẫu</a>
+                </div>
+
+                <ol class="guide-steps">
+                    <li><b>Chọn file UnT.</b> Cần có SBD, mã đề và các câu từ 1 đến đúng số câu của file đáp án.</li>
+                    <li><b>Chọn file đáp án + CLO.</b> Có thể dùng file mẫu để nhập đáp án đúng và CLO của từng câu.</li>
+                    <li><b>Nhấn Chấm bài.</b> Khi dữ liệu hợp lệ, hệ thống cho phép xuất bảng điểm và bảng chi tiết CLO.</li>
+                </ol>
+
+                <details class="answer-preview">
+                    <summary>Xem nhanh định dạng file đáp án</summary>
+                    <div class="answer-preview__body">
+                        <img src="Dap-an.png" alt="Mẫu định dạng file đáp án EXAM-CLO">
+                    </div>
+                </details>
+            </section>
+
+            <div class="primary-action">
+                <button id="btnProcess" type="button">
+                    <span>Đọc dữ liệu và chấm bài</span>
+                </button>
+                <p>Hệ thống sẽ kiểm tra cấu trúc dữ liệu trước khi chấm.</p>
             </div>
-            
-            <div class="card">
-                <h3>File Đáp án + CLO</h3>
-                <input type="file" id="answerFile" accept=".xlsx,.xls">
-            </div>
-        </div>
-        
-        <!--hướng dẫn nhanh-->
 
-        <div class="note-box">
-    <h3>Hướng dẫn</h3>
+            <section class="result-section" aria-live="polite">
+                <div id="result"></div>
+            </section>
 
-    <ul>
-        <li>
-            <b>File UnT:</b> File Excel xuất từ phần mềm <b>UnT Dạy học</b>,
-            trong đó phải có <b>Số báo danh (SBD)</b> và <b>Mã đề</b>.
-            Nếu thiếu SBD hoặc Mã đề, chương trình sẽ báo lỗi.
-        </li>
+            <section class="export-panel">
+                <div>
+                    <span class="section-kicker">XUẤT KẾT QUẢ</span>
+                    <h2>Hai bảng điểm</h2>
+                    <p>Các nút sẽ được mở sau khi chấm thành công.</p>
+                </div>
+                <div class="export-actions">
+                    <button id="btnExportMark" type="button" disabled>Xuất bảng điểm</button>
+                    <button id="btnExportDetail" type="button" disabled>Xuất bảng chi tiết</button>
+                </div>
+            </section>
+        </section>
 
-        <li>
-            <b>File đáp án:</b> Chuẩn bị theo đúng mẫu dưới đây, chú ý các cột khác hoàn toàn trống. Hoặc bạn có thể tải file
-        <a href="Dap-an.xlsx" download>Tại đây</a>.
-         <img
-    src="Dap-an.png"
-    alt="Mẫu File Đáp Án"
-    style="
-        width:60%;
-        max-width:700px;
-        border:1px solid #ccc;
-        border-radius:6px;
-        display:block;
-        margin:10px auto;
-    ">
-        </li>
-        <li>Sau đó nhấn nút <b>Đọc dữ liệu và chấm bài</b>. Nếu thành công có thể xuất 2 bảng điểm.</li>
-    </ul>
-
-  
-
-
-</div>
-
-
-
-        <!-- Nút xử lý chính -->
-        <button id="btnProcess">Đọc dữ liệu và chấm bài</button>
-        
-        <hr>
-        
-        <!-- Nơi hiển thị kết quả chấm bài -->
-        <div id="result"></div>
-
-        <!-- ĐƯA VÀO TRONG: Các nút xuất dữ liệu sau khi chấm -->
-        <div class="export-actions">
-            <button id="btnExportMark" disabled>Xuất bảng điểm</button>
-            <button id="btnExportDetail" disabled>Xuất bảng chi tiết</button>
-        </div>
-        
-        <!-- ĐƯA VÀO TRONG: Footer nằm cuối cùng bên trong container để thẳng hàng tuyệt đối -->
         <footer class="footer">
-      
             <div class="footer-links">
-                
-                <a href="about.html">About</a> •
-                <a href="guide.html">Hướng dẫn</a>
+                <a href="about.html">Giới thiệu</a>
+                <span>•</span>
+                <a href="guide.html">Hướng dẫn sử dụng</a>
             </div>
-            <div class="footer-info">
-                <strong>EXAM-CLO</strong> • Phiên bản V1.1
-            </div>
-            <div class="footer-copyright">
-                &copy; 2026 Phát triển bởi Phan Hoàng Nam.
-            </div>
+            <div><strong>EXAM-CLO</strong> • Phiên bản V1.1</div>
+            <div>&copy; 2026 Phát triển bởi Phan Hoàng Nam.</div>
         </footer>
-    </div> <!-- Kết thúc Container chính -->
-    
-    <!-- Entry Point duy nhất cho Native ES Module -->
+    </main>
+
     <script type="module" src="js/app.js"></script>
 </body>
 </html>

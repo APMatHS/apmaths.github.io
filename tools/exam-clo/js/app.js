@@ -22,6 +22,28 @@ const btnProcess = document.getElementById("btnProcess");
 const btnExportMark = document.getElementById("btnExportMark");
 const btnExportDetail = document.getElementById("btnExportDetail");
 const resultDiv = document.getElementById("result");
+const untFileInput = document.getElementById("untFile");
+const answerFileInput = document.getElementById("answerFile");
+const untFileState = document.getElementById("untFileState");
+const answerFileState = document.getElementById("answerFileState");
+
+function bindFileState(input, stateElement) {
+    if (!input || !stateElement) return;
+
+    input.addEventListener("change", () => {
+        const file = input.files?.[0];
+        if (file) {
+            stateElement.textContent = file.name;
+            stateElement.classList.add("is-selected");
+        } else {
+            stateElement.textContent = "Chưa chọn file";
+            stateElement.classList.remove("is-selected");
+        }
+    });
+}
+
+bindFileState(untFileInput, untFileState);
+bindFileState(answerFileInput, answerFileState);
 
 //------------------------------------------------
 // Xử lý đọc file & Chấm điểm
@@ -41,7 +63,12 @@ btnProcess.addEventListener("click", async function () {
     }
 
     try {
-        resultDiv.innerHTML = "<p>Đang đọc và xử lý dữ liệu...</p>";
+        btnProcess.disabled = true;
+        resultDiv.innerHTML = `
+            <div class="loading-box">
+                <span class="loading-spinner" aria-hidden="true"></span>
+                <span>Đang đọc dữ liệu và chấm bài...</span>
+            </div>`;
 
         // 1. Đọc song song 2 Workbook bằng Promise.all để tăng tốc I/O
         const [untWorkbook, answerWorkbook] = await Promise.all([
@@ -120,8 +147,14 @@ console.log("Sinh viên đầu tiên:", appState.untData.students[0]);
 
     } catch (err) {
         console.error(err);
-        resultDiv.innerHTML = `<p style="color:red"><b>Lỗi:</b> ${err.message}</p>`;
+        resultDiv.innerHTML = `
+            <div class="error-box">
+                <b>Không thể chấm bài.</b><br>
+                ${String(err.message).replace(/\n/g, "<br>")}
+            </div>`;
         alert(err.message);
+    } finally {
+        btnProcess.disabled = false;
     }
 });
 
@@ -129,49 +162,83 @@ console.log("Sinh viên đầu tiên:", appState.untData.students[0]);
 // Hiển thị bảng thống kê dữ liệu lên HTML
 //------------------------------------------------
 function renderSummaryHTML(answerData, untData) {
-    let html = "<h2>ĐỌC DỮ LIỆU THÀNH CÔNG</h2>";
+    const examCodes = Object.keys(answerData.exams).sort();
+    const untExamCodes = Object.keys(untData.examCount).sort();
 
-    // Thống kê Đáp án
-    html += "<h3>ĐÁP ÁN</h3>";
-    html += "<table border='1' style='border-collapse: collapse; width: 100%; text-align: left;'>";
-    html += "<tr><th>Mã đề</th><th>Số CLO</th><th>Chi tiết</th></tr>";
-
-    for (const code in answerData.exams) {
+    let answerRows = "";
+    examCodes.forEach((code) => {
         const info = answerData.exams[code];
         const keys = Object.keys(info.cloCount).sort();
+        const detail = keys.map(k => `CLO ${k}: <b>${info.cloCount[k]}</b> câu`).join(" · ");
 
-        let detail = "";
-        keys.forEach((k) => {
-            detail += `CLO ${k} : ${info.cloCount[k]} câu<br>`;
-        });
+        answerRows += `
+            <tr>
+                <td><b>${code}</b></td>
+                <td>${keys.length}</td>
+                <td class="clo-detail">${detail}</td>
+            </tr>`;
+    });
 
-        html += `<tr>
-            <td><b>${code}</b></td>
-            <td>${keys.length}</td>
-            <td>${detail}</td>
-        </tr>`;
-    }
-    html += "</table><br>";
-
-    // Thống kê UnT
-    html += "<h3>FILE UnT</h3>";
-    html += `<p><b>Số bài đọc được:</b> ${untData.students.length}</p>`;
-    html += "<table border='1' style='border-collapse: collapse; width: 100%; text-align: left;'>";
-    html += "<tr><th>Mã đề</th><th>Số bài</th></tr>";
-
-    Object.keys(untData.examCount)
-        .sort()
-        .forEach((code) => {
-            html += `<tr>
+    let untRows = "";
+    untExamCodes.forEach((code) => {
+        untRows += `
+            <tr>
                 <td><b>${code}</b></td>
                 <td>${untData.examCount[code]}</td>
             </tr>`;
-        });
+    });
 
-    html += "</table><br>";
-    html += "<h2 style='color:green'>✓ Sẵn sàng xuất file Excel</h2>";
+    resultDiv.innerHTML = `
+        <div class="result-box">
+            <div class="result-head">
+                <div>
+                    <span class="section-kicker">KẾT QUẢ KIỂM TRA</span>
+                    <h2 class="result-title">Dữ liệu hợp lệ và đã chấm xong</h2>
+                </div>
+                <span class="success-pill">✓ Sẵn sàng xuất Excel</span>
+            </div>
 
-    resultDiv.innerHTML = html;
+            <div class="summary-container">
+                <div class="summary-item">
+                    <h4>Số bài</h4>
+                    <div class="value">${untData.students.length}</div>
+                </div>
+                <div class="summary-item">
+                    <h4>Số câu</h4>
+                    <div class="value">${answerData.totalQuestion}</div>
+                </div>
+                <div class="summary-item">
+                    <h4>Số mã đề</h4>
+                    <div class="value">${examCodes.length}</div>
+                </div>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-panel">
+                    <h3>Đáp án và phân bố CLO</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Mã đề</th><th>Số CLO</th><th>Chi tiết</th></tr>
+                            </thead>
+                            <tbody>${answerRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="result-panel">
+                    <h3>Số bài theo mã đề</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Mã đề</th><th>Số bài</th></tr>
+                            </thead>
+                            <tbody>${untRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>`;
 }
 
 //------------------------------------------------
