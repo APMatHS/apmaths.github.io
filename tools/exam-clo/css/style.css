@@ -650,3 +650,151 @@ tbody tr:hover {
         width: 100%;
     }
 }
+
+/* =====================================================
+   OCR / Số phách - V1.2
+   ===================================================== */
+.ocr-progress-box { overflow: hidden; }
+.ocr-progress-track {
+    height: 8px;
+    background: #e8eef7;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 14px 0 18px;
+}
+.ocr-progress-track span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #0ea5e9);
+    border-radius: inherit;
+    transition: width .2s ease;
+}
+.success-pill--working { background: #e8f2ff; color: #1d4ed8; }
+.ocr-table th, .ocr-table td { vertical-align: middle; }
+.ocr-thumb {
+    width: 118px;
+    max-width: 24vw;
+    height: 43px;
+    object-fit: cover;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: #fff;
+}
+.ocr-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 7px;
+    vertical-align: 1px;
+}
+.ocr-high { background: #16a34a; }
+.ocr-medium { background: #eab308; }
+.ocr-low { background: #dc2626; }
+.ocr-summary-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin: 14px 0 8px;
+    padding: 12px 14px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf1;
+    border-radius: 12px;
+    color: #475569;
+}
+.ocr-result-details {
+    margin: 18px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+}
+.ocr-result-details > summary {
+    cursor: pointer;
+    padding: 13px 15px;
+    font-weight: 700;
+    background: #f8fafc;
+}
+.ocr-result-details .table-wrapper { margin: 0; border: 0; border-top: 1px solid #e2e8f0; border-radius: 0; }
+.ocr-legend { margin: 10px 15px 14px; color: #64748b; font-size: .88rem; }
+
+.ocr-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, .56);
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    backdrop-filter: blur(3px);
+}
+.ocr-modal__card {
+    width: min(520px, 100%);
+    max-height: calc(100vh - 36px);
+    overflow: auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 28px 70px rgba(15, 23, 42, .28);
+    padding: 20px;
+}
+.ocr-modal__head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+}
+.ocr-modal__head h2 { margin: 4px 0 0; font-size: 1.35rem; }
+.ocr-confidence {
+    flex: 0 0 auto;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-weight: 800;
+    font-size: .9rem;
+}
+.ocr-confidence--low { color: #b91c1c; background: #fee2e2; }
+.ocr-reason { color: #92400e; background: #fffbeb; border: 1px solid #fde68a; padding: 10px 12px; border-radius: 10px; }
+.ocr-image-box {
+    margin: 15px 0;
+    border: 1px solid #dbe3ef;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8fafc;
+}
+.ocr-image-box img { display: block; width: 100%; min-height: 90px; object-fit: contain; image-rendering: auto; }
+.ocr-image-missing { margin: 15px 0; padding: 18px; text-align: center; color: #64748b; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; }
+.ocr-field { display: grid; gap: 7px; font-weight: 700; color: #334155; }
+.ocr-field input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 1.18rem;
+    letter-spacing: .04em;
+}
+.ocr-field input:focus { outline: 3px solid rgba(37, 99, 235, .14); border-color: #2563eb; }
+.ocr-modal__actions { display: flex; justify-content: flex-end; margin-top: 14px; }
+.ocr-confirm {
+    border: 0;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #fff;
+    padding: 11px 16px;
+    font-weight: 800;
+    cursor: pointer;
+}
+.ocr-hint { margin: 10px 0 0; color: #64748b; font-size: .86rem; }
+.warning-box {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border: 1px solid #fde68a;
+    background: #fffbeb;
+    color: #92400e;
+    border-radius: 12px;
+}
+
+@media (max-width: 640px) {
+    .ocr-modal__card { padding: 16px; border-radius: 14px; }
+    .ocr-summary-line { display: grid; grid-template-columns: 1fr; gap: 5px; }
+    .ocr-thumb { width: 92px; height: 36px; }
+}

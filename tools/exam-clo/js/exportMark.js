@@ -1,206 +1,81 @@
-// ============================================
-// exportMark.js
-// Version 7.1 - Native ES Module (GitHub Pages)
-// ============================================
+// =====================================================
+// exportMark.js - Bảng điểm theo phách BM17, giữ 5 cột CLO
+// =====================================================
+import {
+    loadTemplateWorkbook,
+    orderedCloList,
+    cloDisplayName,
+    resizeDataArea,
+    numberToVietnamese,
+    setScoreCell,
+    saveWorkbook,
+    sanitizeTemplateStaticContent
+} from "./exportCommon.js";
 
-// Import ExcelJS ESM từ jsDelivr
-import ExcelJS from "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/+esm";
+const TEMPLATE_URL = "templates/MarksTemplate.xlsx";
+const MAX_CLO = 5;
 
-// Import formatter
-import { formatWorksheet } from "./formatter.js";
-
-/**
- * Xuất file Excel bảng điểm (Marks)
- * @param {Object} answerData Dữ liệu đáp án & CLO
- * @param {Object} untData Dữ liệu bài làm sinh viên
- */
-export async function exportMark(answerData, untData) {
-
-    // Workbook
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Marks");
-
-    // Danh sách CLO
-    const cloList = getCLOList(answerData);
-
-    // Tạo cột
-    setupWorksheetColumns(worksheet, cloList);
-
-    // Ghi dữ liệu
-    createMarkData(worksheet, untData, cloList);
-
-    // Định dạng
-    formatWorksheet(worksheet);
-
-    // Xuất file
-    await saveWorkbook(workbook, "Marks.xlsx");
-}
-
-//------------------------------------------------
-// Lấy danh sách CLO
-//------------------------------------------------
-function getCLOList(answerData) {
-
-    const exams = Object.keys(answerData?.exams || {});
-
-    if (exams.length === 0) return [];
-
-    const exam = answerData.exams[exams[0]];
-
-    return Object.keys(exam?.cloCount || {});
-}
-
-//------------------------------------------------
-// Khai báo cột
-//------------------------------------------------
-function setupWorksheetColumns(worksheet, cloList) {
-
-    worksheet.columns = [
-
-        {
-            header: "STT",
-            key: "stt"
-        },
-
-        {
-            header: "SBD",
-            key: "sbd"
-        },
-
-        ...cloList.map(clo => ({
-            header: "CLO" + clo,
-            key: "clo_" + clo
-        })),
-
-        {
-            header: "GPA",
-            key: "gpa"
-        },
-
-        {
-            header: "GPA (Chữ)",
-            key: "gpaWord"
-        },
-
-        {
-            header: "Tổng đúng",
-            key: "correct"
-        }
-
-    ];
-
-}
-
-//------------------------------------------------
-// Ghi dữ liệu
-//------------------------------------------------
-function createMarkData(worksheet, untData, cloList) {
-
-    let stt = 1;
-
-    for (const student of untData?.students || []) {
-
-        if (!student.result) continue;
-
-        const row = {
-
-            stt: stt++,
-
-            sbd: student.sbd,
-
-            gpa: student.result.marks?.GPA,
-
-            gpaWord: numberToVietnamese(student.result.marks?.GPA),
-
-            correct: student.result.correct
-
-        };
-
-        for (const clo of cloList) {
-
-            row["clo_" + clo] = student.result.marks?.[clo];
-
-        }
-
-        worksheet.addRow(row);
-
+export async function buildMarkWorkbook(answerData, untData, templateBuffer = null) {
+    let workbook;
+    if (templateBuffer) {
+        const ExcelJS = globalThis.ExcelJS;
+        if (!ExcelJS) throw new Error("Không tải được ExcelJS.");
+        workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(templateBuffer);
+    } else {
+        workbook = await loadTemplateWorkbook(TEMPLATE_URL);
     }
 
-}
+    const worksheet = workbook.worksheets[0];
+    sanitizeTemplateStaticContent(worksheet);
+    const students = (untData?.students || []).filter(s => s.result && !s.result.error);
+    const cloList = orderedCloList(answerData);
 
-//------------------------------------------------
-// Điểm thành chữ
-//------------------------------------------------
-function numberToVietnamese(score) {
+    if (cloList.length > MAX_CLO) {
+        throw new Error(`Mẫu Bảng điểm chỉ có ${MAX_CLO} cột CLO, nhưng file đáp án có ${cloList.length} CLO.`);
+    }
 
-    if (score == null || isNaN(score)) return "";
+    resizeDataArea(worksheet, students.length, 12);
 
-    score = Number(score).toFixed(1);
+    const examCode = Object.keys(answerData?.exams || {})[0];
+    const exam = answerData?.exams?.[examCode];
+    const totalQuestion = Number(answerData?.totalQuestion || 0);
 
-    const [a, b] = score.split(".");
-
-    const words = [
-
-        "Không",
-        "Một",
-        "Hai",
-        "Ba",
-        "Bốn",
-        "Năm",
-        "Sáu",
-        "Bảy",
-        "Tám",
-        "Chín",
-        "Mười"
-
-    ];
-
-    let text = Number(a) <= 10
-
-        ? words[Number(a)]
-
-        : a;
-
-    text += " phẩy ";
-
-    text += Number(b) <= 9
-
-        ? words[Number(b)].toLowerCase()
-
-        : b;
-
-    return text;
-
-}
-
-//------------------------------------------------
-// Xuất Workbook
-//------------------------------------------------
-async function saveWorkbook(workbook, filename) {
-
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    const blob = new Blob(
-        [buffer],
-        {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    // 5 vị trí CLO C:G luôn được giữ nguyên.
+    for (let i = 0; i < MAX_CLO; i++) {
+        const col = 3 + i;
+        const clo = cloList[i];
+        worksheet.getCell(10, col).value = clo ? `Điểm \n${cloDisplayName(clo, i)}` : "Điểm \nCLO…";
+        if (clo && totalQuestion > 0) {
+            const count = Number(exam?.cloCount?.[clo] || 0);
+            const percent = Number(((count / totalQuestion) * 100).toFixed(1));
+            worksheet.getCell(11, col).value = `${Number.isInteger(percent) ? percent : percent.toFixed(1)}%`;
+        } else {
+            worksheet.getCell(11, col).value = ".....%";
         }
-    );
+    }
 
-    const url = URL.createObjectURL(blob);
+    students.forEach((student, index) => {
+        const row = worksheet.getRow(12 + index);
+        row.getCell(1).value = index + 1;
+        row.getCell(2).value = student.sbd;
 
-    const a = document.createElement("a");
+        for (let i = 0; i < MAX_CLO; i++) {
+            const clo = cloList[i];
+            if (clo) setScoreCell(row.getCell(3 + i), student.result.marks?.[clo]);
+            else row.getCell(3 + i).value = null;
+        }
 
-    a.href = url;
+        const gpa = student.result.marks?.GPA;
+        setScoreCell(row.getCell(8), gpa);
+        row.getCell(9).value = numberToVietnamese(gpa);
+        row.getCell(10).value = null;
+    });
 
-    a.download = filename;
+    return workbook;
+}
 
-    document.body.appendChild(a);
-
-    a.click();
-
-    document.body.removeChild(a);
-
-    URL.revokeObjectURL(url);
-
+export async function exportMark(answerData, untData) {
+    const workbook = await buildMarkWorkbook(answerData, untData);
+    await saveWorkbook(workbook, "Bang-diem-theo-phach.xlsx");
 }

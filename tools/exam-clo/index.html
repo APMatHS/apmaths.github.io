@@ -52,7 +52,7 @@
                 </div>
 
                 <ol class="guide-steps">
-                    <li><b>Chọn file UnT.</b> Cần có SBD, mã đề và các câu từ 1 đến đúng số câu của file đáp án.</li>
+                    <li><b>Chọn file UnT.</b> Cần có SBD, mã đề và các câu từ 1 đến đúng số câu của file đáp án. Nếu SBD trống/------, hệ thống sẽ đọc ảnh số phách ở cột B cùng hàng.</li>
                     <li><b>Chọn file đáp án + CLO.</b> Có thể dùng file mẫu để nhập đáp án đúng và CLO của từng câu.</li>
                     <li><b>Nhấn Chấm bài.</b> Khi dữ liệu hợp lệ, hệ thống cho phép xuất bảng điểm và bảng chi tiết CLO.</li>
                 </ol>
@@ -95,11 +95,15 @@
                 <span>•</span>
                 <a href="guide.html">Hướng dẫn sử dụng</a>
             </div>
-            <div><strong>EXAM-CLO</strong> • Phiên bản V1.1</div>
+            <div><strong>EXAM-CLO</strong> • Phiên bản V1.2</div>
             <div>&copy; 2026 Phát triển bởi Phan Hoàng Nam.</div>
         </footer>
     </main>
 
+    <!-- Thư viện Excel dùng bản local để đọc/xuất được ngay cả khi CDN lỗi -->
+    <script src="libs/xlsx.full.min.js"></script>
+    <script src="libs/exceljs.min.js"></script>
+    <!-- OCR được nạp khi cần; nếu không có mạng, hệ thống chuyển sang xác nhận SBD thủ công. -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
