@@ -14,6 +14,7 @@ import { playerCaught, reachedExit } from './systems/collision.js';
 import { createRenderer } from './render/renderer.js';
 import { createHud } from './ui/hud.js';
 import { createScreens } from './ui/screens.js';
+import { playStep, playCaught, setSoundEnabled, isSoundEnabled } from './systems/sound.js';
 
 const canvas = document.querySelector('#game-canvas');
 const state = createGameState();
@@ -22,6 +23,9 @@ const hud = createHud();
 const screens = createScreens();
 let pendingTurnResolution = false;
 let leaderboardReturnStatus = 'ready';
+let needsRender = true;
+let lastRenderAt = 0;
+let frameRequest = 0;
 
 const apiHeaders = {
   apikey: CONFIG.SUPABASE_KEY,
@@ -72,6 +76,7 @@ function buildRound() {
   revealAroundPlayer(maze, player);
   pendingTurnResolution = false;
   hud.update(state);
+  needsRender = true;
 }
 
 async function finishGame(won, now = performance.now()) {
@@ -93,7 +98,9 @@ async function finishGame(won, now = performance.now()) {
 function handleCapture(now) {
   if (!playerCaught(state)) return false;
   const result = loseLife(state, now);
+  if (result !== 'ignored') playCaught();
   hud.update(state);
+  needsRender = true;
   if (result === 'lost') finishGame(false, now);
   else if (result === 'respawned') revealAroundPlayer(state.maze, state.player);
   return result !== 'ignored';
@@ -107,20 +114,29 @@ function resolvePlayerTurn(now) {
   if (event.exit || reachedExit(state)) { finishGame(true, now); return; }
   if (handleCapture(now)) return;
   runMonsterTurn(state, now);
-  handleCapture(now);
+  needsRender = true;
 }
 
 function move(direction) {
-  if (tryPlayerMove(state, direction)) pendingTurnResolution = true;
+  if (tryPlayerMove(state, direction)) {
+    pendingTurnResolution = true;
+    playStep();
+    needsRender = true;
+    requestGameFrame();
+  }
 }
 
 function togglePause() {
   if (state.status === 'playing') {
     state.status = 'paused';
     screens.show('pause');
+    needsRender = true;
+    requestGameFrame();
   } else if (state.status === 'paused') {
     state.status = 'playing';
     screens.hideAll();
+    needsRender = true;
+    requestGameFrame();
   }
 }
 
@@ -129,11 +145,14 @@ function startGame() {
   state.startedAt = performance.now();
   screens.hideAll();
   canvas.focus();
+  needsRender = true;
+  requestGameFrame();
 }
 
 function restartGame() {
   buildRound();
   screens.show('start');
+  requestGameFrame();
 }
 
 async function openLeaderboard() {
@@ -148,6 +167,8 @@ function closeLeaderboard() {
   if (leaderboardReturnStatus === 'playing') {
     state.status = 'playing';
     screens.hideAll();
+    needsRender = true;
+    requestGameFrame();
   } else if (leaderboardReturnStatus === 'won') {
     screens.showResult(true, finalDetails());
   } else if (leaderboardReturnStatus === 'lost') {
@@ -190,9 +211,19 @@ async function saveHighScore(event) {
   }
 }
 
-bindInput(canvas, move, togglePause);
+bindInput(canvas, move, togglePause, () => ({
+  x: state.player.renderX * CONFIG.CELL_SIZE + CONFIG.CELL_SIZE / 2 - state.camera.x,
+  y: state.player.renderY * CONFIG.CELL_SIZE + CONFIG.CELL_SIZE / 2 - state.camera.y
+}));
 document.querySelector('#start-button').addEventListener('click', startGame);
 document.querySelector('#pause-button').addEventListener('click', togglePause);
+const soundButton = document.querySelector('#sound-button');
+soundButton.addEventListener('click', () => {
+  const enabled = setSoundEnabled(!isSoundEnabled());
+  soundButton.textContent = enabled ? '🔈' : '🔇';
+  soundButton.setAttribute('aria-label', enabled ? 'Tắt âm thanh' : 'Bật âm thanh');
+  soundButton.title = enabled ? 'Tắt âm thanh' : 'Bật âm thanh';
+});
 document.querySelector('#resume-button').addEventListener('click', togglePause);
 document.querySelector('#restart-button').addEventListener('click', restartGame);
 document.querySelector('#leaderboard-button').addEventListener('click', openLeaderboard);
@@ -202,25 +233,43 @@ document.querySelector('#skip-score-button').addEventListener('click', () => scr
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && state.status === 'playing') togglePause();
 });
+window.addEventListener('resize', () => { needsRender = true; requestGameFrame(); }, { passive: true });
+setInterval(() => hud.update(state), 500);
+
+function requestGameFrame() {
+  if (!frameRequest) frameRequest = requestAnimationFrame(gameLoop);
+}
 
 function gameLoop(now) {
+  frameRequest = 0;
   if (state.status !== 'paused') {
     const movementFinished = updatePlayerMovement(state, now);
-    updateMonsterMovement(state, now);
+    const monstersFinished = updateMonsterMovement(state, now);
     if (movementFinished && pendingTurnResolution && state.status === 'playing') {
       pendingTurnResolution = false;
       resolvePlayerTurn(now);
+      needsRender = true;
+    }
+    if (monstersFinished && state.status === 'playing') {
+      handleCapture(now);
+      needsRender = true;
     }
   }
-  render(state, now);
-  hud.update(state, now);
-  requestAnimationFrame(gameLoop);
+
+  const animating = state.status !== 'paused' && Boolean(state.animation || state.monsterAnimations.length || now < state.invulnerableUntil);
+  const frameInterval = 1000 / CONFIG.RENDER_FPS;
+  if ((needsRender || animating) && (now - lastRenderAt >= frameInterval || !animating)) {
+    render(state, now);
+    needsRender = false;
+    lastRenderAt = now;
+  }
+  if (animating || needsRender) requestGameFrame();
 }
 
 try {
   buildRound();
   screens.show('start');
-  requestAnimationFrame(gameLoop);
+  requestGameFrame();
 } catch (error) {
   console.error('Không thể khởi tạo Game 1:', error);
   document.querySelector('#loading-screen p').textContent = 'Không thể tạo mê cung. Hãy tải lại trang.';

@@ -494,6 +494,10 @@ button:focus-visible {
     min-height: 50px;
   }
 
+  .brand__title {
+    display: none;
+  }
+
   .brand__mark {
     width: 28px;
     height: 28px;
