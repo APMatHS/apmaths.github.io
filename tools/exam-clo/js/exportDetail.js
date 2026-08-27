@@ -1,117 +1,83 @@
-// ============================================
-// exportDetail.js
-// Version 7.1 - Native ES Module (ExcelJS)
-// ============================================
+// =====================================================
+// exportDetail.js - Bảng điểm chi tiết BM17, 3 nhóm CLO
+// Mỗi CLO gồm 2 cột: Số câu đúng + Điểm đóng góp.
+// =====================================================
+import {
+    loadTemplateWorkbook,
+    orderedCloList,
+    cloDisplayName,
+    resizeDataArea,
+    setScoreCell,
+    saveWorkbook,
+    sanitizeTemplateStaticContent
+} from "./exportCommon.js";
 
-import ExcelJS from "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/+esm";
-import { formatWorksheet } from "./formatter.js";
+const TEMPLATE_URL = "templates/DetailTemplate.xlsx";
+const MAX_CLO = 3;
 
-/**
- * Xuất file Excel bảng chi tiết điểm và số câu đúng theo CLO (Detail)
- * @param {Object} answerData Dữ liệu đáp án & cấu trúc CLO
- * @param {Object} untData Dữ liệu kết quả bài làm học sinh
- */
-export async function exportDetail(answerData, untData) {
-    // 1. Khởi tạo Workbook & Worksheet
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("ChiTiet");
-
-    // 2. Chuẩn bị danh sách CLO
-    const cloList = getCLOList(answerData);
-
-    // 3. Xây dựng Cột & Dòng Tiêu Đề
-    setupWorksheetColumns(worksheet, cloList);
-
-    // 4. Đổ dữ liệu chi tiết sinh viên
-    createDetailData(worksheet, untData, cloList);
-
-    // 5. Áp dụng định dạng chung từ formatter.js
-    formatWorksheet(worksheet);
-
-    // 6. Lưu và tải xuống file Excel
-    await saveWorkbook(workbook, "Detail.xlsx");
-}
-
-//------------------------------------------------
-// Trích xuất danh sách CLO
-//------------------------------------------------
-function getCLOList(answerData) {
-    const exams = Object.keys(answerData?.exams || {});
-    if (exams.length > 0) {
-        const exam = answerData.exams[exams[0]];
-        return Object.keys(exam?.cloCount || {});
-    }
-    return [];
-}
-
-//------------------------------------------------
-// Khởi tạo các cột
-//------------------------------------------------
-function setupWorksheetColumns(worksheet, cloList) {
-    const columns = [
-        { header: "STT", key: "stt" },
-        { header: "SBD", key: "sbd" }
-    ];
-
-    // Tạo 2 cột cho mỗi CLO: Số câu đúng và Điểm
-    for (const clo of cloList) {
-        columns.push({
-            header: "Số câu đúng CLO" + clo,
-            key: "clo_correct_" + clo
-        });
-        columns.push({
-            header: "Điểm CLO" + clo,
-            key: "clo_score_" + clo
-        });
+export async function buildDetailWorkbook(answerData, untData, templateBuffer = null) {
+    let workbook;
+    if (templateBuffer) {
+        const ExcelJS = globalThis.ExcelJS;
+        if (!ExcelJS) throw new Error("Không tải được ExcelJS.");
+        workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(templateBuffer);
+    } else {
+        workbook = await loadTemplateWorkbook(TEMPLATE_URL);
     }
 
-    // Cột tổng hợp GPA
-    columns.push({ header: "GPA", key: "gpa" });
+    const worksheet = workbook.worksheets[0];
+    sanitizeTemplateStaticContent(worksheet);
+    const students = (untData?.students || []).filter(s => s.result && !s.result.error);
+    const cloList = orderedCloList(answerData);
 
-    worksheet.columns = columns;
-}
+    if (cloList.length > MAX_CLO) {
+        throw new Error(
+            `Mẫu Bảng điểm chi tiết chỉ có ${MAX_CLO} nhóm CLO, nhưng file đáp án có ${cloList.length} CLO. ` +
+            "Không xuất để tránh làm mất dữ liệu CLO."
+        );
+    }
 
-//------------------------------------------------
-// Đổ dữ liệu vào các dòng
-//------------------------------------------------
-function createDetailData(worksheet, untData, cloList) {
-    let stt = 1;
+    resizeDataArea(worksheet, students.length, 12);
 
-    for (const student of untData?.students || []) {
-        if (!student.result) {
-            continue;
+    const examCode = Object.keys(answerData?.exams || {})[0];
+    const exam = answerData?.exams?.[examCode];
+
+    for (let i = 0; i < MAX_CLO; i++) {
+        const clo = cloList[i];
+        const startCol = 3 + i * 2;
+        worksheet.getCell(10, startCol).value = clo
+            ? `${cloDisplayName(clo, i)}: ${exam?.cloCount?.[clo] || 0} câu`
+            : `CLO${i + 1}: ... câu`;
+    }
+
+    students.forEach((student, index) => {
+        const row = worksheet.getRow(12 + index);
+        row.getCell(1).value = index + 1;
+        row.getCell(2).value = student.sbd;
+
+        for (let i = 0; i < MAX_CLO; i++) {
+            const clo = cloList[i];
+            const correctCol = 3 + i * 2;
+            const scoreCol = correctCol + 1;
+
+            if (clo) {
+                row.getCell(correctCol).value = Number(student.result.clo?.[clo]?.correctCount || 0);
+                setScoreCell(row.getCell(scoreCol), student.result.detail?.[clo]?.score);
+            } else {
+                row.getCell(correctCol).value = null;
+                row.getCell(scoreCol).value = null;
+            }
         }
 
-        const rowData = {
-            stt: stt++,
-            sbd: student.sbd,
-            gpa: student.result.marks?.GPA
-        };
-
-        // Điền số câu đúng và điểm cho từng CLO
-        for (const clo of cloList) {
-            rowData["clo_correct_" + clo] = student.result.clo?.[clo]?.correctCount;
-            rowData["clo_score_" + clo] = student.result.detail?.[clo]?.score;
-        }
-
-        worksheet.addRow(rowData);
-    }
-}
-
-//------------------------------------------------
-// Tải xuống file Excel trên Trình duyệt
-//------------------------------------------------
-async function saveWorkbook(workbook, filename) {
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        setScoreCell(row.getCell(9), student.result.marks?.GPA);
+        row.getCell(10).value = null;
     });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+
+    return workbook;
+}
+
+export async function exportDetail(answerData, untData) {
+    const workbook = await buildDetailWorkbook(answerData, untData);
+    await saveWorkbook(workbook, "Bang-diem-chi-tiet.xlsx");
 }
