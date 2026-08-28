@@ -155,6 +155,16 @@ export function numberToVietnamese(score) {
     return `${wholeText} phẩy ${decimalText}`;
 }
 
+
+export function exportSbdValue(value) {
+    const raw = String(value ?? "").trim();
+    if (/^\d+$/.test(raw)) {
+        const numeric = Number(raw);
+        if (Number.isSafeInteger(numeric)) return numeric;
+    }
+    return raw;
+}
+
 export function setScoreCell(cell, value) {
     if (value == null || value === "" || Number.isNaN(Number(value))) {
         cell.value = null;

@@ -1,7 +1,6 @@
 // =====================================================
 // untNormalizer.js
-// Nhận diện cấu trúc UnT linh hoạt: có/mất 6 dòng đầu,
-// có/mất các cột Điểm xen kẽ.
+// Nhận diện cấu trúc UnT linh hoạt và không phụ thuộc mã đề đáp án.
 // =====================================================
 
 const ANSWERS = new Set(["A", "B", "C", "D"]);
@@ -26,7 +25,13 @@ export function normalizeExamCode(value) {
 }
 
 export function isValidSbd(value) {
-    return /^\d+$/.test(String(value ?? "").trim());
+    const s = String(value ?? "").trim();
+    return /^\d+$/.test(s) && Number(s) > 0;
+}
+
+export function normalizeSbd(value) {
+    const s = String(value ?? "").trim();
+    return /^\d+$/.test(s) && Number(s) > 0 ? String(Number(s)) : "";
 }
 
 function isMissingSbd(value) {
@@ -44,7 +49,7 @@ function findHeader(data, questionCount) {
 
         for (let c = 0; c < row.length; c++) {
             const text = compact(row[c]);
-            if (text === "sbd" || text === "sobaodanh" || text === "maphach") sbdCol = c;
+            if (text === "sbd" || text === "sobaodanh" || text === "maphach" || text === "sophach") sbdCol = c;
             if (text === "made" || text === "madethi") examCol = c;
         }
 
@@ -68,20 +73,23 @@ function findHeader(data, questionCount) {
             return { headerRow: r, sbdCol, examCol, questionCols, mode: "header" };
         }
     }
-
     return null;
 }
 
-function rowLooksLikeStudent(row, examCol, answerCols, validExamCodes) {
-    const exam = normalizeExamCode(row?.[examCol]);
-    if (!validExamCodes.has(exam)) return false;
-
-    let validAnswer = 0;
+function answerEvidence(row, answerCols) {
     const probe = Math.min(answerCols.length, 8);
+    if (!probe) return 0;
+    let valid = 0;
     for (let i = 0; i < probe; i++) {
-        if (ANSWERS.has(String(row?.[answerCols[i]] ?? "").trim().toUpperCase())) validAnswer++;
+        if (ANSWERS.has(String(row?.[answerCols[i]] ?? "").trim().toUpperCase())) valid++;
     }
-    return probe > 0 && validAnswer >= Math.max(2, Math.ceil(probe * 0.5));
+    return valid / probe;
+}
+
+function rowLooksLikeStudent(row, examCol, answerCols) {
+    const exam = normalizeExamCode(row?.[examCol]);
+    if (!exam) return false;
+    return answerEvidence(row, answerCols) >= 0.5;
 }
 
 function scoreExamColumn(data, col, validExamCodes) {
@@ -93,8 +101,19 @@ function scoreExamColumn(data, col, validExamCodes) {
         checked++;
         if (validExamCodes.has(normalizeExamCode(raw))) matches++;
     }
-    if (checked === 0) return 0;
-    return matches / checked;
+    return checked === 0 ? 0 : matches / checked;
+}
+
+function genericExamColumnScore(data, col) {
+    const values = [];
+    for (let r = 0; r < Math.min(data.length, 80); r++) {
+        const raw = String(data[r]?.[col] ?? "").trim();
+        if (/^[A-Za-z0-9_-]{1,8}$/.test(raw) && !ANSWERS.has(raw.toUpperCase())) values.push(raw);
+    }
+    if (values.length < 2) return 0;
+    const unique = new Set(values);
+    // Mã đề thường lặp lại giữa nhiều sinh viên và chỉ có ít giá trị khác nhau.
+    return (values.length / Math.max(unique.size, 1)) * Math.min(values.length / 10, 1);
 }
 
 function answerRatio(data, col, validRows) {
@@ -114,6 +133,7 @@ function inferStructure(data, questionCount, validExamCodes) {
     let examCol = -1;
     let bestExamScore = 0;
 
+    // Ưu tiên mã đề trùng file đáp án nếu có.
     for (let c = 0; c < maxCols; c++) {
         const score = scoreExamColumn(data, c, validExamCodes);
         if (score > bestExamScore) {
@@ -122,18 +142,29 @@ function inferStructure(data, questionCount, validExamCodes) {
         }
     }
 
+    // Nếu mã đề UnT khác hoàn toàn file đáp án, tìm cột mã đề theo đặc trưng lặp.
     if (examCol < 0 || bestExamScore < 0.5) {
-        throw new Error('Không xác định được cột "Mã đề" trong file UnT.');
+        examCol = -1;
+        bestExamScore = 0;
+        for (let c = 0; c < maxCols; c++) {
+            const score = genericExamColumnScore(data, c);
+            if (score > bestExamScore) {
+                bestExamScore = score;
+                examCol = c;
+            }
+        }
     }
 
-    const examRows = [];
+    if (examCol < 0) throw new Error('Không xác định được cột "Mã đề" trong file UnT.');
+
+    const candidateRows = [];
     for (let r = 0; r < data.length; r++) {
-        if (validExamCodes.has(normalizeExamCode(data[r]?.[examCol]))) examRows.push(r);
+        if (String(data[r]?.[examCol] ?? "").trim()) candidateRows.push(r);
     }
 
     const questionCols = [];
     for (let c = examCol + 1; c < maxCols; c++) {
-        if (answerRatio(data, c, examRows) >= 0.55) questionCols.push(c);
+        if (answerRatio(data, c, candidateRows) >= 0.55) questionCols.push(c);
         if (questionCols.length === questionCount) break;
     }
 
@@ -144,13 +175,14 @@ function inferStructure(data, questionCount, validExamCodes) {
         );
     }
 
-    // SBD thường nằm trước Mã đề. Chọn cột có nhiều số hoặc dấu ------ nhất.
+    const studentRows = candidateRows.filter(r => rowLooksLikeStudent(data[r], examCol, questionCols));
+
     let sbdCol = -1;
     let bestSbdScore = -1;
     for (let c = 0; c < examCol; c++) {
         let evidence = 0;
         let checked = 0;
-        for (const r of examRows.slice(0, 60)) {
+        for (const r of studentRows.slice(0, 60)) {
             const raw = String(data[r]?.[c] ?? "").trim();
             if (!raw) continue;
             checked++;
@@ -158,32 +190,18 @@ function inferStructure(data, questionCount, validExamCodes) {
             else if (isMissingSbd(raw)) evidence += 3;
         }
         const score = checked ? evidence / checked : 0;
-        // Ưu tiên cột gần Mã đề hơn khi điểm bằng nhau (C gần E trong mẫu chuẩn).
         if (score > bestSbdScore || (score === bestSbdScore && c > sbdCol)) {
             bestSbdScore = score;
             sbdCol = c;
         }
     }
 
-    if (sbdCol < 0) {
-        throw new Error('Không xác định được cột "SBD" trong file UnT.');
-    }
-
-    let firstStudentRow = -1;
-    for (const r of examRows) {
-        if (rowLooksLikeStudent(data[r], examCol, questionCols, validExamCodes)) {
-            firstStudentRow = r;
-            break;
-        }
-    }
-
-    if (firstStudentRow < 0) {
-        throw new Error("Không tìm thấy dòng dữ liệu sinh viên trong file UnT.");
-    }
+    if (sbdCol < 0) throw new Error('Không xác định được cột "SBD" trong file UnT.');
+    if (!studentRows.length) throw new Error("Không tìm thấy dòng dữ liệu sinh viên trong file UnT.");
 
     return {
         headerRow: -1,
-        firstStudentRow,
+        firstStudentRow: studentRows[0],
         sbdCol,
         examCol,
         questionCols,
@@ -191,49 +209,30 @@ function inferStructure(data, questionCount, validExamCodes) {
     };
 }
 
-/**
- * Chuẩn hóa file UnT thành cấu trúc dùng chung cho grader.
- * Không yêu cầu dòng bắt đầu cố định và không yêu cầu cột Điểm.
- */
+/** Chuẩn hóa file UnT thành cấu trúc dùng chung cho grader. */
 export function normalizeUntData(data, answerData) {
-    if (!Array.isArray(data) || data.length === 0) {
-        throw new Error("File UnT không có dữ liệu.");
-    }
+    if (!Array.isArray(data) || data.length === 0) throw new Error("File UnT không có dữ liệu.");
 
     const questionCount = Number(answerData?.totalQuestion || 0);
     if (!questionCount) throw new Error("Không xác định được số câu từ file đáp án.");
 
     const validExamCodes = new Set(Object.keys(answerData?.exams || {}).map(normalizeExamCode));
-    if (validExamCodes.size === 0) throw new Error("File đáp án không có mã đề.");
-
     const header = findHeader(data, questionCount);
-    let structure;
-
-    if (header) {
-        structure = {
-            ...header,
-            firstStudentRow: header.headerRow + 1
-        };
-    } else {
-        structure = inferStructure(data, questionCount, validExamCodes);
-    }
+    const structure = header
+        ? { ...header, firstStudentRow: header.headerRow + 1 }
+        : inferStructure(data, questionCount, validExamCodes);
 
     const students = [];
     const examCount = {};
 
     for (let r = structure.firstStudentRow; r < data.length; r++) {
         const row = data[r] || [];
+        if (!rowLooksLikeStudent(row, structure.examCol, structure.questionCols)) continue;
+
         const examCode = normalizeExamCode(row[structure.examCol]);
-        if (!validExamCodes.has(examCode)) continue;
-
-        const answers = structure.questionCols.map(c =>
-            String(row[c] ?? "").trim().toUpperCase()
-        );
-
-        // Không loại dòng chỉ vì SV có câu trống/ký tự lạ; grader sẽ xem đó là câu sai.
-        // Điều bắt buộc là đã nhận diện đủ đúng N cột câu trả lời.
+        const answers = structure.questionCols.map(c => String(row[c] ?? "").trim().toUpperCase());
         const rawSbd = String(row[structure.sbdCol] ?? "").trim();
-        const sbd = isValidSbd(rawSbd) ? rawSbd : "";
+        const sbd = isValidSbd(rawSbd) ? String(Number(rawSbd)) : "";
 
         students.push({
             sourceRow: r,
@@ -241,22 +240,27 @@ export function normalizeUntData(data, answerData) {
             sbd,
             rawSbd,
             examCode,
+            originalExamCode: examCode,
             answers
         });
         examCount[examCode] = (examCount[examCode] || 0) + 1;
     }
 
-    if (students.length === 0) {
+    if (!students.length) {
         throw new Error("Không tìm thấy bài làm sinh viên hợp lệ trong file UnT.");
     }
 
-    return {
-        totalStudent: students.length,
-        questionCount,
-        examCount,
-        students,
-        structure
-    };
+    return { totalStudent: students.length, questionCount, examCount, students, structure };
+}
+
+export function rebuildExamCount(untData) {
+    const examCount = {};
+    for (const student of untData?.students || []) {
+        const code = normalizeExamCode(student.examCode);
+        examCount[code] = (examCount[code] || 0) + 1;
+    }
+    untData.examCount = examCount;
+    return examCount;
 }
 
 export function validateStudentIds(untData) {
@@ -274,13 +278,8 @@ export function validateStudentIds(untData) {
         else seen.set(sbd, student);
     }
 
-    if (missing.length) {
-        throw new Error(`Còn ${missing.length} dòng chưa có SBD hợp lệ.`);
-    }
-    if (duplicates.length) {
-        const ids = [...new Set(duplicates.map(pair => pair[1].sbd))];
-        throw new Error(`SBD bị trùng: ${ids.join(", ")}. Vui lòng kiểm tra lại.`);
-    }
-
+    if (missing.length) throw new Error(`Còn ${missing.length} dòng chưa có SBD hợp lệ.`);
+    // SBD trùng là cảnh báo có thể được giảng viên bỏ qua ở bước xác nhận.
+    if (duplicates.length) return { ok: true, duplicates };
     return true;
 }

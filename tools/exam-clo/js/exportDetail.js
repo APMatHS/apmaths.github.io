@@ -9,7 +9,8 @@ import {
     resizeDataArea,
     setScoreCell,
     saveWorkbook,
-    sanitizeTemplateStaticContent
+    sanitizeTemplateStaticContent,
+    exportSbdValue
 } from "./exportCommon.js";
 
 const TEMPLATE_URL = "templates/DetailTemplate.xlsx";
@@ -28,7 +29,7 @@ export async function buildDetailWorkbook(answerData, untData, templateBuffer = 
 
     const worksheet = workbook.worksheets[0];
     sanitizeTemplateStaticContent(worksheet);
-    const students = (untData?.students || []).filter(s => s.result && !s.result.error);
+    const students = untData?.exportStudents || (untData?.students || []).filter(s => s.result && !s.result.error);
     const cloList = orderedCloList(answerData);
 
     if (cloList.length > MAX_CLO) {
@@ -54,7 +55,7 @@ export async function buildDetailWorkbook(answerData, untData, templateBuffer = 
     students.forEach((student, index) => {
         const row = worksheet.getRow(12 + index);
         row.getCell(1).value = index + 1;
-        row.getCell(2).value = student.sbd;
+        row.getCell(2).value = exportSbdValue(student.sbd);
 
         for (let i = 0; i < MAX_CLO; i++) {
             const clo = cloList[i];
@@ -62,16 +63,16 @@ export async function buildDetailWorkbook(answerData, untData, templateBuffer = 
             const scoreCol = correctCol + 1;
 
             if (clo) {
-                row.getCell(correctCol).value = Number(student.result.clo?.[clo]?.correctCount || 0);
-                setScoreCell(row.getCell(scoreCol), student.result.detail?.[clo]?.score);
+                row.getCell(correctCol).value = student.result ? Number(student.result.clo?.[clo]?.correctCount || 0) : null;
+                setScoreCell(row.getCell(scoreCol), student.result?.detail?.[clo]?.score);
             } else {
                 row.getCell(correctCol).value = null;
                 row.getCell(scoreCol).value = null;
             }
         }
 
-        setScoreCell(row.getCell(9), student.result.marks?.GPA);
-        row.getCell(10).value = null;
+        setScoreCell(row.getCell(9), student.result?.marks?.GPA);
+        row.getCell(10).value = student.officeNote ?? null;
     });
 
     return workbook;
