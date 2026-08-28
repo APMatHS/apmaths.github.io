@@ -14,7 +14,7 @@ import { buildAnswerDataFromDirect, storeFromAnswerData } from './directAnswer.j
 import { createDirectAnswerGrid } from './directAnswerGrid.js';
 import { reviewAnswerData } from './answerReview.js';
 
-const state={answerData:null,answerCacheKey:null,rooms:[],officeData:null,officeTemplateBuffer:null,maxScores:null};
+const state={answerData:null,answerCacheKey:null,answerConfirmedKey:null,rooms:[],officeData:null,officeTemplateBuffer:null,maxScores:null};
 const $=id=>document.getElementById(id);
 const result=$('result'), untInput=$('untFile'), answerInput=$('answerFile'), officeInput=$('officeFile');
 const btnProcess=$('btnProcess'), btnMark=$('btnExportMark'), btnDetail=$('btnExportDetail'), btnReport=$('btnExportReport');
@@ -25,7 +25,7 @@ function fileNames(input){return [...(input.files||[])].map(f=>f.name).join(', '
 function setExportsEnabled(enabled){btnMark.disabled=!enabled;btnDetail.disabled=!enabled;btnReport.disabled=!enabled}
 function bind(input,stateEl){input?.addEventListener('change',()=>{stateEl.textContent=input.files?.length?fileNames(input):(input===officeInput?'Không bắt buộc':'Chưa chọn file');setExportsEnabled(false)})}
 bind(untInput,$('untFileState'));bind(answerInput,$('answerFileState'));bind(officeInput,$('officeFileState'));
-answerInput?.addEventListener('change',()=>{state.answerData=null;state.answerCacheKey=null});
+answerInput?.addEventListener('change',()=>{state.answerData=null;state.answerCacheKey=null;state.answerConfirmedKey=null});
 $('btnClearLog')?.addEventListener('click',clearLog);
 $('btnCopyLog')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(getLogText());addLog('Đã sao chép log vào clipboard.','info')}catch{alert('Trình duyệt không cho phép sao chép tự động.')}});
 
@@ -33,11 +33,11 @@ function answerMode(){return $('answerSourceDirect')?.checked?'direct':'excel'}
 function syncAnswerModeUi(){
   const direct=answerMode()==='direct';
   $('directAnswerPanel').hidden=!direct;$('answerExcelPanel').hidden=direct;
-  state.answerData=null;state.answerCacheKey=null;setExportsEnabled(false);
+  state.answerData=null;state.answerCacheKey=null;state.answerConfirmedKey=null;setExportsEnabled(false);
 }
 $('answerSourceExcel')?.addEventListener('change',syncAnswerModeUi);$('answerSourceDirect')?.addEventListener('change',syncAnswerModeUi);
 
-function resetDirectCache(){state.answerData=null;state.answerCacheKey=null;setExportsEnabled(false)}
+function resetDirectCache(){state.answerData=null;state.answerCacheKey=null;state.answerConfirmedKey=null;setExportsEnabled(false)}
 
 const directGrid=createDirectAnswerGrid({
   host:$('directAnswerGridHost'),
@@ -67,7 +67,7 @@ $('btnReviewAnswer')?.addEventListener('click',async()=>{
   try{
     const data=await loadAnswerData();
     await reviewAnswerData({container:result,answerData:data,title:`Đáp án đang dùng — ${data.sourceLabel||''}`});
-    state.answerData=data;
+    state.answerData=data;state.answerConfirmedKey=state.answerCacheKey;
     if(answerMode()==='direct'){directGrid.setStore(storeFromAnswerData(data))}
     addLog('Đã lưu chỉnh sửa trong bảng xem lại đáp án.','warn');
     if(state.rooms.length){
@@ -132,8 +132,15 @@ btnProcess?.addEventListener('click',async()=>{
  try{
    btnProcess.disabled=true;setExportsEnabled(false);clearLog();state.rooms=[];
    addLog(`Bắt đầu xử lý ${untFiles.length} file UnT.`,'info');
-   state.answerData=await loadAnswerData();state.maxScores=calcMaxScores(state.answerData);
+   state.answerData=await loadAnswerData();
    addLog(`Đã đọc đáp án (${state.answerData.sourceLabel}): ${Object.keys(state.answerData.exams).length} mã đề, ${state.answerData.totalQuestion} câu.`);
+   if(state.answerConfirmedKey!==state.answerCacheKey){
+     await reviewAnswerData({container:result,answerData:state.answerData,title:`Xác nhận đáp án — ${state.answerData.sourceLabel||''}`});
+     state.answerConfirmedKey=state.answerCacheKey;
+     if(answerMode()==='direct') directGrid.setStore(storeFromAnswerData(state.answerData));
+     addLog('Đã xác nhận số mã đề, số câu và phân bố CLO của đáp án.','info');
+   }
+   state.maxScores=calcMaxScores(state.answerData);
    if(officeFile){const wb=await readExcel(officeFile);state.officeData=parseExamOfficeWorkbook(wb);state.officeTemplateBuffer=/\.xlsx$/i.test(officeFile.name)?await officeFile.arrayBuffer():null;addLog(`Đã đọc file khảo thí: tìm thấy ${state.officeData.sheets.length} sheet có danh sách số phách.`);if(!state.officeTemplateBuffer)addLog('File khảo thí không phải .xlsx nên chỉ dùng để ghép phách; phần đầu biểu mẫu sẽ dùng mẫu mặc định.','warn')} else {state.officeData=null;state.officeTemplateBuffer=null;addLog('Không sử dụng file khảo thí. Web vẫn chấm bình thường.','info')}
 
    for(const file of untFiles){

@@ -75,15 +75,6 @@ function finalizeAnswerData({ sheetName, layout, exams }) {
         }
     }
 
-    if (useCLO) {
-        const standard = JSON.stringify(exams[examCodes[0]].cloCount);
-        for (const code of examCodes.slice(1)) {
-            if (JSON.stringify(exams[code].cloCount) !== standard) {
-                throw new Error("Phân bố số câu theo CLO giữa các mã đề không đồng nhất.");
-            }
-        }
-    }
-
     return { sheetName, layout, totalQuestion, useCLO, exams };
 }
 
@@ -213,16 +204,20 @@ function parseHorizontalAnswer(data, sheetName) {
 }
 
 /**
- * Phân tích Workbook đáp án. Tự nhận diện:
- * - Dạng dọc: Câu | 001 | CLO | 002 | CLO | ...
+ * Phân tích Workbook đáp án theo đúng 2 cấu trúc chuẩn của hệ thống:
+ * - Dạng dọc: Câu | mã đề | CLO | mã đề | CLO | ...
  * - Dạng ngang: Câu | 1 | 2 | ... | N; mỗi mã đề một hàng, hàng sau là CLO.
+ *
+ * Nếu workbook có cả hai sheet hợp lệ, ưu tiên dạng dọc vì cấu trúc cặp cột
+ * mã đề/CLO rõ ràng hơn. Không gộp dữ liệu từ hai sheet.
  */
 export function readAnswerWorkbook(workbook) {
     const sheetNames = workbook.SheetNames || [];
     if (!sheetNames.length) throw new Error("File đáp án không có sheet.");
 
+    const verticalCandidates = [];
+    const horizontalCandidates = [];
     const errors = [];
-    const candidates = [];
 
     for (const sheetName of sheetNames) {
         const data = sheetToArray(workbook, sheetName);
@@ -230,44 +225,32 @@ export function readAnswerWorkbook(workbook) {
         if (String(data[0]?.[0] ?? "").trim().toLowerCase() !== "câu") continue;
 
         const header = data[0] || [];
-        const c1 = String(header[2] ?? "").trim().toUpperCase();
-        const b1 = Number(header[1]);
-        const c1num = Number(header[2]);
+        const looksVertical = String(header[2] ?? "").trim().toUpperCase() === "CLO";
+        const looksHorizontal = Number(header[1]) === 1 && Number(header[2]) === 2;
 
-        // Nếu sau mã đề là cột CLO thì gần như chắc chắn là dạng dọc.
-        // Điều này tránh trường hợp mã đề 001 được Excel lưu nội bộ thành số 1
-        // và bị hiểu nhầm thành câu 1 của đáp án ngang.
-        const looksVertical = c1 === "CLO";
-        const looksHorizontal = b1 === 1 && c1num === 2;
-        const parsers = looksVertical
-            ? [parseVerticalAnswer, parseHorizontalAnswer]
-            : looksHorizontal
-                ? [parseHorizontalAnswer, parseVerticalAnswer]
-                : [parseVerticalAnswer, parseHorizontalAnswer];
-
-        for (const parser of parsers) {
+        if (looksVertical) {
             try {
-                const parsed = parser(data, sheetName);
-                candidates.push(parsed);
+                verticalCandidates.push(parseVerticalAnswer(data, sheetName));
             } catch (err) {
-                errors.push(`${sheetName}: ${err.message}`);
+                errors.push(`${sheetName} (dọc): ${err.message}`);
+            }
+            continue;
+        }
+
+        if (looksHorizontal) {
+            try {
+                horizontalCandidates.push(parseHorizontalAnswer(data, sheetName));
+            } catch (err) {
+                errors.push(`${sheetName} (ngang): ${err.message}`);
             }
         }
     }
 
-    if (candidates.length) {
-        // Một parser "nhầm dạng" đôi khi vẫn có thể chạy thành công nhưng chỉ tạo
-        // 1 câu / rất nhiều mã đề. Chọn ứng viên có nhiều câu nhất; nếu bằng nhau,
-        // ưu tiên ứng viên có ít mã đề hơn (thường là cấu trúc thật của đề thi).
-        candidates.sort((a, b) => {
-            if (b.totalQuestion !== a.totalQuestion) return b.totalQuestion - a.totalQuestion;
-            return Object.keys(a.exams || {}).length - Object.keys(b.exams || {}).length;
-        });
-        return candidates[0];
-    }
+    if (verticalCandidates.length) return verticalCandidates[0];
+    if (horizontalCandidates.length) return horizontalCandidates[0];
 
     throw new Error(
-        "Không nhận diện được file đáp án. Hệ thống hỗ trợ cả dạng dọc và dạng ngang.\n\n" +
+        "Không nhận diện được file đáp án chuẩn. Cần có sheet dạng dọc hoặc dạng ngang của hệ thống.\n\n" +
         (errors.slice(0, 6).join("\n") || 'Ô đầu tiên của sheet đáp án phải là "Câu".')
     );
 }

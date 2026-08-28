@@ -999,3 +999,12 @@ tbody tr:hover {
 .direct-horizontal-label--clo{color:#475569}.direct-clo-row td{background:#fbfdff}
 .direct-grid-note{margin:10px 0 0;color:#64748b;font-size:12.5px;line-height:1.5}
 @media(max-width:820px){.direct-grid-status{width:100%;margin-left:0}.direct-toolbar-divider{display:none}.direct-validation-legend{display:none}}
+
+/* ===== V1.8: xác nhận dữ liệu đáp án + thống kê CLO theo mã đề ===== */
+.answer-data-summary{margin:12px 0 16px;padding:14px;border:1px solid #dbe3ec;border-radius:12px;background:#f8fafc}
+.answer-data-summary-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;color:#334155}
+.answer-data-summary-title span{color:#64748b;font-size:13px;font-weight:800}
+.answer-summary-table{margin:0;background:#fff}
+.answer-summary-table th,.answer-summary-table td{text-align:center;white-space:nowrap}
+.answer-summary-table td:first-child,.answer-summary-table th:first-child{text-align:left}
+@media(max-width:640px){.answer-data-summary-title{align-items:flex-start;flex-direction:column}}

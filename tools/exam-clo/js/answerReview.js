@@ -1,5 +1,20 @@
 function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function normCode(v){const s=String(v??'').trim();return /^\d+$/.test(s)?s.padStart(3,'0'):s}
+function cloSort(a,b){
+  const na=String(a).match(/\d+/), nb=String(b).match(/\d+/);
+  if(na&&nb&&Number(na[0])!==Number(nb[0])) return Number(na[0])-Number(nb[0]);
+  return String(a).localeCompare(String(b),'vi',{numeric:true,sensitivity:'base'});
+}
+function summaryTable(answerData,codes){
+  const clos=[...new Set(codes.flatMap(c=>Object.keys(answerData.exams?.[c]?.cloCount||{})))].sort(cloSort);
+  const head=['<th>Mã đề</th><th>Số câu</th>',...clos.map(c=>`<th>${esc(/^CLO/i.test(c)?c:'CLO'+c)}</th>`)].join('');
+  const rows=codes.map(code=>{
+    const exam=answerData.exams[code]||{};
+    const cells=clos.map(clo=>`<td>${Number(exam.cloCount?.[clo]||0)}</td>`).join('');
+    return `<tr><td><b>${esc(code)}</b></td><td>${Number(exam.totalQuestion||0)}</td>${cells}</tr>`;
+  }).join('');
+  return `<div class="answer-data-summary"><div class="answer-data-summary-title"><b>Kiểm tra dữ liệu đáp án</b><span>${codes.length} mã đề • ${Number(answerData.totalQuestion||0)} câu</span></div><div class="table-wrapper"><table class="answer-summary-table"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
 
 function rebuild(answerData, draft){
   const codes=Object.keys(draft);
@@ -24,8 +39,6 @@ function rebuild(answerData, draft){
       const missing=[];for(let q=1;q<=total;q++) if(!String(exam.questions[q].clo).trim()) missing.push(q);
       if(missing.length) throw new Error(`Mã đề ${code} thiếu CLO ở câu ${missing.join(', ')}.`);
     }
-    const standard=JSON.stringify(exams[codes[0]].cloCount);
-    for(const c of codes.slice(1)) if(JSON.stringify(exams[c].cloCount)!==standard) throw new Error('Phân bố CLO giữa các mã đề không đồng nhất.');
   }
   answerData.exams=exams;answerData.useCLO=useCLO;answerData.totalQuestion=total;
   return answerData;
@@ -39,7 +52,7 @@ export function reviewAnswerData({container,answerData,title='Xem lại đáp á
     const head=codes.map(c=>`<th colspan="2"><input class="answer-code-input" data-old="${esc(c)}" value="${esc(c)}" aria-label="Mã đề ${esc(c)}"></th>`).join('');
     const sub=codes.map(()=>'<th>Đáp án</th><th>CLO</th>').join('');
     const rows=Array.from({length:total},(_,i)=>`<tr><td>${i+1}</td>${codes.map(c=>`<td><input class="answer-cell" data-code="${esc(c)}" data-q="${i+1}" data-kind="answer" value="${esc(draft[c].answers[i])}" maxlength="1"></td><td><input class="answer-cell clo-cell" data-code="${esc(c)}" data-q="${i+1}" data-kind="clo" value="${esc(draft[c].clos[i])}"></td>`).join('')}</tr>`).join('');
-    container.innerHTML=`<div class="result-box review-panel"><div class="result-head"><div><span class="section-kicker">XEM LẠI ĐÁP ÁN</span><h2 class="result-title">${esc(title)}</h2></div><span class="success-pill">${codes.length} mã đề • ${total} câu</span></div><p class="review-description">Có thể sửa mã đề, đáp án hoặc CLO ngay tại đây. Mọi thay đổi chỉ có hiệu lực sau khi bấm <b>Lưu đáp án</b>.</p><div id="answerReviewError" class="inline-error" hidden></div><div class="table-wrapper answer-review-wrapper"><table class="answer-review-table"><thead><tr><th rowspan="2">Câu</th>${head}</tr><tr>${sub}</tr></thead><tbody>${rows}</tbody></table></div><div class="review-actions"><button id="cancelAnswerReview" class="secondary-action">Đóng</button><button id="saveAnswerReview" class="primary-inline-action">Lưu đáp án</button></div></div>`;
+    container.innerHTML=`<div class="result-box review-panel"><div class="result-head"><div><span class="section-kicker">XEM LẠI ĐÁP ÁN</span><h2 class="result-title">${esc(title)}</h2></div><span class="success-pill">${codes.length} mã đề • ${total} câu</span></div><p class="review-description">Kiểm tra số mã đề, số câu và số câu theo từng CLO trước khi chấm. Phân bố CLO giữa các mã đề có thể khác nhau và không bị xem là lỗi.</p>${summaryTable(answerData,codes)}<p class="review-description">Có thể sửa mã đề, đáp án hoặc CLO ngay tại đây. Mọi thay đổi chỉ có hiệu lực sau khi bấm <b>Xác nhận &amp; lưu đáp án</b>.</p><div id="answerReviewError" class="inline-error" hidden></div><div class="table-wrapper answer-review-wrapper"><table class="answer-review-table"><thead><tr><th rowspan="2">Câu</th>${head}</tr><tr>${sub}</tr></thead><tbody>${rows}</tbody></table></div><div class="review-actions"><button id="cancelAnswerReview" class="secondary-action">Đóng</button><button id="saveAnswerReview" class="primary-inline-action">Xác nhận &amp; lưu đáp án</button></div></div>`;
     const err=container.querySelector('#answerReviewError');const show=m=>{err.hidden=false;err.textContent=m};
     container.querySelector('#saveAnswerReview')?.addEventListener('click',()=>{
       try{

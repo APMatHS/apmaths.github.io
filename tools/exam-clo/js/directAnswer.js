@@ -127,10 +127,6 @@ export function buildAnswerDataFromDirect(store){
     }
   }
   const exams={}; codes.forEach(c=>exams[c]=rebuildExam(store.exams[c].answers,store.exams[c].clos));
-  if(useCLO){
-    const standard=JSON.stringify(exams[codes[0]].cloCount);
-    for(const c of codes.slice(1)) if(JSON.stringify(exams[c].cloCount)!==standard) throw new Error('Phân bố số câu theo CLO giữa các mã đề không đồng nhất.');
-  }
   return {sheetName:'Nhập trực tiếp',layout:'manual',totalQuestion,useCLO,exams,sourceLabel:'Nhập/dán trực tiếp trên web'};
 }
 

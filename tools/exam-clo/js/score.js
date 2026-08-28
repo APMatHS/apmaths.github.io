@@ -22,6 +22,15 @@ export function calculateStudentScore(student, answerData, maxScores) {
     }
 
     const useCLO = answerData.useCLO === true;
+    // Mỗi mã đề có thể có phân bố CLO khác nhau. Vì vậy điểm tối đa
+    // của từng CLO phải tính theo chính mã đề của sinh viên, không dùng
+    // cơ cấu CLO của mã đề đầu tiên làm chuẩn chung.
+    const examMaxScores = {};
+    for (const clo in (exam.cloCount || {})) {
+        examMaxScores[clo] = exam.totalQuestion > 0
+            ? (Number(exam.cloCount[clo] || 0) / exam.totalQuestion) * 10
+            : 0;
+    }
 
     const cloStatistic = student.result.clo || {};
     const marks = {};
@@ -57,13 +66,13 @@ if (!useCLO) {
             score: calculateDetailScore(
                 correctQuestion,
                 questionCount,
-                maxScores[clo]
+                examMaxScores[clo]
             )
         };
     }
 
     // 3. Hiệu chỉnh
-    adjustDetailScore(detail, gpa, maxScores);
+    adjustDetailScore(detail, gpa, examMaxScores);
 
     // 4. Lưu kết quả mà KHÔNG đè lên questionDetail
     student.result = {
