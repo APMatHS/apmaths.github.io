@@ -1,5 +1,5 @@
 (() => {
-  const TOKEN_URL = "https://rraooqedkpyhokattwdz.supabase.co/functions/v1/ai_live_token";
+  const TOKEN_URL = "https://yhfburffwzvcayjadskr.supabase.co/functions/v1/ai_live_token";
   const WS_URL = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained";
   const MODEL = "models/gemini-3.1-flash-live-preview";
 
