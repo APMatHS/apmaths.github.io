@@ -1,4 +1,4 @@
-/* AI-CLO PTITHCM V12.5.0 — Student Assessment list, detail and attempt module. */
+/* AI-CLO PTITHCM V12.6.33 — Student Assessment list, detail and attempt module. */
 (() => {
   "use strict";
   window.AICLO_ASSESSMENT_MODULES = window.AICLO_ASSESSMENT_MODULES || {};
@@ -115,25 +115,65 @@
     }
 
     function attemptStatus(exam, mine) {
-      const open = mine.find((a) => !a.submitted_at);
+      const open = mine.find((a) => !a.submitted_at && !a._expired);
       const done = mine.filter((a) => a.submitted_at);
       const s = statusMeta(exam);
       const max = Math.max(1, Number(exam.max_attempts || 1));
-      const canStart = !open && s.code === "active" && mine.length < max;
-      return { open, done, status: s, max, canStart };
+      const used = mine.length;
+      const canStart = !open && s.code === "active" && used < max;
+      return { open, done, status: s, max, used, canStart };
+    }
+
+    async function fetchStudentAttempts() {
+      const { data, error } = await db
+        .from("exam_attempts")
+        .select("*")
+        .eq("student_id", state.user.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    }
+
+    async function reconcileOpenAttempts(attempts) {
+      const open = (attempts || []).filter((attempt) => !attempt.submitted_at);
+      if (!open.length) return attempts || [];
+
+      let changed = false;
+      await Promise.all(
+        open.map(async (attempt) => {
+          try {
+            const payload = await db.rpc("get_exam_attempt_payload", {
+              p_attempt_id: attempt.id,
+            });
+            if (payload.error) throw payload.error;
+            if (payload.data?.submitted_at) {
+              changed = true;
+              clearAttemptLocal(attempt.id);
+              return;
+            }
+            if (payload.data?.remaining_seconds !== 0) return;
+
+            attempt._expired = true;
+            const finalized = await db.rpc("finalize_exam_attempt", {
+              p_attempt_id: attempt.id,
+            });
+            if (finalized.error) throw finalized.error;
+            changed = true;
+            clearAttemptLocal(attempt.id);
+          } catch (error) {
+            console.warn("Không thể đồng bộ lượt làm đang mở", attempt.id, error);
+          }
+        }),
+      );
+      return changed ? fetchStudentAttempts() : attempts || [];
     }
 
     async function loadStudentExamData() {
-      const [items, { data: attempts, error }] = await Promise.all([
+      const [items, initialAttempts] = await Promise.all([
         fetchExams(),
-        db
-          .from("exam_attempts")
-          .select("*")
-          .eq("student_id", state.user.id)
-          .order("created_at", { ascending: false }),
+        fetchStudentAttempts(),
       ]);
-      if (error) throw error;
-      const rows = attempts || [];
+      const rows = await reconcileOpenAttempts(initialAttempts);
       const visible = items.filter(
         (exam) => exam.status === "active" || rows.some((a) => a.exam_id === exam.id),
       );
@@ -145,7 +185,7 @@
       if (meta.status.code === "upcoming") return "Chưa mở";
       if (meta.status.code === "expired") return "Đã hết hạn";
       if (exam.status === "closed") return "Đang tạm dừng";
-      if (!meta.canStart && meta.done.length >= meta.max) return "Đã hết lượt";
+      if (!meta.canStart && meta.used >= meta.max) return "Đã hết lượt";
       return meta.status.label;
     }
 
@@ -238,16 +278,21 @@
           <section class="panel">
             <div class="panel-head"><div><h3>Các lượt làm của bạn</h3><p class="hint">Câu hỏi của lượt đã nộp chỉ mở trong panel khi bạn chọn “Xem câu hỏi”.</p></div></div>
             <div class="student-attempt-history">
-              ${mine.map((a) => `<article class="student-attempt-history-row">
+              ${mine.map((a) => {
+                const expired = !a.submitted_at && a._expired;
+                return `<article class="student-attempt-history-row">
                 <div><small>Lần</small><b>${a.attempt_number || 1}</b></div>
                 <div><small>Bắt đầu</small><b>${formatDateTime(a.started_at)}</b></div>
-                <div><small>Nộp bài</small><b>${a.submitted_at ? formatDateTime(a.submitted_at) : "Chưa nộp"}</b></div>
+                <div><small>Nộp bài</small><b>${a.submitted_at ? formatDateTime(a.submitted_at) : expired ? "Hết giờ" : "Chưa nộp"}</b></div>
                 <div><small>Điểm</small><b>${a.submitted_at && a.score != null ? `${scaleExamScore(a.score, exam).toFixed(2)}/${maxScoreText(exam)}` : "—"}</b></div>
-                <div><span class="badge ${a.submitted_at ? "green" : ""}">${a.submitted_at ? "Đã nộp" : "Đang làm"}</span></div>
+                <div><span class="badge ${a.submitted_at ? "green" : expired ? "red" : ""}">${a.submitted_at ? "Đã nộp" : expired ? "Hết giờ" : "Đang làm"}</span></div>
                 <div class="student-attempt-history-actions">${a.submitted_at
                   ? `<button type="button" class="secondary compact" data-v125-view-questions="${a.id}" data-exam-id="${exam.id}">Xem câu hỏi</button>`
-                  : `<button type="button" class="primary compact" data-v122-resume="${exam.id}" data-attempt="${a.id}">Tiếp tục</button>`}</div>
-              </article>`).join("") || '<div class="empty">Bạn chưa có lượt làm nào.</div>'}
+                  : expired
+                    ? '<button type="button" class="secondary compact" disabled>Đã hết giờ</button>'
+                    : `<button type="button" class="primary compact" data-v122-resume="${exam.id}" data-attempt="${a.id}">Tiếp tục</button>`}</div>
+              </article>`;
+              }).join("") || '<div class="empty">Bạn chưa có lượt làm nào.</div>'}
             </div>
           </section>
         </section>`;
