@@ -1,4 +1,4 @@
 window.AICLO_CONFIG = {
-  SUPABASE_URL: "https://rraooqedkpyhokattwdz.supabase.co",
-  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_A-EAWmU0kIcDFKMb4YispA_ucX6uOOK"
+  SUPABASE_URL: "https://yhfburffwzvcayjadskr.supabase.co",
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_TcYRYTrR3VZgOoyH0Ye1hQ_d-Jm4UwL"
 };
