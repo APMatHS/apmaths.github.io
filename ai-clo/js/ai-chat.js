@@ -1,5 +1,5 @@
 (() => {
-  const CHAT_URL = "https://rraooqedkpyhokattwdz.supabase.co/functions/v1/ai_clo_chat";
+  const CHAT_URL = "https://yhfburffwzvcayjadskr.supabase.co/functions/v1/ai_clo_chat";
   const MAX_HISTORY_MESSAGES = 8;
   const history = [];
   let sending = false;
