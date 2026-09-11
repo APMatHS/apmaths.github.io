@@ -1,4 +1,4 @@
-/* AI-CLO PTITHCM V12.6.47 — AI question variants with sequential review. */
+/* AI-CLO PTITHCM V12.6.50 — AI question variants with course guidance and sequential review. */
 (() => {
   "use strict";
 
@@ -35,7 +35,7 @@
   }
 
   function configurationHtml(source) {
-    return `<section class="ai-clone-config"><div class="ai-clone-section-head"><div><h4>Thiết lập nhân bản</h4><p>Tạo nhiều câu cùng dạng toán nhưng thay dữ liệu, hàm số hoặc tham số. Sau khi sinh, từng câu sẽ được duyệt giống luồng “Tạo bằng Gemini”.</p></div></div><div class="ai-clone-config-grid"><label class="field">Số lượng câu<input id="aiCloneCount" type="number" min="1" max="10" step="1" value="3"></label><label class="field">Mức biến đổi<select id="aiCloneVariation"><option value="close">Gần dạng câu gốc</option><option value="balanced" selected>Vừa phải</option><option value="strong">Thay dữ liệu mạnh</option></select></label><label class="field">Nơi lưu khi duyệt<select id="aiCloneScope">${scopeOptions(source.question_scope)}</select></label><label class="field wide">Yêu cầu bổ sung<textarea id="aiCloneRequirements" rows="3" placeholder="Ví dụ: dùng hàm lượng giác; hệ số nguyên; không dùng căn; khó hơn một mức; thay hoàn toàn dữ kiện về hàm số…"></textarea></label></div><div class="ai-clone-config-actions"><button id="aiCloneGenerate" type="button" class="ai-btn">✦ Tạo câu nhân bản</button></div></section>`;
+    return `<section class="ai-clone-config"><div class="ai-clone-section-head"><div><h4>Thiết lập nhân bản</h4><p>Tạo nhiều câu cùng dạng toán nhưng thay dữ liệu, hàm số hoặc tham số. Hướng dẫn AI học phần được áp dụng tự động; sau khi sinh, từng câu sẽ được duyệt giống luồng “Tạo bằng Gemini”.</p></div></div><div class="ai-clone-config-grid"><label class="field">Số lượng câu<input id="aiCloneCount" type="number" min="1" max="10" step="1" value="3"></label><label class="field">Mức biến đổi<select id="aiCloneVariation"><option value="close">Gần dạng câu gốc</option><option value="balanced" selected>Vừa phải</option><option value="strong">Thay dữ liệu mạnh</option></select></label><label class="field">Nơi lưu khi duyệt<select id="aiCloneScope">${scopeOptions(source.question_scope)}</select></label><label class="field wide">Yêu cầu bổ sung<textarea id="aiCloneRequirements" rows="3" placeholder="Ví dụ: dùng hàm lượng giác; hệ số nguyên; không dùng căn; khó hơn một mức; thay hoàn toàn dữ kiện về hàm số…"></textarea></label></div><div class="ai-clone-config-actions"><button id="aiCloneGenerate" type="button" class="ai-btn">✦ Tạo câu nhân bản</button></div></section>`;
   }
 
   function readEditor(source) {
@@ -225,7 +225,7 @@
     const results = root.querySelector("#aiCloneResults");
     const count = Math.max(1, Math.min(10, Number(root.querySelector("#aiCloneCount")?.value || 3)));
     const variation = root.querySelector("#aiCloneVariation")?.value || "balanced";
-    const requirements = root.querySelector("#aiCloneRequirements")?.value.trim() || "";
+    const userRequirements = root.querySelector("#aiCloneRequirements")?.value.trim() || "";
     const scope = validScope(root.querySelector("#aiCloneScope")?.value || source.question_scope || "practice");
     if (button) {
       button.disabled = true;
@@ -233,6 +233,9 @@
     }
     results.innerHTML = '<div class="ai-clone-loading"><b>Đang tạo các câu cùng dạng…</b><span>AI đang thay dữ liệu và tự tính lại đáp án, lời giải.</span></div>';
     try {
+      const requirements = window.AICLO_COURSE_AI_GUIDE?.buildRequirements
+        ? await window.AICLO_COURSE_AI_GUIDE.buildRequirements(userRequirements)
+        : userRequirements;
       const { data, error } = await db.functions.invoke("generate-question-variants", {
         body: {
           source_question_id: source.id,
@@ -252,7 +255,7 @@
       return showVariantReview(source, sets, variants, 0, scope, data.model || "Gemini");
     } catch (error) {
       err(error);
-      results.innerHTML = '<div class="ai-clone-error"><b>Chưa tạo được câu nhân bản.</b><span>Kiểm tra Edge Function generate-question-variants và thử lại.</span></div>';
+      results.innerHTML = `<div class="ai-clone-error"><b>Chưa tạo được câu nhân bản.</b><span>${escHtml(error?.message || 'Kiểm tra Edge Function generate-question-variants và thử lại.')}</span></div>`;
     } finally {
       if (button && document.body.contains(button)) {
         button.disabled = false;
