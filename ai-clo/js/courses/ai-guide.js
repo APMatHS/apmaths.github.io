@@ -27,8 +27,16 @@ function setPageHeading(subject){
  if(sub)sub.textContent=`${subject?.name||'Học phần'} · ${subject?.semester||''} · ${subject?.academic_year||''}`;
 }
 
+function restoreStructureHeading(){
+ const subject=activeSubject?.();
+ const title=$('#pageTitle'),sub=$('#pageSub');
+ if(title)title.textContent=titles?.structure?.[0]||'Chương · CLO';
+ if(sub)sub.textContent=titles?.structure?.[1]||`${subject?.name||'Học phần'} · Cấu trúc chương, chủ đề và CLO`;
+}
+
 function backToStructure(){
  window.AICLO_SUBPAGE_STATE?.clear?.();
+ restoreStructureHeading();
  if(typeof render==='function')return render();
 }
 
@@ -82,13 +90,36 @@ async function open(){
  }catch(error){err(error);host.innerHTML=`<section class="panel"><div class="panel-head"><h3>Không mở được hướng dẫn AI</h3></div><p class="hint">${esc(error?.message||'Có lỗi khi tải dữ liệu.')}</p><button id="courseAiGuideErrorBack" class="secondary" type="button">← Quay lại</button></section>`;$('#courseAiGuideErrorBack',host).onclick=backToStructure}
 }
 
+function installStructureEntry(){
+ const base=window.structure;
+ if(typeof base!=='function'||base.__aicloCourseAiGuideEntry)return;
+ const wrapped=async function(c){
+  await base.call(this,c);
+  if(!canTeach?.()||!c||$('#courseAiGuideOpen',c))return;
+  const head=$('.panel-head',c);if(!head)return;
+  const button=document.createElement('button');
+  button.id='courseAiGuideOpen';
+  button.type='button';
+  button.className='secondary';
+  button.textContent='✦ Hướng dẫn AI học phần';
+  button.onclick=()=>open();
+  head.append(button);
+ };
+ wrapped.__aicloCourseAiGuideEntry=true;
+ wrapped.__aicloBaseStructure=base;
+ window.structure=wrapped;
+}
+
 function registerSubpage(){
- const api=window.AICLO_SUBPAGE_STATE;if(!api?.register)return;
- api.register(subpageKind,{
-  detect(){return document.querySelector('.course-ai-guide-page')?{entityType:'question-bank',entityId:document.querySelector('.course-ai-guide-page')?.dataset.aicloEntityId||null}:null},
-  isActive:()=>!!document.querySelector('.course-ai-guide-page'),
-  async restore(){await open();return !!document.querySelector('.course-ai-guide-page')}
- });
+ const api=window.AICLO_SUBPAGE_STATE;
+ if(api?.register){
+  api.register(subpageKind,{
+   detect(){return document.querySelector('.course-ai-guide-page')?{entityType:'question-bank',entityId:document.querySelector('.course-ai-guide-page')?.dataset.aicloEntityId||null}:null},
+   isActive:()=>!!document.querySelector('.course-ai-guide-page'),
+   async restore(){await open();return !!document.querySelector('.course-ai-guide-page')}
+  });
+ }
+ installStructureEntry();
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',registerSubpage,{once:true});else registerSubpage();
