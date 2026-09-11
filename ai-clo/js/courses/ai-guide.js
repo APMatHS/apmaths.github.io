@@ -1,4 +1,4 @@
-/* AI-CLO PTITHCM V12.6.49 — course AI guidance subpage. */
+/* AI-CLO PTITHCM V12.6.50 — course AI guidance subpage + prompt composition. */
 (()=>{
 'use strict';
 
@@ -19,6 +19,21 @@ async function loadGuide(bankId){
  const {data,error}=await db.from(TABLE).select('instruction,updated_at,updated_by').eq('question_bank_id',bankId).maybeSingle();
  if(error)throw error;
  return data||{instruction:'',updated_at:null,updated_by:null};
+}
+
+async function getInstruction(){
+ const {bankId}=await resolveBank();
+ const guide=await loadGuide(bankId);
+ return String(guide.instruction||'').trim();
+}
+
+async function buildRequirements(userRequirements=''){
+ const instruction=await getInstruction();
+ const extra=String(userRequirements||'').trim();
+ const blocks=[];
+ if(instruction)blocks.push(`HƯỚNG DẪN AI CỦA HỌC PHẦN — PHẢI TUÂN THỦ:\n${instruction}`);
+ if(extra)blocks.push(`YÊU CẦU BỔ SUNG CHO LẦN SINH NÀY:\n${extra}`);
+ return blocks.join('\n\n');
 }
 
 function setPageHeading(subject){
@@ -123,5 +138,5 @@ function registerSubpage(){
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',registerSubpage,{once:true});else registerSubpage();
-window.AICLO_COURSE_AI_GUIDE=Object.freeze({open});
+window.AICLO_COURSE_AI_GUIDE=Object.freeze({open,getInstruction,buildRequirements});
 })();
