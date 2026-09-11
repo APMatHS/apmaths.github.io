@@ -1,4 +1,4 @@
-/* AI-CLO PTITHCM V11.6.9 — AI generation with persistent pre-submit workspace. */
+/* AI-CLO PTITHCM V12.6.50 — AI generation with course guidance and persistent pre-submit workspace. */
 (()=>{
 'use strict';
 
@@ -23,7 +23,7 @@ const clearAiDraft=()=>{
  window.AICLO_QUESTION_WORKSPACE?.forgetAi?.();
 };
 
-window.aiGenerateForm=function aiGenerateFormV1169(sets){
+window.aiGenerateForm=function aiGenerateFormV12650(sets){
  if(!sets.ch.length||!sets.clos.length)return toast('Học phần cần có chương và CLO trước khi tạo câu hỏi',true);
 
  captureQuestionFilters();
@@ -32,7 +32,7 @@ window.aiGenerateForm=function aiGenerateFormV1169(sets){
   'Tạo câu hỏi bằng AI',
   'Thiết lập yêu cầu và tạo bản nháp trực tiếp trong trang.',
   `<form id="aiForm" class="form-grid v10-ai-page">
-   <div class="ai-note wide"><b>AI chỉ tạo bản nháp.</b><span>Giảng viên luôn duyệt, chỉnh sửa và kiểm tra câu tương tự trước khi câu hỏi được lưu vào ngân hàng.</span></div>
+   <div class="ai-note wide"><b>AI chỉ tạo bản nháp.</b><span>Giảng viên luôn duyệt, chỉnh sửa và kiểm tra câu tương tự trước khi câu hỏi được lưu vào ngân hàng. Hướng dẫn AI học phần được áp dụng tự động.</span></div>
    <label class="field">Chương<select name="chapter_id" id="aiChapter" required>${sets.ch.map(v=>`<option value="${v.id}">${esc(v.order_index)}. ${esc(v.name)}</option>`).join('')}</select></label>
    <label class="field">Chủ đề<select name="topic_id" id="aiTopic"></select></label>
    <label class="field">CLO<select name="clo_id" id="aiClo" required>${sets.clos.map(v=>`<option value="${v.id}">${esc(v.code)}</option>`).join('')}</select></label>
@@ -68,13 +68,17 @@ window.aiGenerateForm=function aiGenerateFormV1169(sets){
   button.disabled=true;button.textContent='AI đang tạo…';
   errorBox.classList.add('hidden');errorBox.textContent='';
   try{
+   const userRequirements=values.additional_requirements||'';
+   const additionalRequirements=window.AICLO_COURSE_AI_GUIDE?.buildRequirements
+    ?await window.AICLO_COURSE_AI_GUIDE.buildRequirements(userRequirements)
+    :userRequirements;
    const data=await invokeDetailed('generate-questions',{
     subject_id:state.subjectId,
     chapter_id:values.chapter_id,
     topic_id:values.topic_id||null,
     clo_id:values.clo_id,
     count:Number(values.count),
-    additional_requirements:values.additional_requirements||'',
+    additional_requirements:additionalRequirements,
     avoid_duplicates:avoidDuplicates,
     question_scope:targetScope
    });
