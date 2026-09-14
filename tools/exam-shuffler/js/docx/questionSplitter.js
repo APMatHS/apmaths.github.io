@@ -1,8 +1,9 @@
 /* =====================================================
-   questionSplitter.js v2.0
+   questionSplitter.js v2.1
    - Nhận diện Câu 1 / Câu 1. / Câu 1: / Câu 1) / Q1 / Question 1.
-   - Có thể dùng expectedQuestionCount để khóa đúng chuỗi Câu 1..N.
-   - Tách phần trước Câu 1 thành header và phần sau đáp án D của câu N thành footer.
+   - Dùng expectedQuestionCount để tìm đúng một KHỐI N câu bắt đầu từ Câu 1.
+   - Không bắt buộc nhãn nguồn phải liên tục 1..N; khi xuất sẽ đánh lại số.
+   - Tách phần trước khối thành header và phần sau đáp án D của câu cuối thành footer.
 ===================================================== */
 
 const W_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
@@ -12,9 +13,7 @@ function getParagraphText(paragraph) {
     if (!paragraph || typeof paragraph.getElementsByTagNameNS !== "function") return "";
     const textNodes = paragraph.getElementsByTagNameNS(W_NAMESPACE, "t");
     let text = "";
-    for (let i = 0; i < textNodes.length; i++) {
-        text += textNodes[i].textContent || "";
-    }
+    for (let i = 0; i < textNodes.length; i++) text += textNodes[i].textContent || "";
     return text.replace(/\u00a0/g, " ");
 }
 
@@ -31,47 +30,43 @@ function parseQuestionStart(paragraph) {
     if (!text) return null;
 
     let match = text.match(/^(Câu|Question)\s*(\d+)(?=\s|$|[\.\:\)\-–—])/i);
-    if (match) {
-        return { number: Number(match[2]), kind: "named", text };
-    }
+    if (match) return { number: Number(match[2]), kind: "named", text };
 
     match = text.match(/^Q\s*(\d+)(?=\s|$|[\.\:\)\-–—])/i);
-    if (match) {
-        return { number: Number(match[1]), kind: "q", text };
-    }
+    if (match) return { number: Number(match[1]), kind: "q", text };
 
     match = text.match(/^(\d+)\s*[\.\:\)](?=\s|$)/);
-    if (match) {
-        return { number: Number(match[1]), kind: "numeric", text };
-    }
+    if (match) return { number: Number(match[1]), kind: "numeric", text };
 
     return null;
 }
 
-function findSequentialQuestionStarts(candidates, expectedCount) {
+function candidatePools(candidates) {
+    const preferred = candidates.filter(c => c.kind !== "numeric");
+    return preferred.length ? [preferred, candidates] : [candidates];
+}
+
+/**
+ * Tìm một đoạn N mốc câu liên tiếp trong tài liệu, bắt đầu bằng nhãn Câu 1.
+ * Nếu trước khi đủ N câu lại gặp một Câu 1 khác, đoạn trước bị loại.
+ * Cách này xử lý được file có nhiều bộ đề nối tiếp và nhãn nguồn bị nhảy số (vd. 9 -> 11).
+ */
+function findQuestionBlock(candidates, expectedCount) {
     if (!Number.isInteger(expectedCount) || expectedCount <= 0) return null;
 
-    const preferred = candidates.filter(c => c.kind !== "numeric");
-    const pools = preferred.length >= expectedCount ? [preferred, candidates] : [candidates];
-
-    for (const pool of pools) {
+    for (const pool of candidatePools(candidates)) {
         for (let start = 0; start < pool.length; start++) {
             if (pool[start].number !== 1) continue;
 
-            const selected = [pool[start]];
-            let nextNumber = 2;
+            const slice = pool.slice(start, start + expectedCount);
+            if (slice.length !== expectedCount) continue;
 
-            for (let i = start + 1; i < pool.length && nextNumber <= expectedCount; i++) {
-                if (pool[i].number === nextNumber) {
-                    selected.push(pool[i]);
-                    nextNumber++;
-                }
-            }
+            const anotherStart = slice.slice(1).findIndex(item => item.number === 1);
+            if (anotherStart >= 0) continue;
 
-            if (selected.length === expectedCount) return selected;
+            return slice;
         }
     }
-
     return null;
 }
 
@@ -79,9 +74,7 @@ function choiceLabelsInText(text) {
     const labels = [];
     const regex = /(?:^|[\s\t])([A-D])\s*[\.\:\)]/g;
     let match;
-    while ((match = regex.exec(text)) !== null) {
-        labels.push(match[1]);
-    }
+    while ((match = regex.exec(text)) !== null) labels.push(match[1]);
 
     if (labels.length === 0) {
         const fallback = /([A-D])\s*[\.\:\)]/g;
@@ -92,33 +85,21 @@ function choiceLabelsInText(text) {
 
 function findLastQuestionEnd(nodes, startIndex) {
     const seen = new Set();
-
     for (let i = startIndex; i < nodes.length; i++) {
         const node = nodes[i];
         if (isSectPr(node)) continue;
         if (!node || node.nodeType !== ELEMENT_NODE) continue;
 
-        const text = getParagraphText(node);
-        const labels = choiceLabelsInText(text);
+        const labels = choiceLabelsInText(getParagraphText(node));
         labels.forEach(label => seen.add(label));
-
-        if (seen.has("A") && seen.has("B") && seen.has("C") && seen.has("D")) {
-            return i + 1;
-        }
+        if (seen.has("A") && seen.has("B") && seen.has("C") && seen.has("D")) return i + 1;
     }
-
     return nodes.length;
 }
 
 export function splitQuestions(bodyNode, expectedQuestionCount = null) {
     if (!bodyNode || typeof bodyNode.childNodes === "undefined") {
-        return {
-            headerNodes: [],
-            questionBlocks: [],
-            footerNodes: [],
-            totalNodes: 0,
-            detectedQuestionStarts: 0
-        };
+        return { headerNodes: [], questionBlocks: [], footerNodes: [], totalNodes: 0, detectedQuestionStarts: 0 };
     }
 
     const nodes = Array.from(bodyNode.childNodes);
@@ -131,12 +112,11 @@ export function splitQuestions(bodyNode, expectedQuestionCount = null) {
     });
 
     let selectedStarts;
-
     if (Number.isInteger(expectedQuestionCount) && expectedQuestionCount > 0) {
-        selectedStarts = findSequentialQuestionStarts(candidates, expectedQuestionCount);
+        selectedStarts = findQuestionBlock(candidates, expectedQuestionCount);
         if (!selectedStarts) {
             throw new Error(
-                `Không tìm được đúng chuỗi Câu 1 đến Câu ${expectedQuestionCount}. ` +
+                `Không tìm được một khối gồm ${expectedQuestionCount} câu bắt đầu từ Câu 1. ` +
                 `Đã phát hiện ${candidates.length} mốc có dạng đầu câu.`
             );
         }
@@ -147,18 +127,13 @@ export function splitQuestions(bodyNode, expectedQuestionCount = null) {
     if (selectedStarts.length === 0) {
         return {
             headerNodes: nodes.filter(node => !isSectPr(node)),
-            questionBlocks: [],
-            footerNodes: [],
-            totalNodes: nodes.length,
+            questionBlocks: [], footerNodes: [], totalNodes: nodes.length,
             detectedQuestionStarts: candidates.length
         };
     }
 
     const firstStart = selectedStarts[0].nodeIndex;
-    const headerNodes = nodes
-        .slice(0, firstStart)
-        .filter(node => !isSectPr(node));
-
+    const headerNodes = nodes.slice(0, firstStart).filter(node => !isSectPr(node));
     const questionBlocks = [];
     let footerNodes = [];
 
@@ -170,9 +145,7 @@ export function splitQuestions(bodyNode, expectedQuestionCount = null) {
             endIndex = selectedStarts[q + 1].nodeIndex;
         } else if (Number.isInteger(expectedQuestionCount) && expectedQuestionCount > 0) {
             endIndex = findLastQuestionEnd(nodes, startIndex);
-            footerNodes = nodes
-                .slice(endIndex)
-                .filter(node => !isSectPr(node));
+            footerNodes = nodes.slice(endIndex).filter(node => !isSectPr(node));
         } else {
             endIndex = nodes.length;
         }
@@ -182,17 +155,15 @@ export function splitQuestions(bodyNode, expectedQuestionCount = null) {
             startNodeIndex: startIndex,
             questionNumber: selectedStarts[q].number,
             nodes: nodes.slice(startIndex, endIndex).filter(node => !isSectPr(node)),
-            answers: [],
-            correctAnswer: null
+            answers: [], correctAnswer: null
         });
     }
 
     return {
-        headerNodes,
-        questionBlocks,
-        footerNodes,
+        headerNodes, questionBlocks, footerNodes,
         totalNodes: nodes.length,
-        detectedQuestionStarts: candidates.length
+        detectedQuestionStarts: candidates.length,
+        selectedSourceNumbers: selectedStarts.map(item => item.number)
     };
 }
 
