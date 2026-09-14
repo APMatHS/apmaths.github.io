@@ -1,9 +1,9 @@
 /* =====================================================
-   choiceShuffle.js v2.9
+   choiceShuffle.js v2.9.1
    - Trộn A/B/C/D.
    - Tự chọn layout 1 dòng / 2 dòng / 4 dòng theo độ rộng phương án.
    - Không phụ thuộc layout của file Word nguồn với câu hỏi chuẩn.
-   - Loại bỏ Word Numbering khỏi paragraph đáp án đầu ra.
+   - Loại bỏ Word Numbering trực tiếp hoặc qua paragraph style khỏi đầu ra.
    - Không dùng table.
    - Làm sạch định dạng đáp án: không bold/italic/underline/màu.
    - Chuẩn hóa vị trí cột đáp án trên toàn bộ đề.
@@ -129,10 +129,11 @@ function applyStandardAnswerLayout(paragraph, slotCount) {
     const doc = paragraph.ownerDocument;
     const pPr = ensureParagraphProperties(paragraph);
 
-    // Không kế thừa indent/tab/numbering động từ file nguồn.
+    // Không kế thừa indent/tab/numbering động hoặc paragraph style từ file nguồn.
     removeDirectChildren(pPr, "ind");
     removeDirectChildren(pPr, "tabs");
     removeDirectChildren(pPr, "numPr");
+    removeDirectChildren(pPr, "pStyle");
 
     const ind = doc.createElementNS(W_NAMESPACE, "w:ind");
     ind.setAttributeNS(W_NAMESPACE, "w:left", String(ANSWER_LEFT_INDENT));
