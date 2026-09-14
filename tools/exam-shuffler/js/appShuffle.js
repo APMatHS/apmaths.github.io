@@ -1,12 +1,13 @@
 /* =====================================================
    appShuffle.js
-   Exam Shuffler v2.9
+   Exam Shuffler v3.0
 ===================================================== */
 
 import { readDocx } from "./docx/docxReader.js";
 import { loadDocument, getDocumentBody, updateDocumentBody, writeRawDocument } from "./docx/docxWriter.js";
 import { splitQuestions } from "./docx/questionSplitter.js";
 import { analyzeQuestions } from "./docx/answerExtractor.js";
+import { createNumberingResolver } from "./docx/numberingResolver.js";
 import { shuffleQuestions } from "./shuffle/questionShuffle.js";
 import { shuffleAllChoices } from "./shuffle/choiceShuffle.js";
 import { renumberAllQuestions } from "./shuffle/questionRenumber.js";
@@ -68,6 +69,7 @@ async function parseSource(fileInput, expectedQuestionCount) {
 
     const zip = await readDocx(fileInput);
     const xmlDoc = await loadDocument(zip);
+    const numberingResolver = await createNumberingResolver(zip);
     const bodyNode = getDocumentBody(xmlDoc);
     const splitResult = splitQuestions(bodyNode, count);
     const header = splitResult.headerNodes ?? [];
@@ -78,7 +80,7 @@ async function parseSource(fileInput, expectedQuestionCount) {
         throw new Error(`Số câu không khớp: xác nhận ${count}, nhưng tách được ${questionBlocks.length}.`);
     }
 
-    const rawQuestions = analyzeQuestions(questionBlocks).map((q, index) => ({
+    const rawQuestions = analyzeQuestions(questionBlocks, numberingResolver).map((q, index) => ({
         ...q,
         sourceIndex: index + 1,
         originalNumber: Number(q.number) || index + 1,
@@ -122,6 +124,7 @@ export async function analyzeExamSource(fileInput, expectedQuestionCount) {
         clo: q.clo || "",
         correct: q.correct || "",
         correctCount: (q.choices || []).filter(c => c.correct).length,
+        choicesFromNumbering: Boolean(q.choicesFromNumbering),
         choices: (q.choices || []).map(c => ({
             label: c.label,
             text: String(c.text || "").replace(/^\s*[A-D]\s*[\.\:\)]\s*/i, ""),
@@ -138,6 +141,7 @@ export async function analyzeExamSource(fileInput, expectedQuestionCount) {
             headerNodes: parsed.header.length,
             footerNodes: parsed.footer.length,
             cloCounts: cloCounts(parsed.rawQuestions),
+            numberingChoiceQuestions: parsed.rawQuestions.filter(q => q.choicesFromNumbering).length,
             missingClo: parsed.rawQuestions.filter(q => !q.clo).length,
             missingCorrect: parsed.rawQuestions.filter(q => (q.choices || []).filter(c => c.correct).length !== 1).length,
             badChoiceCount: parsed.rawQuestions.filter(q => (q.choices || []).length !== 4).length
@@ -226,6 +230,7 @@ export async function processExamShuffling(
             headerNodes: header.length,
             footerNodes: footer.length,
             cloCounts: cloCounts(rawQuestions),
+            numberingChoiceQuestions: rawQuestions.filter(q => q.choicesFromNumbering).length,
             missingClo: rawQuestions.filter(q => !q.clo).length
         }
     };
