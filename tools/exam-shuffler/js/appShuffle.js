@@ -1,6 +1,6 @@
 /* =====================================================
    appShuffle.js
-   Exam Shuffler v2.8
+   Exam Shuffler v2.9
 ===================================================== */
 
 import { readDocx } from "./docx/docxReader.js";
@@ -95,19 +95,11 @@ function applyManualOverrides(rawQuestions, overrides = []) {
         const clo = override.clo !== undefined ? normalizeClo(override.clo) : normalizeClo(q.clo);
         const chosen = String(override.correct ?? "").trim().toUpperCase();
         const correct = /^[A-D]$/.test(chosen) ? chosen : String(q.correct || "").toUpperCase();
-
         const choices = (q.choices || []).map(choice => ({
             ...choice,
             correct: /^[A-D]$/.test(correct) ? String(choice.label).toUpperCase() === correct : Boolean(choice.correct)
         }));
-
-        return {
-            ...q,
-            clo,
-            correct,
-            choices,
-            originalCorrect: correct
-        };
+        return { ...q, clo, correct, choices, originalCorrect: correct };
     });
 }
 
@@ -121,7 +113,6 @@ function cloCounts(questions) {
     return counts;
 }
 
-/** Phân tích file để preview trên web, chưa trộn và chưa xuất. */
 export async function analyzeExamSource(fileInput, expectedQuestionCount) {
     const parsed = await parseSource(fileInput, expectedQuestionCount);
     const questions = parsed.rawQuestions.map(q => ({
@@ -157,18 +148,13 @@ export async function analyzeExamSource(fileInput, expectedQuestionCount) {
 async function renderExamToBlob(exam, originalZip, parsedXmlDoc) {
     const xmlDocClone = parsedXmlDoc.cloneNode(true);
     const zipClone = originalZip.clone();
-
     const formattedNodes = formatExamDocument(assembleExamNodes(exam));
     updateDocumentBody(xmlDocClone, formattedNodes);
     writeRawDocument(zipClone, xmlDocClone);
-
     const auxiliaryUpdate = await updateExamCodeInZipParts(zipClone, exam.examCode);
     if (!exam.bodyExamCodeUpdated && auxiliaryUpdate.replacements === 0) {
-        throw new Error(
-            `Mã đề ${exam.examCode}: không tìm thấy "Mã đề/Đề số/Code" trong phần thân, header hoặc footer của Word.`
-        );
+        throw new Error(`Mã đề ${exam.examCode}: không tìm thấy "Mã đề/Đề số/Code" trong phần thân, header hoặc footer của Word.`);
     }
-
     return await zipClone.generateAsync({
         type: "blob",
         mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -180,40 +166,25 @@ async function renderExamToBlob(exam, originalZip, parsedXmlDoc) {
 export async function processExamShuffling(
     fileInput,
     examCodes = ["101", "102", "103", "104"],
-    options = {
-        shuffleQuestions: true,
-        shuffleChoices: true,
-        expectedQuestionCount: null,
-        manualOverrides: []
-    },
+    options = { shuffleQuestions: true, shuffleChoices: true, expectedQuestionCount: null, manualOverrides: [] },
     onProgress = () => {}
 ) {
     const expectedQuestionCount = Number(options.expectedQuestionCount);
-
     onProgress(5, "Đang đọc và phân tích file Word...");
     const parsed = await parseSource(fileInput, expectedQuestionCount);
     const { zip, xmlDoc, splitResult, header, footer } = parsed;
 
     onProgress(28, "Đang áp dụng các chỉnh sửa đáp án/CLO từ màn hình kiểm tra...");
     const rawQuestions = applyManualOverrides(parsed.rawQuestions, options.manualOverrides || []);
-
     const malformed = rawQuestions
-        .map((q, index) => ({
-            number: index + 1,
-            choices: q.choices.length,
-            correct: q.choices.filter(c => c.correct).length
-        }))
+        .map((q, index) => ({ number: index + 1, choices: q.choices.length, correct: q.choices.filter(c => c.correct).length }))
         .filter(row => row.choices !== 4 || row.correct !== 1);
-
     if (malformed.length > 0) {
-        const sample = malformed.slice(0, 8)
-            .map(row => `Câu ${row.number}: ${row.choices} phương án, ${row.correct} đáp án đúng`)
-            .join("; ");
+        const sample = malformed.slice(0, 8).map(row => `Câu ${row.number}: ${row.choices} phương án, ${row.correct} đáp án đúng`).join("; ");
         throw new Error(`Đề chưa đạt kiểm tra trước khi trộn. ${sample}`);
     }
 
     onProgress(42, `Đã xác nhận ${expectedQuestionCount} câu. Đang tạo ${examCodes.length} mã đề...`);
-
     const questionSets = examCodes.map(() => {
         let processed = cloneQuestions(rawQuestions);
         if (options.shuffleQuestions !== false) processed = shuffleQuestions(processed);
@@ -222,16 +193,12 @@ export async function processExamShuffling(
     });
 
     const exams = buildExamSet(examCodes, header, questionSets, footer);
-    exams.forEach(exam => {
-        exam.bodyExamCodeUpdated = applyExamCodeToExam(exam, false);
-    });
+    exams.forEach(exam => { exam.bodyExamCodeUpdated = applyExamCodeToExam(exam, false); });
 
     const validationResults = validateExamSet(exams, { expectedQuestionCount });
     const invalid = validationResults.filter(result => !result.valid);
     if (invalid.length > 0) {
-        const summary = invalid
-            .map(result => `${result.examCode}: ${result.errors.slice(0, 3).join("; ")}`)
-            .join(" | ");
+        const summary = invalid.map(result => `${result.examCode}: ${result.errors.slice(0, 3).join("; ")}`).join(" | ");
         throw new Error(`Kiểm tra tính toàn vẹn thất bại. ${summary}`);
     }
 
@@ -244,12 +211,12 @@ export async function processExamShuffling(
         exportResults.push({ examCode: exam.examCode, blob });
     }
 
-    onProgress(90, "Đang tạo Excel đáp án, đối chiếu và phân tích đề gốc...");
-    const excelBlob = await exportAnswerExcel(exams, "Dap_An_Tong_Hop.xlsx", false, rawQuestions);
-
+    onProgress(90, "Đang tạo Excel chuẩn 4 sheet...");
+    const excelBlob = await exportAnswerExcel(exams, "Dap_an_CLO.xlsx", false, rawQuestions);
     onProgress(100, "Hoàn tất bộ đề và bảng Excel.");
 
     return {
+        exams,
         docxFiles: exportResults,
         excelBlob,
         diagnostics: {
