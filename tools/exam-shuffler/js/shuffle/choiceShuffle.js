@@ -1,13 +1,25 @@
 /* =====================================================
-   choiceShuffle.js v2.6
+   choiceShuffle.js v2.7
    - Trộn A/B/C/D.
    - Dựng lại layout 4 dòng / 2 dòng Tab / 1 dòng Tab.
    - Không dùng table.
    - Làm sạch định dạng đáp án: không bold/italic/underline/màu.
+   - Chuẩn hóa vị trí cột đáp án trên toàn bộ đề.
 ===================================================== */
 
 const LABELS = ["A", "B", "C", "D"];
 const W_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+
+// Word dùng twip: 1 cm ≈ 567 twip.
+// A/C (hoặc A ở layout 1 dòng) bắt đầu thụt nhẹ 0,6 cm.
+const ANSWER_LEFT_INDENT = 340;
+
+// Vị trí tab chuẩn tính từ lề trái vùng văn bản của paragraph.
+// 2 cột: A/C ở 0,6 cm; B/D ở khoảng 8,3 cm.
+const TWO_COLUMN_TAB_POSITIONS = [4706];
+
+// 4 cột: A ở 0,6 cm; B/C/D ở khoảng 4,4 / 8,3 / 12,2 cm.
+const FOUR_COLUMN_TAB_POSITIONS = [2495, 4706, 6917];
 
 function shuffleChoicesArray(choices) {
     const shuffled = [...choices];
@@ -93,6 +105,69 @@ function makeTabRun(doc) {
     return run;
 }
 
+function directChild(parent, localName) {
+    return Array.from(parent?.childNodes || []).find(
+        child => child.nodeType === 1 && (child.localName === localName || child.nodeName === `w:${localName}`)
+    ) || null;
+}
+
+function ensureParagraphProperties(paragraph) {
+    let pPr = directChild(paragraph, "pPr");
+    if (!pPr) {
+        pPr = paragraph.ownerDocument.createElementNS(W_NAMESPACE, "w:pPr");
+        paragraph.insertBefore(pPr, paragraph.firstChild);
+    }
+    return pPr;
+}
+
+function removeDirectChildren(parent, localName) {
+    const children = Array.from(parent?.childNodes || []);
+    for (const child of children) {
+        if (child.nodeType === 1 && (child.localName === localName || child.nodeName === `w:${localName}`)) {
+            parent.removeChild(child);
+        }
+    }
+}
+
+function createTabStop(doc, position) {
+    const tab = doc.createElementNS(W_NAMESPACE, "w:tab");
+    tab.setAttributeNS(W_NAMESPACE, "w:val", "left");
+    tab.setAttributeNS(W_NAMESPACE, "w:pos", String(position));
+    return tab;
+}
+
+/**
+ * Chuẩn hóa toàn bộ hàng đáp án để các câu khác nhau luôn cùng cột.
+ * - 4 dòng: A/B/C/D cùng thụt trái 0,6 cm.
+ * - 2 dòng: A/C cùng cột trái, B/D cùng cột phải.
+ * - 1 dòng: A/B/C/D ở bốn cột cố định.
+ */
+function applyStandardAnswerLayout(paragraph, slotCount) {
+    if (!paragraph || !paragraph.ownerDocument) return;
+
+    const doc = paragraph.ownerDocument;
+    const pPr = ensureParagraphProperties(paragraph);
+
+    // Không kế thừa indent hoặc tab stop tùy ý từ file nguồn.
+    removeDirectChildren(pPr, "ind");
+    removeDirectChildren(pPr, "tabs");
+
+    const ind = doc.createElementNS(W_NAMESPACE, "w:ind");
+    ind.setAttributeNS(W_NAMESPACE, "w:left", String(ANSWER_LEFT_INDENT));
+    ind.setAttributeNS(W_NAMESPACE, "w:firstLine", "0");
+    pPr.appendChild(ind);
+
+    let positions = [];
+    if (slotCount === 2) positions = TWO_COLUMN_TAB_POSITIONS;
+    else if (slotCount >= 4) positions = FOUR_COLUMN_TAB_POSITIONS;
+
+    if (positions.length > 0) {
+        const tabs = doc.createElementNS(W_NAMESPACE, "w:tabs");
+        positions.forEach(position => tabs.appendChild(createTabStop(doc, position)));
+        pPr.appendChild(tabs);
+    }
+}
+
 function buildAnswerRows(question, choices) {
     const rows = [];
     let cursor = 0;
@@ -110,6 +185,8 @@ function buildAnswerRows(question, choices) {
 
         const paragraph = row.template.cloneNode(true);
         const slotCount = Math.max(1, Number(row.slotCount) || (row.choiceIndexes?.length ?? 1));
+
+        applyStandardAnswerLayout(paragraph, slotCount);
 
         for (let slot = 0; slot < slotCount; slot++) {
             const choice = choices[cursor++];
@@ -139,6 +216,8 @@ function buildAnswerRows(question, choices) {
             const doc = choice.nodes?.[0]?.ownerDocument;
             if (!doc) continue;
             const p = doc.createElementNS(W_NAMESPACE, "w:p");
+            applyStandardAnswerLayout(p, 1);
+
             for (const node of choice.nodes ?? []) {
                 const clone = node.cloneNode(true);
                 stripTabs(clone);
