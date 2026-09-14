@@ -1,8 +1,9 @@
 /* =====================================================
-   examCodeWriter.js v2.6
+   examCodeWriter.js v2.7
    - Thay mã đề trong body/header/footer.
    - Chỉ thay các chữ số của mã đề, không gom paragraph về một w:t.
    - Giữ nguyên field PAGE / NUMPAGES và định dạng run.
+   - Nếu đề không có vị trí mã đề, tự chèn "Mã đề: xxx" vào cuối header.
 ===================================================== */
 
 const W_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
@@ -56,15 +57,48 @@ function paragraphsInNode(node) {
     if (!node || typeof node.getElementsByTagNameNS !== "function") return [];
 
     const result = [];
-    if (node.nodeType === 1 && (node.localName === "p" || node.nodeName === "w:p")) {
-        result.push(node);
-    }
+    if (node.nodeType === 1 && (node.localName === "p" || node.nodeName === "w:p")) result.push(node);
 
     const nested = node.getElementsByTagNameNS(W_NAMESPACE, "p");
     for (let i = 0; i < nested.length; i++) {
         if (!result.includes(nested[i])) result.push(nested[i]);
     }
     return result;
+}
+
+function findOwnerDocument(exam) {
+    for (const node of exam.header ?? []) {
+        if (node?.ownerDocument) return node.ownerDocument;
+    }
+    for (const q of exam.questions ?? []) {
+        for (const node of q.nodes ?? []) {
+            if (node?.ownerDocument) return node.ownerDocument;
+        }
+    }
+    for (const node of exam.footer ?? []) {
+        if (node?.ownerDocument) return node.ownerDocument;
+    }
+    return null;
+}
+
+function createExamCodeParagraph(examCode, doc) {
+    const p = doc.createElementNS(W_NAMESPACE, "w:p");
+    const pPr = doc.createElementNS(W_NAMESPACE, "w:pPr");
+    const jc = doc.createElementNS(W_NAMESPACE, "w:jc");
+    jc.setAttributeNS(W_NAMESPACE, "w:val", "right");
+    pPr.appendChild(jc);
+    p.appendChild(pPr);
+
+    const r = doc.createElementNS(W_NAMESPACE, "w:r");
+    const rPr = doc.createElementNS(W_NAMESPACE, "w:rPr");
+    rPr.appendChild(doc.createElementNS(W_NAMESPACE, "w:b"));
+    r.appendChild(rPr);
+
+    const t = doc.createElementNS(W_NAMESPACE, "w:t");
+    t.textContent = `Mã đề: ${examCode}`;
+    r.appendChild(t);
+    p.appendChild(r);
+    return p;
 }
 
 export function updateExamCodeInNodes(nodes, examCode) {
@@ -84,19 +118,27 @@ export function applyExamCodeToExam(exam, strict = false) {
 
     const updatedHeader = updateExamCodeInNodes(exam.header ?? [], exam.examCode);
     const updatedFooter = updateExamCodeInNodes(exam.footer ?? [], exam.examCode);
-    const success = updatedHeader || updatedFooter;
+    let success = updatedHeader || updatedFooter;
+
+    if (!success) {
+        const doc = findOwnerDocument(exam);
+        if (doc) {
+            if (!Array.isArray(exam.header)) exam.header = [];
+            exam.header.push(createExamCodeParagraph(exam.examCode, doc));
+            success = true;
+            exam.examCodeInserted = true;
+        }
+    }
 
     if (!success && strict) {
-        throw new Error("Không tìm thấy vị trí 'Mã đề/Đề số/Code' trong phần thân tài liệu.");
+        throw new Error("Không thể tìm hoặc chèn vị trí Mã đề trong tài liệu.");
     }
 
     return success;
 }
 
 export async function updateExamCodeInZipParts(zip, examCode) {
-    if (!zip || typeof zip.file !== "function") {
-        throw new TypeError("zip không hợp lệ.");
-    }
+    if (!zip || typeof zip.file !== "function") throw new TypeError("zip không hợp lệ.");
 
     const paths = Object.keys(zip.files).filter(path =>
         /^word\/(?:header|footer)\d*\.xml$/i.test(path)
