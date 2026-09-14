@@ -1,7 +1,8 @@
 /* =====================================================
-   choiceShuffle.js v2.7
+   choiceShuffle.js v2.8
    - Trộn A/B/C/D.
-   - Dựng lại layout 4 dòng / 2 dòng Tab / 1 dòng Tab.
+   - Tự chọn layout 1 dòng / 2 dòng / 4 dòng theo độ rộng phương án.
+   - Không phụ thuộc layout của file Word nguồn với câu hỏi chuẩn.
    - Không dùng table.
    - Làm sạch định dạng đáp án: không bold/italic/underline/màu.
    - Chuẩn hóa vị trí cột đáp án trên toàn bộ đề.
@@ -20,6 +21,12 @@ const TWO_COLUMN_TAB_POSITIONS = [4706];
 
 // 4 cột: A ở 0,6 cm; B/C/D ở khoảng 4,4 / 8,3 / 12,2 cm.
 const FOUR_COLUMN_TAB_POSITIONS = [2495, 4706, 6917];
+
+// Ngưỡng ước lượng độ rộng trực quan của từng phương án.
+// Mục tiêu: luôn thử 1 dòng trước, không đủ thì 2 dòng, cuối cùng 4 dòng.
+// Các giá trị này cố ý bảo thủ để tránh phương án đè sang cột kế tiếp trong Word.
+const ONE_LINE_SLOT_UNITS = 17;
+const TWO_LINE_SLOT_UNITS = 36;
 
 function shuffleChoicesArray(choices) {
     const shuffled = [...choices];
@@ -168,7 +175,134 @@ function applyStandardAnswerLayout(paragraph, slotCount) {
     }
 }
 
-function buildAnswerRows(question, choices) {
+function localNameOf(node) {
+    return String(node?.localName || node?.nodeName || "").replace(/^.*:/, "").toLowerCase();
+}
+
+function containsComplexGraphic(nodes) {
+    const complexNames = new Set(["drawing", "pict", "object", "shape", "imagedata"]);
+
+    const visit = node => {
+        if (!node || node.nodeType !== 1) return false;
+        if (complexNames.has(localNameOf(node))) return true;
+        return Array.from(node.childNodes || []).some(visit);
+    };
+
+    return (nodes || []).some(visit);
+}
+
+function hasExplicitBreak(nodes) {
+    const breakNames = new Set(["br", "cr"]);
+
+    const visit = node => {
+        if (!node || node.nodeType !== 1) return false;
+        if (breakNames.has(localNameOf(node))) return true;
+        return Array.from(node.childNodes || []).some(visit);
+    };
+
+    return (nodes || []).some(visit);
+}
+
+/**
+ * Ước lượng độ rộng trực quan thay vì chỉ đếm ký tự.
+ * - khoảng trắng, dấu câu, ký tự hẹp được tính nhẹ hơn;
+ * - ký tự rộng/hoa được tính nặng hơn;
+ * - cộng thêm phần nhãn "A. ".
+ * Đây là heuristic để chọn bố cục; Word vẫn là nơi render cuối cùng.
+ */
+function estimateChoiceWidth(choice) {
+    const raw = String(choice?.text || "")
+        .replace(/^\s*[A-D]\s*[\.\:\)]\s*/i, "")
+        .trim();
+
+    let units = 2.2; // nhãn A./B./C./D. và khoảng cách sau nhãn
+
+    for (const ch of raw) {
+        if (/\s/.test(ch)) units += 0.45;
+        else if (/[\.,:;!?'"`´\-–—()\[\]{}]/.test(ch)) units += 0.5;
+        else if (/[ilI1jtfr]/.test(ch)) units += 0.55;
+        else if (/[mwMW@%&QGƠƯÔ]/.test(ch)) units += 1.15;
+        else if (ch === ch.toUpperCase() && ch !== ch.toLowerCase()) units += 1.0;
+        else units += 0.85;
+    }
+
+    return units;
+}
+
+/**
+ * Chọn layout đầu ra độc lập với cách file nguồn đang xuống dòng.
+ * Trình tự cố định: thử 1 dòng -> 2 dòng -> 4 dòng.
+ */
+function chooseAutoLayout(choices) {
+    if (!Array.isArray(choices) || choices.length !== 4) return 1;
+
+    // Đáp án chứa hình/đối tượng hoặc ngắt dòng cưỡng bức: ưu tiên an toàn 4 dòng.
+    if (choices.some(choice =>
+        containsComplexGraphic(choice.nodes) || hasExplicitBreak(choice.nodes)
+    )) {
+        return 1;
+    }
+
+    const widths = choices.map(estimateChoiceWidth);
+
+    if (widths.every(width => width <= ONE_LINE_SLOT_UNITS)) return 4;
+    if (widths.every(width => width <= TWO_LINE_SLOT_UNITS)) return 2;
+    return 1;
+}
+
+function findAnswerTemplate(question, choices) {
+    const layoutRows = Array.isArray(question?.layoutRows) ? question.layoutRows : [];
+    const row = layoutRows.find(item => !item?.passthrough && item?.template?.cloneNode);
+    if (row) return row.template;
+
+    const doc = choices?.[0]?.nodes?.[0]?.ownerDocument;
+    if (!doc) return null;
+    return doc.createElementNS(W_NAMESPACE, "w:p");
+}
+
+function appendChoiceToParagraph(paragraph, choice) {
+    const segmentNodes = Array.isArray(choice?.nodes)
+        ? choice.nodes.map(node => node && typeof node.cloneNode === "function" ? node.cloneNode(true) : node)
+        : [];
+
+    for (const segmentNode of segmentNodes) {
+        if (!segmentNode) continue;
+        stripTabs(segmentNode);
+        normalizeAnswerFormatting(segmentNode);
+        paragraph.appendChild(segmentNode);
+    }
+}
+
+function buildAutoAnswerRows(question, choices) {
+    const template = findAnswerTemplate(question, choices);
+    if (!template) return [];
+
+    const slotCount = chooseAutoLayout(choices);
+    const rows = [];
+
+    for (let start = 0; start < choices.length; start += slotCount) {
+        const paragraph = template.cloneNode(true);
+        applyStandardAnswerLayout(paragraph, slotCount);
+
+        const rowChoices = choices.slice(start, start + slotCount);
+        rowChoices.forEach((choice, index) => {
+            appendChoiceToParagraph(paragraph, choice);
+            if (index < rowChoices.length - 1) {
+                paragraph.appendChild(makeTabRun(paragraph.ownerDocument));
+            }
+        });
+
+        rows.push(paragraph);
+    }
+
+    return rows;
+}
+
+/**
+ * Với tài liệu bất thường có node chen giữa các phương án (ảnh/chú thích...),
+ * giữ layout nguồn để không làm thay đổi vị trí nội dung ngoài A/B/C/D.
+ */
+function buildRowsPreservingSpecialContent(question, choices) {
     const rows = [];
     let cursor = 0;
     const layoutRows = Array.isArray(question.layoutRows) ? question.layoutRows : [];
@@ -185,24 +319,12 @@ function buildAnswerRows(question, choices) {
 
         const paragraph = row.template.cloneNode(true);
         const slotCount = Math.max(1, Number(row.slotCount) || (row.choiceIndexes?.length ?? 1));
-
         applyStandardAnswerLayout(paragraph, slotCount);
 
         for (let slot = 0; slot < slotCount; slot++) {
             const choice = choices[cursor++];
             if (!choice) break;
-
-            const segmentNodes = Array.isArray(choice.nodes)
-                ? choice.nodes.map(node => node && typeof node.cloneNode === "function" ? node.cloneNode(true) : node)
-                : [];
-
-            for (const segmentNode of segmentNodes) {
-                if (!segmentNode) continue;
-                stripTabs(segmentNode);
-                normalizeAnswerFormatting(segmentNode);
-                paragraph.appendChild(segmentNode);
-            }
-
+            appendChoiceToParagraph(paragraph, choice);
             if (slot < slotCount - 1) {
                 paragraph.appendChild(makeTabRun(paragraph.ownerDocument));
             }
@@ -211,21 +333,19 @@ function buildAnswerRows(question, choices) {
         rows.push(paragraph);
     }
 
-    if (rows.length === 0 && choices.length === 4) {
-        for (const choice of choices) {
-            const doc = choice.nodes?.[0]?.ownerDocument;
-            if (!doc) continue;
-            const p = doc.createElementNS(W_NAMESPACE, "w:p");
-            applyStandardAnswerLayout(p, 1);
+    return rows;
+}
 
-            for (const node of choice.nodes ?? []) {
-                const clone = node.cloneNode(true);
-                stripTabs(clone);
-                normalizeAnswerFormatting(clone);
-                p.appendChild(clone);
-            }
-            rows.push(p);
-        }
+function buildAnswerRows(question, choices) {
+    const layoutRows = Array.isArray(question.layoutRows) ? question.layoutRows : [];
+    const hasPassthrough = layoutRows.some(row => row?.passthrough);
+
+    let rows = hasPassthrough
+        ? buildRowsPreservingSpecialContent(question, choices)
+        : buildAutoAnswerRows(question, choices);
+
+    if (rows.length === 0 && choices.length === 4) {
+        rows = buildAutoAnswerRows(question, choices);
     }
 
     return rows;
