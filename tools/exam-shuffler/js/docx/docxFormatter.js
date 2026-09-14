@@ -1,11 +1,12 @@
 /* =====================================================
-   docxFormatter.js v2.1
-   - Làm sạch định dạng đánh dấu ở các phương án.
-   - Không bold nhãn A/B/C/D.
-   - Chỉ làm đậm đúng phần nhãn "Câu n"/"Question n"/"Qn", không làm đậm nội dung câu.
+   docxFormatter.js v2.2
+   - Làm sạch dấu hiệu đáp án ở nội dung lựa chọn.
+   - Chỉ in đậm nhãn A./B./C./D., nội dung phương án để thường.
+   - Chỉ làm đậm nhãn Câu n/Question n/Qn.
 ===================================================== */
 
 const W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+const XML_NS = "http://www.w3.org/XML/1998/namespace";
 
 function paragraphText(pNode) {
     if (!pNode || typeof pNode.getElementsByTagNameNS !== "function") return "";
@@ -33,65 +34,114 @@ function removeProps(run, names) {
     }
 }
 
-function ensureProp(run, localName, value) {
-    const doc = run.ownerDocument;
-    let rPr = Array.from(run.childNodes || []).find(
-        child => child.nodeType === 1 && (child.localName === "rPr" || child.nodeName === "w:rPr")
-    );
+function directChild(parent, localName) {
+    return Array.from(parent?.childNodes || []).find(child =>
+        child.nodeType === 1 && (child.localName === localName || child.nodeName === `w:${localName}`)
+    ) || null;
+}
 
+function ensureRunProperties(run) {
+    let rPr = directChild(run, "rPr");
     if (!rPr) {
-        rPr = doc.createElementNS(W_NS, "w:rPr");
+        rPr = run.ownerDocument.createElementNS(W_NS, "w:rPr");
         run.insertBefore(rPr, run.firstChild);
     }
+    return rPr;
+}
 
-    const prop = doc.createElementNS(W_NS, `w:${localName}`);
-    prop.setAttributeNS(W_NS, "w:val", value);
+function addProp(run, localName, value = null) {
+    const rPr = ensureRunProperties(run);
+    const prop = run.ownerDocument.createElementNS(W_NS, `w:${localName}`);
+    if (value !== null) prop.setAttributeNS(W_NS, "w:val", value);
     rPr.appendChild(prop);
 }
 
-function normalizeAnswerParagraph(pNode) {
-    const runs = pNode.getElementsByTagNameNS(W_NS, "r");
-    for (let i = 0; i < runs.length; i++) {
-        const run = runs[i];
-        removeProps(run, ["b", "bCs", "i", "iCs", "u", "color", "rStyle"]);
-        ensureProp(run, "b", "0");
-        ensureProp(run, "bCs", "0");
-        ensureProp(run, "i", "0");
-        ensureProp(run, "iCs", "0");
-        ensureProp(run, "u", "none");
-        ensureProp(run, "color", "auto");
+function setNormalAnswerRun(run) {
+    removeProps(run, ["b", "bCs", "i", "iCs", "u", "color", "rStyle"]);
+    addProp(run, "b", "0");
+    addProp(run, "bCs", "0");
+    addProp(run, "i", "0");
+    addProp(run, "iCs", "0");
+    addProp(run, "u", "none");
+    addProp(run, "color", "auto");
+}
+
+function setBold(run) {
+    removeProps(run, ["b", "bCs"]);
+    addProp(run, "b", "1");
+    addProp(run, "bCs", "1");
+}
+
+function setTextNode(textNode, text) {
+    textNode.textContent = text;
+    textNode.removeAttributeNS(XML_NS, "space");
+    textNode.removeAttribute("xml:space");
+    if (/^\s|\s$/.test(text)) textNode.setAttributeNS(XML_NS, "xml:space", "preserve");
+}
+
+function directRunText(run) {
+    const tNodes = run.getElementsByTagNameNS(W_NS, "t");
+    let text = "";
+    for (let i = 0; i < tNodes.length; i++) text += tNodes[i].textContent || "";
+    return text;
+}
+
+function boldChoiceLabelInRun(run) {
+    const text = directRunText(run);
+    const match = text.match(/^(\s*[A-D]\s*[\.\:\)]\s*)(.*)$/s);
+    if (!match) return false;
+
+    const labelText = match[1];
+    const rest = match[2];
+    const tNodes = run.getElementsByTagNameNS(W_NS, "t");
+
+    if (!rest.trim()) {
+        setBold(run);
+        return true;
     }
+
+    // Trường hợp phổ biến: A. và nội dung nằm chung một w:t.
+    if (tNodes.length === 1 && run.parentNode) {
+        const labelRun = run.cloneNode(true);
+        const labelT = labelRun.getElementsByTagNameNS(W_NS, "t")[0];
+        setTextNode(labelT, labelText);
+        setNormalAnswerRun(labelRun);
+        setBold(labelRun);
+
+        setTextNode(tNodes[0], rest);
+        setNormalAnswerRun(run);
+        run.parentNode.insertBefore(labelRun, run);
+        return true;
+    }
+
+    // Nếu nhãn đã nằm ở run riêng, chỉ bold run đó.
+    const firstText = tNodes[0]?.textContent || "";
+    if (/^\s*[A-D]\s*[\.\:\)]\s*$/.test(firstText)) {
+        setBold(run);
+        return true;
+    }
+
+    return false;
+}
+
+function normalizeAnswerParagraph(pNode) {
+    const runs = Array.from(pNode.getElementsByTagNameNS(W_NS, "r"));
+    runs.forEach(setNormalAnswerRun);
+
+    // Snapshot mới sau khi có thể split run.
+    const after = Array.from(pNode.getElementsByTagNameNS(W_NS, "r"));
+    after.forEach(boldChoiceLabelInRun);
 }
 
 function ensureBold(run) {
-    const doc = run.ownerDocument;
-    let rPr = Array.from(run.childNodes || []).find(
-        child => child.nodeType === 1 && (child.localName === "rPr" || child.nodeName === "w:rPr")
-    );
-
-    if (!rPr) {
-        rPr = doc.createElementNS(W_NS, "w:rPr");
-        run.insertBefore(rPr, run.firstChild);
-    }
-
-    const existing = rPr.getElementsByTagNameNS(W_NS, "b");
-    if (existing.length === 0) {
-        rPr.appendChild(doc.createElementNS(W_NS, "w:b"));
-    } else {
-        existing[0].removeAttributeNS(W_NS, "val");
-        existing[0].removeAttribute("w:val");
-        existing[0].removeAttribute("val");
-    }
+    setBold(run);
 }
 
 function getDirectRunsWithText(pNode) {
     const result = [];
     for (const node of Array.from(pNode.childNodes || [])) {
         if (node.nodeType !== 1 || !(node.localName === "r" || node.nodeName === "w:r")) continue;
-
-        const tNodes = node.getElementsByTagNameNS(W_NS, "t");
-        let text = "";
-        for (let i = 0; i < tNodes.length; i++) text += tNodes[i].textContent || "";
+        const text = directRunText(node);
         if (text) result.push({ runNode: node, text });
     }
     return result;
@@ -100,19 +150,7 @@ function getDirectRunsWithText(pNode) {
 function setRunText(run, text) {
     const tNodes = run.getElementsByTagNameNS(W_NS, "t");
     if (tNodes.length !== 1) return false;
-
-    const t = tNodes[0];
-    t.textContent = text;
-    t.removeAttribute("xml:space");
-    t.removeAttributeNS("http://www.w3.org/XML/1998/namespace", "space");
-
-    if (/^\s|\s$/.test(text)) {
-        t.setAttributeNS(
-            "http://www.w3.org/XML/1998/namespace",
-            "xml:space",
-            "preserve"
-        );
-    }
+    setTextNode(tNodes[0], text);
     return true;
 }
 
@@ -138,7 +176,6 @@ function boldQuestionLabel(paragraph) {
             ensureBold(run);
             continue;
         }
-
         if (start >= labelEnd) break;
 
         const splitIndex = labelEnd - start;
@@ -148,7 +185,6 @@ function boldQuestionLabel(paragraph) {
         const labelRun = run.cloneNode(true);
         if (!setRunText(labelRun, text.slice(0, splitIndex))) break;
         ensureBold(labelRun);
-
         if (!setRunText(run, text.slice(splitIndex))) break;
         paragraph.insertBefore(labelRun, run);
         break;
@@ -162,9 +198,7 @@ export function formatExamDocument(nodes) {
         if (!node || typeof node.getElementsByTagNameNS !== "function") continue;
 
         const paragraphs = [];
-        if (node.nodeType === 1 && (node.localName === "p" || node.nodeName === "w:p")) {
-            paragraphs.push(node);
-        }
+        if (node.nodeType === 1 && (node.localName === "p" || node.nodeName === "w:p")) paragraphs.push(node);
 
         const nested = node.getElementsByTagNameNS(W_NS, "p");
         for (let i = 0; i < nested.length; i++) {
@@ -176,7 +210,6 @@ export function formatExamDocument(nodes) {
             else boldQuestionLabel(p);
         }
     }
-
     return nodes;
 }
 
@@ -185,4 +218,4 @@ export function removeAnswerRedColor(nodes) { return formatExamDocument(nodes); 
 export function removeAnswerColor(nodes) { return formatExamDocument(nodes); }
 export function formatLabelsInParagraphs(nodes) { return formatExamDocument(nodes); }
 export function boldQuestionLabels(nodes) { return formatExamDocument(nodes); }
-export function boldChoiceLabels(nodes) { return nodes; }
+export function boldChoiceLabels(nodes) { return formatExamDocument(nodes); }
