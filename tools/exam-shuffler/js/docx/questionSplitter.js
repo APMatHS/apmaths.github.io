@@ -1,9 +1,9 @@
 /* =====================================================
-   questionSplitter.js v2.2
+   questionSplitter.js v2.3
    - Nhận diện Câu 1 / Câu 1. / Câu 1: / Câu 1) / Q1 / Question 1.
-   - Dùng expectedQuestionCount để tìm đúng một KHỐI N câu bắt đầu từ Câu 1.
-   - Không bắt buộc nhãn nguồn phải liên tục 1..N; khi xuất sẽ đánh lại số.
-   - Nếu file chứa nhiều đề nối tiếp, chỉ giữ header gần nhất của khối được chọn.
+   - Khi người dùng xác nhận N câu, đề gốc PHẢI có đúng Câu 1..Câu N.
+   - Nếu thiếu/dư/trùng số câu: dừng và báo cụ thể để người dùng sửa file nguồn.
+   - Nếu file chứa nhiều đề nối tiếp, chọn khối hợp lệ bắt đầu từ Câu 1.
 ===================================================== */
 
 const W_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
@@ -46,20 +46,106 @@ function candidatePools(candidates) {
     return preferred.length ? [preferred, candidates] : [candidates];
 }
 
-function findQuestionBlock(candidates, expectedCount) {
+function splitIntoCandidateBlocks(pool) {
+    const starts = [];
+    pool.forEach((item, index) => {
+        if (item.number === 1) starts.push(index);
+    });
+
+    return starts.map((startIndex, blockIndex) => {
+        const endIndex = blockIndex + 1 < starts.length ? starts[blockIndex + 1] : pool.length;
+        return pool.slice(startIndex, endIndex);
+    });
+}
+
+function diagnoseBlock(block, expectedCount) {
+    const numbers = block.map(item => item.number);
+    const counts = new Map();
+    numbers.forEach(number => counts.set(number, (counts.get(number) || 0) + 1));
+
+    const missing = [];
+    for (let number = 1; number <= expectedCount; number++) {
+        if (!counts.has(number)) missing.push(number);
+    }
+
+    const extra = [...new Set(numbers.filter(number => number < 1 || number > expectedCount))]
+        .sort((a, b) => a - b);
+
+    const duplicate = [...counts.entries()]
+        .filter(([, count]) => count > 1)
+        .map(([number]) => number)
+        .sort((a, b) => a - b);
+
+    const exactSequence =
+        block.length === expectedCount &&
+        missing.length === 0 &&
+        extra.length === 0 &&
+        duplicate.length === 0 &&
+        numbers.every((number, index) => number === index + 1);
+
+    const score =
+        missing.length +
+        extra.length +
+        duplicate.length * 2 +
+        Math.abs(block.length - expectedCount);
+
+    return { block, numbers, missing, extra, duplicate, exactSequence, score };
+}
+
+function findExactQuestionBlock(candidates, expectedCount) {
     if (!Number.isInteger(expectedCount) || expectedCount <= 0) return null;
 
-    for (const pool of candidatePools(candidates)) {
-        for (let start = 0; start < pool.length; start++) {
-            if (pool[start].number !== 1) continue;
+    let bestInvalid = null;
 
-            const slice = pool.slice(start, start + expectedCount);
-            if (slice.length !== expectedCount) continue;
-            if (slice.slice(1).some(item => item.number === 1)) continue;
-            return slice;
+    for (const pool of candidatePools(candidates)) {
+        const blocks = splitIntoCandidateBlocks(pool);
+
+        for (const block of blocks) {
+            const diagnosis = diagnoseBlock(block, expectedCount);
+            if (diagnosis.exactSequence) {
+                return { selected: block, diagnosis };
+            }
+
+            if (
+                !bestInvalid ||
+                diagnosis.score < bestInvalid.score ||
+                (diagnosis.score === bestInvalid.score && block.length > bestInvalid.block.length)
+            ) {
+                bestInvalid = diagnosis;
+            }
         }
     }
-    return null;
+
+    return { selected: null, diagnosis: bestInvalid };
+}
+
+function formatNumberList(numbers, prefix = "Câu") {
+    return numbers.map(number => `${prefix} ${number}`).join(", ");
+}
+
+function buildStructureError(diagnosis, expectedCount, totalDetected) {
+    if (!diagnosis) {
+        return `Không tìm thấy khối đề bắt đầu từ Câu 1. Đã phát hiện ${totalDetected} mốc có dạng đầu câu.`;
+    }
+
+    const details = [];
+    if (diagnosis.missing.length) {
+        details.push(`Thiếu: ${formatNumberList(diagnosis.missing)}`);
+    }
+    if (diagnosis.extra.length) {
+        details.push(`Dư: ${formatNumberList(diagnosis.extra)}`);
+    }
+    if (diagnosis.duplicate.length) {
+        details.push(`Trùng số: ${formatNumberList(diagnosis.duplicate)}`);
+    }
+    if (!details.length && diagnosis.block.length !== expectedCount) {
+        details.push(`Phát hiện ${diagnosis.block.length} câu, trong khi đã xác nhận ${expectedCount} câu`);
+    }
+    if (!details.length) {
+        details.push(`Thứ tự số câu không đúng 1 → ${expectedCount}`);
+    }
+
+    return `Đề gốc chưa hợp lệ. ${details.join("; ")}. Vui lòng sửa file Word rồi bấm Kiểm tra định dạng lại.`;
 }
 
 function choiceLabelsInText(text) {
@@ -95,10 +181,6 @@ function looksLikeExamTitle(text) {
            /^(BÀI|BAI)\s+(THI|KIỂM TRA|KIEM TRA)/i.test(normalized);
 }
 
-/**
- * Khi đã có một khối câu khác trước khối được chọn, tìm tiêu đề đề gần nhất để cắt bỏ đề cũ.
- * Nếu không thấy tiêu đề rõ ràng thì giữ header từ đầu tài liệu như hành vi truyền thống.
- */
 function findHeaderStart(nodes, firstStart, candidates) {
     const earlierQuestionExists = candidates.some(c => c.nodeIndex < firstStart && c.number === 1);
     if (!earlierQuestionExists) return 0;
@@ -127,13 +209,11 @@ export function splitQuestions(bodyNode, expectedQuestionCount = null) {
 
     let selectedStarts;
     if (Number.isInteger(expectedQuestionCount) && expectedQuestionCount > 0) {
-        selectedStarts = findQuestionBlock(candidates, expectedQuestionCount);
-        if (!selectedStarts) {
-            throw new Error(
-                `Không tìm được một khối gồm ${expectedQuestionCount} câu bắt đầu từ Câu 1. ` +
-                `Đã phát hiện ${candidates.length} mốc có dạng đầu câu.`
-            );
+        const result = findExactQuestionBlock(candidates, expectedQuestionCount);
+        if (!result?.selected) {
+            throw new Error(buildStructureError(result?.diagnosis, expectedQuestionCount, candidates.length));
         }
+        selectedStarts = result.selected;
     } else {
         selectedStarts = candidates;
     }
@@ -168,7 +248,7 @@ export function splitQuestions(bodyNode, expectedQuestionCount = null) {
         questionBlocks.push({
             index: q + 1,
             startNodeIndex: startIndex,
-            questionNumber: selectedStarts[q].number,
+            questionNumber: q + 1,
             nodes: nodes.slice(startIndex, endIndex).filter(node => !isSectPr(node)),
             answers: [], correctAnswer: null
         });
@@ -178,7 +258,7 @@ export function splitQuestions(bodyNode, expectedQuestionCount = null) {
         headerNodes, questionBlocks, footerNodes,
         totalNodes: nodes.length,
         detectedQuestionStarts: candidates.length,
-        selectedSourceNumbers: selectedStarts.map(item => item.number),
+        selectedSourceNumbers: selectedStarts.map((_, index) => index + 1),
         headerStartNodeIndex: headerStart
     };
 }
