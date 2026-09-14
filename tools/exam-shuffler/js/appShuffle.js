@@ -1,21 +1,14 @@
 /* =====================================================
    appShuffle.js
-   Exam Shuffler v2.4 - Production Pipeline (Streamlined UX)
-
-   Chức năng:
-   - Điều phối luồng xử lý từ Zip Reader, Splitter, Extractor, Shuffler.
-   - Định dạng văn bản bằng docxFormatter.
-   - Render và xuất mảng Blobs cho từng mã đề thi DOCX.
-   - Tích hợp Facade exportAnswerExcel để tự động tạo và tải file Excel đáp án.
-   - Tối ưu hóa các thông điệp UX Progress cho trải nghiệm mượt mà.
+   Exam Shuffler v2.6
 ===================================================== */
 
 import { readDocx } from "./docx/docxReader.js";
-import { 
-    loadDocument, 
-    getDocumentBody, 
-    updateDocumentBody, 
-    writeRawDocument 
+import {
+    loadDocument,
+    getDocumentBody,
+    updateDocumentBody,
+    writeRawDocument
 } from "./docx/docxWriter.js";
 import { splitQuestions } from "./docx/questionSplitter.js";
 import { analyzeQuestions } from "./docx/answerExtractor.js";
@@ -24,212 +17,194 @@ import { shuffleAllChoices } from "./shuffle/choiceShuffle.js";
 import { renumberAllQuestions } from "./shuffle/questionRenumber.js";
 import { buildExamSet } from "./shuffle/examBuilder.js";
 import { validateExamSet } from "./utils/validator.js";
-import { applyExamCodeToExam } from "./docx/examCodeWriter.js";
+import { applyExamCodeToExam, updateExamCodeInZipParts } from "./docx/examCodeWriter.js";
 import { exportAnswerExcel } from "./excel/excelExporter.js";
 import { formatExamDocument } from "./docx/docxFormatter.js";
-import { exportZip } from "./zip/zipExporter.js";
 
-/**
- * Deep clone mảng câu hỏi dựa trên mảng nguyên khối nodes[]
- */
+function cloneNode(node) {
+    return node && typeof node.cloneNode === "function" ? node.cloneNode(true) : node;
+}
+
 function cloneQuestions(questions) {
     if (!Array.isArray(questions)) return [];
 
-    return questions.map(q => {
-        const clonedQ = { ...q };
-
-        if (Array.isArray(q.nodes)) {
-            clonedQ.nodes = q.nodes.map(node => (node && typeof node.cloneNode === "function" ? node.cloneNode(true) : node));
-        }
-
-        if (Array.isArray(q.stem)) {
-            clonedQ.stem = q.stem.map(node => (node && typeof node.cloneNode === "function" ? node.cloneNode(true) : node));
-        }
-
-        if (q.questionParagraph && typeof q.questionParagraph.cloneNode === "function") {
-            clonedQ.questionParagraph = q.questionParagraph.cloneNode(true);
-        }
-
-        if (Array.isArray(q.choices)) {
-            clonedQ.choices = q.choices.map(choice => {
-                const clonedChoice = { ...choice };
-                if (Array.isArray(choice.nodes)) {
-                    clonedChoice.nodes = choice.nodes.map(node => (node && typeof node.cloneNode === "function" ? node.cloneNode(true) : node));
-                }
-                if (choice.paragraph && typeof choice.paragraph.cloneNode === "function") {
-                    clonedChoice.paragraph = choice.paragraph.cloneNode(true);
-                }
-                if (choice.xml && typeof choice.xml.cloneNode === "function") {
-                    clonedChoice.xml = choice.xml.cloneNode(true);
-                }
-                return clonedChoice;
-            });
-        }
-
-        return clonedQ;
-    });
+    return questions.map(q => ({
+        ...q,
+        nodes: Array.isArray(q.nodes) ? q.nodes.map(cloneNode) : [],
+        stem: Array.isArray(q.stem) ? q.stem.map(cloneNode) : [],
+        trailing: Array.isArray(q.trailing) ? q.trailing.map(cloneNode) : [],
+        choices: Array.isArray(q.choices)
+            ? q.choices.map(choice => ({
+                ...choice,
+                nodes: Array.isArray(choice.nodes) ? choice.nodes.map(cloneNode) : []
+            }))
+            : [],
+        layoutRows: Array.isArray(q.layoutRows)
+            ? q.layoutRows.map(row => row.passthrough
+                ? { ...row, node: cloneNode(row.node) }
+                : {
+                    ...row,
+                    template: cloneNode(row.template),
+                    choiceIndexes: Array.isArray(row.choiceIndexes) ? [...row.choiceIndexes] : []
+                })
+            : []
+    }));
 }
 
-/**
- * Tái tạo danh sách Paragraphs/Nodes cho file Word xuất ra
- */
-function assembleExamParagraphs(exam) {
-    const rebuiltNodes = [];
-
-    if (Array.isArray(exam.header)) {
-        rebuiltNodes.push(...exam.header);
-    }
-
-    if (Array.isArray(exam.questions)) {
-        for (const q of exam.questions) {
-            if (Array.isArray(q.nodes)) {
-                rebuiltNodes.push(...q.nodes);
-            }
-        }
-    }
-
-    if (Array.isArray(exam.footer)) {
-        rebuiltNodes.push(...exam.footer);
-    }
-
-    return rebuiltNodes;
+function assembleExamNodes(exam) {
+    return [
+        ...(Array.isArray(exam.header) ? exam.header : []),
+        ...(Array.isArray(exam.questions)
+            ? exam.questions.flatMap(q => Array.isArray(q.nodes) ? q.nodes : [])
+            : []),
+        ...(Array.isArray(exam.footer) ? exam.footer : [])
+    ];
 }
 
-/**
- * Cầu nối biến đổi dữ liệu Exam Object thành Blob .docx
- */
 async function renderExamToBlob(exam, originalZip, parsedXmlDoc) {
     const xmlDocClone = parsedXmlDoc.cloneNode(true);
     const zipClone = originalZip.clone();
 
-    const rawNodes = assembleExamParagraphs(exam);
-    
-    console.log("Before Formatter");
-    // Định dạng lại tài liệu trước khi đưa vào w:body
-    const formattedNodes = formatExamDocument(rawNodes);
-
+    const formattedNodes = formatExamDocument(assembleExamNodes(exam));
     updateDocumentBody(xmlDocClone, formattedNodes);
     writeRawDocument(zipClone, xmlDocClone);
 
+    const auxiliaryUpdate = await updateExamCodeInZipParts(zipClone, exam.examCode);
+
+    if (!exam.bodyExamCodeUpdated && auxiliaryUpdate.replacements === 0) {
+        throw new Error(
+            `Mã đề ${exam.examCode}: không tìm thấy "Mã đề/Đề số/Code" ` +
+            `trong phần thân, header hoặc footer của Word.`
+        );
+    }
+
     return await zipClone.generateAsync({
         type: "blob",
-        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        compression: "DEFLATE",
+        compressionOptions: { level: 6 }
     });
 }
 
-/**
- * Pipeline thực thi chính cho Exam Shuffler v2.4
- */
 export async function processExamShuffling(
     fileInput,
     examCodes = ["101", "102", "103", "104"],
-    options = { shuffleQuestions: true, shuffleChoices: true },
+    options = {
+        shuffleQuestions: true,
+        shuffleChoices: true,
+        expectedQuestionCount: null
+    },
     onProgress = () => {}
 ) {
-    console.time("[Pipeline] Total Execution Time");
+    const expectedQuestionCount = Number(options.expectedQuestionCount);
 
-    try {
-        // 1. Reader: Đọc Zip file
-        onProgress(5, "Đang đọc cấu trúc file Word (.docx)...");
-        const zip = await readDocx(fileInput);
+    if (!Number.isInteger(expectedQuestionCount) || expectedQuestionCount <= 0) {
+        throw new Error("Vui lòng xác nhận số câu của đề trước khi trộn.");
+    }
 
-        // 2. Load XML Document
-        onProgress(15, "Đang nạp cấu trúc XML document...");
-        const xmlDoc = await loadDocument(zip);
+    onProgress(5, "Đang đọc cấu trúc file Word...");
+    const zip = await readDocx(fileInput);
 
-        // 3. Trích xuất thẻ <w:body>
-        onProgress(20, "Đang trích xuất thẻ <w:body>...");
-        const bodyNode = getDocumentBody(xmlDoc);
+    onProgress(12, "Đang nạp document.xml...");
+    const xmlDoc = await loadDocument(zip);
+    const bodyNode = getDocumentBody(xmlDoc);
 
-        // 4. Splitter: Tách các khối câu hỏi và Header
-        onProgress(30, "Đang phân tách các khối câu hỏi & Header...");
-        const splitResult = splitQuestions(bodyNode);
-        
-        const header = splitResult.headerNodes ?? [];
-        const questionBlocks = splitResult.questionBlocks ?? [];
-        const footer = []; 
+    onProgress(20, `Đang khóa cấu trúc Câu 1 đến Câu ${expectedQuestionCount}...`);
+    const splitResult = splitQuestions(bodyNode, expectedQuestionCount);
 
-        // 5. Extractor: Phân tích chi tiết câu hỏi
-        onProgress(40, "Đang phân tích đáp án gạch chân và CLO...");
-        const rawQuestions = analyzeQuestions(questionBlocks);
+    const header = splitResult.headerNodes ?? [];
+    const questionBlocks = splitResult.questionBlocks ?? [];
+    const footer = splitResult.footerNodes ?? [];
 
-        // 6 & 7. Shuffle: Xáo trộn vị trí câu & đáp án A/B/C/D
-        onProgress(55, `Đang xử lý xáo trộn cho ${examCodes.length} mã đề...`);
-        const questionSets = examCodes.map((code) => {
-            let processedQuestions = cloneQuestions(rawQuestions);
+    if (questionBlocks.length !== expectedQuestionCount) {
+        throw new Error(
+            `Số câu không khớp: xác nhận ${expectedQuestionCount}, ` +
+            `nhưng chỉ tách được ${questionBlocks.length}.`
+        );
+    }
 
-            if (options.shuffleQuestions) {
-                processedQuestions = shuffleQuestions(processedQuestions);
-            }
+    onProgress(32, "Đang đọc CLO và các phương án A/B/C/D...");
+    const rawQuestions = analyzeQuestions(questionBlocks);
 
-            if (options.shuffleChoices) {
-                processedQuestions = shuffleAllChoices(processedQuestions);
-            }
+    const malformed = rawQuestions
+        .map((q, index) => ({
+            number: index + 1,
+            choices: q.choices.length,
+            correct: q.choices.filter(c => c.correct).length,
+            clo: q.clo
+        }))
+        .filter(row => row.choices !== 4 || row.correct !== 1 || !row.clo);
 
-            processedQuestions = renumberAllQuestions(processedQuestions);
-            return processedQuestions;
-        });
+    if (malformed.length > 0) {
+        const sample = malformed.slice(0, 5).map(row =>
+            `Câu ${row.number}: ${row.choices} PA, ${row.correct} đáp án đúng, ` +
+            `${row.clo ? `CLO${row.clo}` : "thiếu CLO"}`
+        ).join("; ");
+        throw new Error(`Đề chưa đạt kiểm tra trước khi trộn. ${sample}`);
+    }
 
-        // 8. Exam Builder: Ghép các mã đề & Ghi Mã Đề Header
-        onProgress(70, "Đang đóng gói cấu trúc bộ đề...");
-        const exams = buildExamSet(examCodes, header, questionSets, footer);
+    onProgress(45, `Đã xác nhận ${expectedQuestionCount} câu. Đang tạo ${examCodes.length} mã đề...`);
 
-        exams.forEach(exam => {
-            applyExamCodeToExam(exam, false);
-        });
+    const questionSets = examCodes.map(() => {
+        let processed = cloneQuestions(rawQuestions);
 
-        // 9. Validator: Kiểm tra tính toàn vẹn bộ đề
-        onProgress(80, "Đang kiểm tra tính toàn vẹn dữ liệu...");
-        if (typeof validateExamSet === "function") {
-            const validationResults = validateExamSet(exams);
-            
-            if (Array.isArray(validationResults) && validationResults.some(r => r && !r.valid)) {
-                const invalidCodes = validationResults.filter(r => !r.valid).map(r => r.examCode).join(", ");
-                throw new Error(`Kiểm tra tính toàn vẹn thất bại tại các mã đề: ${invalidCodes}`);
-            }
+        if (options.shuffleQuestions !== false) {
+            processed = shuffleQuestions(processed);
         }
 
-        // 10-13. Writer: Render các file Blobs DOCX tương ứng
-        onProgress(85, "Đang khởi tạo render các file .docx...");
-        const exportResults = await Promise.all(
-            exams.map(async (exam, index) => {
-                const blob = await renderExamToBlob(exam, zip, xmlDoc);
+        if (options.shuffleChoices !== false) {
+            processed = shuffleAllChoices(processed);
+        }
 
-                const currentPercent = 85 + Math.round(((index + 1) / exams.length) * 10);
-                onProgress(currentPercent, `Đã tạo xong mã đề ${exam.examCode} (${index + 1}/${exams.length})`);
+        return renumberAllQuestions(processed);
+    });
 
-                return {
-                    examCode: exam.examCode,
-                    blob
-                };
-            })
-        );
+    const exams = buildExamSet(examCodes, header, questionSets, footer);
 
-       // 14. Excel Writer
-onProgress(95, "Đang hoàn tất xuất các tệp đầu ra...");
+    exams.forEach(exam => {
+        exam.bodyExamCodeUpdated = applyExamCodeToExam(exam, false);
+    });
 
-console.log("A");
-const excelBlob = await exportAnswerExcel(
-    exams,
-    "Dap_An_Tong_Hop.xlsx",
-    false
-);
+    const validationResults = validateExamSet(exams, {
+        expectedQuestionCount
+    });
 
-onProgress(100, "Hoàn tất tạo bộ đề thi và file đáp án Excel!");
-
-
-console.log("B");
-
-console.log("C");
-console.log("exportResults =", exportResults);
-console.log("excelBlob =", excelBlob);
-return {
-    docxFiles: exportResults,
-    excelBlob
-};
-
-    } catch (error) {
-        console.error("[Pipeline Error] Failed to process exam shuffling:", error);
-        throw error;
+    const invalid = validationResults.filter(result => !result.valid);
+    if (invalid.length > 0) {
+        const summary = invalid
+            .map(result => `${result.examCode}: ${result.errors.slice(0, 3).join("; ")}`)
+            .join(" | ");
+        throw new Error(`Kiểm tra tính toàn vẹn thất bại. ${summary}`);
     }
+
+    // Render tuần tự để tránh tăng đột biến RAM trên điện thoại khi tạo nhiều mã đề.
+    const exportResults = [];
+    for (let index = 0; index < exams.length; index++) {
+        const exam = exams[index];
+        const percent = 60 + Math.round((index / exams.length) * 28);
+        onProgress(percent, `Đang tạo mã đề ${exam.examCode} (${index + 1}/${exams.length})...`);
+
+        const blob = await renderExamToBlob(exam, zip, xmlDoc);
+        exportResults.push({ examCode: exam.examCode, blob });
+    }
+
+    onProgress(92, "Đang tạo Excel đáp án và CLO...");
+    const excelBlob = await exportAnswerExcel(
+        exams,
+        "Dap_An_Tong_Hop.xlsx",
+        false
+    );
+
+    onProgress(100, "Hoàn tất bộ đề và bảng đáp án.");
+
+    return {
+        docxFiles: exportResults,
+        excelBlob,
+        diagnostics: {
+            expectedQuestionCount,
+            detectedQuestionStarts: splitResult.detectedQuestionStarts,
+            headerNodes: header.length,
+            footerNodes: footer.length
+        }
+    };
 }

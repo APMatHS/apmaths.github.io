@@ -1,120 +1,201 @@
 /* =====================================================
-   questionSplitter.js v1.6
-   Exam Shuffler Architecture
-
-   Trách nhiệm: 
-   - Phân đoạn cây DOM w:body thành Header và các Khối câu hỏi độc lập.
-   - Sử dụng cơ chế phân rã mạch lạc để phục vụ mở rộng dài hạn.
-   - Phòng thủ chặt chẽ ranh giới câu hỏi, vượt qua bộ Test Cases biên của dự án.
+   questionSplitter.js v2.0
+   - Nhận diện Câu 1 / Câu 1. / Câu 1: / Câu 1) / Q1 / Question 1.
+   - Có thể dùng expectedQuestionCount để khóa đúng chuỗi Câu 1..N.
+   - Tách phần trước Câu 1 thành header và phần sau đáp án D của câu N thành footer.
 ===================================================== */
 
-// Namespace chuẩn của WordprocessingML trong OpenXML
 const W_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-
-// Phòng thủ môi trường: Đảm bảo chạy an toàn trên cả Browser lẫn môi trường Test (Node.js/JSDOM)
 const ELEMENT_NODE = typeof Node !== "undefined" ? Node.ELEMENT_NODE : 1;
 
-/**
- * Phân đoạn cấu trúc w:body thành vùng Header và danh sách các khối câu hỏi nguyên khối
- * @param {Element} bodyNode - Node <w:body> trích xuất từ docxWriter
- * @returns {Object} { headerNodes: Element[], questionBlocks: Object[], totalNodes: number }
- */
-export function splitQuestions(bodyNode) {
-    if (!bodyNode || typeof bodyNode.childNodes === "undefined") {
-        return { headerNodes: [], questionBlocks: [], totalNodes: 0 };
+function getParagraphText(paragraph) {
+    if (!paragraph || typeof paragraph.getElementsByTagNameNS !== "function") return "";
+    const textNodes = paragraph.getElementsByTagNameNS(W_NAMESPACE, "t");
+    let text = "";
+    for (let i = 0; i < textNodes.length; i++) {
+        text += textNodes[i].textContent || "";
+    }
+    return text.replace(/\u00a0/g, " ");
+}
+
+function isSectPr(node) {
+    return node && node.nodeType === ELEMENT_NODE &&
+        (node.localName === "sectPr" || node.nodeName === "w:sectPr");
+}
+
+function parseQuestionStart(paragraph) {
+    if (!paragraph || paragraph.nodeType !== ELEMENT_NODE) return null;
+    if (!(paragraph.localName === "p" || paragraph.nodeName === "w:p")) return null;
+
+    const text = getParagraphText(paragraph).replace(/\s+/g, " ").trim();
+    if (!text) return null;
+
+    let match = text.match(/^(Câu|Question)\s*(\d+)(?=\s|$|[\.\:\)\-–—])/i);
+    if (match) {
+        return { number: Number(match[2]), kind: "named", text };
     }
 
-    const headerNodes = [];
-    const questionBlocks = [];
-    let currentBlock = null;
+    match = text.match(/^Q\s*(\d+)(?=\s|$|[\.\:\)\-–—])/i);
+    if (match) {
+        return { number: Number(match[1]), kind: "q", text };
+    }
 
-    // Chuyển đổi childNodes thành mảng phẳng đại diện cho cấu trúc gốc
-    const nodes = Array.from(bodyNode.childNodes);
+    match = text.match(/^(\d+)\s*[\.\:\)](?=\s|$)/);
+    if (match) {
+        return { number: Number(match[1]), kind: "numeric", text };
+    }
 
-    for (let i = 0; i < nodes.length; i++) {
+    return null;
+}
+
+function findSequentialQuestionStarts(candidates, expectedCount) {
+    if (!Number.isInteger(expectedCount) || expectedCount <= 0) return null;
+
+    const preferred = candidates.filter(c => c.kind !== "numeric");
+    const pools = preferred.length >= expectedCount ? [preferred, candidates] : [candidates];
+
+    for (const pool of pools) {
+        for (let start = 0; start < pool.length; start++) {
+            if (pool[start].number !== 1) continue;
+
+            const selected = [pool[start]];
+            let nextNumber = 2;
+
+            for (let i = start + 1; i < pool.length && nextNumber <= expectedCount; i++) {
+                if (pool[i].number === nextNumber) {
+                    selected.push(pool[i]);
+                    nextNumber++;
+                }
+            }
+
+            if (selected.length === expectedCount) return selected;
+        }
+    }
+
+    return null;
+}
+
+function choiceLabelsInText(text) {
+    const labels = [];
+    const regex = /(?:^|[\s\t])([A-D])\s*[\.\:\)]/g;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+        labels.push(match[1]);
+    }
+
+    if (labels.length === 0) {
+        const fallback = /([A-D])\s*[\.\:\)]/g;
+        while ((match = fallback.exec(text)) !== null) labels.push(match[1]);
+    }
+    return labels;
+}
+
+function findLastQuestionEnd(nodes, startIndex) {
+    const seen = new Set();
+
+    for (let i = startIndex; i < nodes.length; i++) {
         const node = nodes[i];
+        if (isSectPr(node)) continue;
+        if (!node || node.nodeType !== ELEMENT_NODE) continue;
 
-        // Duyệt và giữ lại các text node hoặc comment node ở vùng tương ứng
-        if (node.nodeType !== ELEMENT_NODE) { 
-            if (currentBlock) {
-                currentBlock.nodes.push(node);
-            } else {
-                headerNodes.push(node);
-            }
-            continue;
+        const text = getParagraphText(node);
+        const labels = choiceLabelsInText(text);
+        labels.forEach(label => seen.add(label));
+
+        if (seen.has("A") && seen.has("B") && seen.has("C") && seen.has("D")) {
+            return i + 1;
         }
+    }
 
-        // Nhận diện ranh giới câu mới dựa trên phần tử <w:p>
-        if (node.localName === "p" && isQuestionStart(node)) {
-            currentBlock = {
-                index: questionBlocks.length + 1, 
-                startNodeIndex: i,                // Tọa độ node gốc phục vụ debug
-                questionNumber: null,             // Sẽ được điền chính xác ở tầng answerExtractor
-                nodes: [node],
-                answers: [],
-                correctAnswer: null
-            };
-            questionBlocks.push(currentBlock);
+    return nodes.length;
+}
+
+export function splitQuestions(bodyNode, expectedQuestionCount = null) {
+    if (!bodyNode || typeof bodyNode.childNodes === "undefined") {
+        return {
+            headerNodes: [],
+            questionBlocks: [],
+            footerNodes: [],
+            totalNodes: 0,
+            detectedQuestionStarts: 0
+        };
+    }
+
+    const nodes = Array.from(bodyNode.childNodes);
+    const candidates = [];
+
+    nodes.forEach((node, index) => {
+        if (isSectPr(node)) return;
+        const parsed = parseQuestionStart(node);
+        if (parsed) candidates.push({ ...parsed, nodeIndex: index });
+    });
+
+    let selectedStarts;
+
+    if (Number.isInteger(expectedQuestionCount) && expectedQuestionCount > 0) {
+        selectedStarts = findSequentialQuestionStarts(candidates, expectedQuestionCount);
+        if (!selectedStarts) {
+            throw new Error(
+                `Không tìm được đúng chuỗi Câu 1 đến Câu ${expectedQuestionCount}. ` +
+                `Đã phát hiện ${candidates.length} mốc có dạng đầu câu.`
+            );
+        }
+    } else {
+        selectedStarts = candidates;
+    }
+
+    if (selectedStarts.length === 0) {
+        return {
+            headerNodes: nodes.filter(node => !isSectPr(node)),
+            questionBlocks: [],
+            footerNodes: [],
+            totalNodes: nodes.length,
+            detectedQuestionStarts: candidates.length
+        };
+    }
+
+    const firstStart = selectedStarts[0].nodeIndex;
+    const headerNodes = nodes
+        .slice(0, firstStart)
+        .filter(node => !isSectPr(node));
+
+    const questionBlocks = [];
+    let footerNodes = [];
+
+    for (let q = 0; q < selectedStarts.length; q++) {
+        const startIndex = selectedStarts[q].nodeIndex;
+        let endIndex;
+
+        if (q < selectedStarts.length - 1) {
+            endIndex = selectedStarts[q + 1].nodeIndex;
+        } else if (Number.isInteger(expectedQuestionCount) && expectedQuestionCount > 0) {
+            endIndex = findLastQuestionEnd(nodes, startIndex);
+            footerNodes = nodes
+                .slice(endIndex)
+                .filter(node => !isSectPr(node));
         } else {
-            // Nếu là w:tbl, w:p thông thường, hoặc node cấu trúc đứng trước câu đầu tiên
-            if (currentBlock) {
-                currentBlock.nodes.push(node);
-            } else {
-                // Toàn bộ dữ liệu trước Câu 1 được gom trọn vẹn vào Header để bảo toàn cấu trúc file
-                headerNodes.push(node);
-            }
+            endIndex = nodes.length;
         }
+
+        questionBlocks.push({
+            index: q + 1,
+            startNodeIndex: startIndex,
+            questionNumber: selectedStarts[q].number,
+            nodes: nodes.slice(startIndex, endIndex).filter(node => !isSectPr(node)),
+            answers: [],
+            correctAnswer: null
+        });
     }
 
     return {
         headerNodes,
         questionBlocks,
-        totalNodes: nodes.length
+        footerNodes,
+        totalNodes: nodes.length,
+        detectedQuestionStarts: candidates.length
     };
 }
 
-/**
- * Phân rã logic nhận diện để tăng tính rõ ràng, dễ bảo trì và mở rộng trong tương lai
- * @param {Element} paragraph - Thẻ <w:p>
- * @returns {boolean}
- */
-function isQuestionStart(paragraph) {
-    // Chuẩn hóa toàn bộ khoảng trắng đặc biệt, tab ẩn (\t) thành dấu cách đơn
-    const text = getParagraphText(paragraph)
-        .replace(/\s+/g, " ")
-        .trim();
-    
-    // Mẫu 1: Nhận diện tiền tố rõ ràng (Câu 1, Question 2, Q3...) [Đạt Test 5]
-    if (/^(Câu|Question|Q)\s*\d+(\s|$|[\.:)])/i.test(text)) {
-        return true;
-    }
-    
-    // Mẫu 2: Nhận diện số thuần có ký tự phân tách đi kèm liền sau và có khoảng trắng/kết thúc chuỗi để siết biên chặt chẽ (Ví dụ: "1. ", "12:", "3) ") [Đạt Test 5, loại bỏ rủi ro 1.a]
-    if (/^\d+[\.:)](\s|$)/.test(text)) {
-        return true;
-    }
-    
-    // Mẫu 3: Nhận diện số cô độc hoàn toàn trên một dòng đơn lẻ (Ví dụ người ra đề xuống dòng viết số "4") [Đạt Test 5]
-    if (/^\d+$/.test(text)) {
-        return true;
-    }
-    
-    // Các trường hợp văn bản thường "2026 năm học" [Đạt Test 3] hoặc "1 tín chỉ" [Đạt Test 4] sẽ rơi xuống đây và trả về false
-    return false;
-}
-
-/**
- * Trích xuất text thuần an toàn xuyên Namespace bằng getElementsByTagNameNS
- * @param {Element} paragraph - Thẻ <w:p>
- * @returns {string}
- */
-function getParagraphText(paragraph) {
-    const textNodes = paragraph.getElementsByTagNameNS(W_NAMESPACE, "t");
-    let text = "";
-    
-    for (let i = 0; i < textNodes.length; i++) {
-        text += textNodes[i].textContent;
-    }
-    
-    return text;
+export function isQuestionStart(paragraph) {
+    return Boolean(parseQuestionStart(paragraph));
 }

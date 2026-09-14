@@ -1,18 +1,11 @@
 /* =====================================================
    appShuffleController.js
-   Exam Shuffler v2.3 - Production UI Controller (Safeguarded & Throttled Download)
-
-   Nhiệm vụ:
-   - Đọc danh sách mã đề linh hoạt từ HTML Input #examCodes (tối đa 20 mã đề).
-   - Validate chuỗi mã đề: 3 chữ số, không trùng lặp, không rỗng, giới hạn MAX_EXAMS.
-   - Thu thập file và tham số cấu hình từ UI.
-   - Gọi processExamShuffling() từ appShuffle.js.
-   - Quản lý tải xuống các file .docx kết quả có delay (throttling) để tránh bị Chrome chặn.
+   Exam Shuffler v2.6
 ===================================================== */
 
 import { processExamShuffling } from "./appShuffle.js";
 import { exportZip } from "./zip/zipExporter.js";
-// DOM Elements
+
 const fileInput = document.getElementById("docxFile");
 const dropZone = document.getElementById("dropZone");
 const fileInfo = document.getElementById("fileInfo");
@@ -24,11 +17,8 @@ const logContent = document.getElementById("logContent");
 const checkList = document.getElementById("checkList");
 
 let selectedFile = null;
-
-// Cấu hình giới hạn tối đa số mã đề trong một lần sinh
 const MAX_EXAMS = 20;
 
-/* ---------- Logger & UI Helpers ---------- */
 function log(message) {
     if (!logContent) return;
     logContent.textContent += "\n> " + message;
@@ -36,57 +26,50 @@ function log(message) {
 }
 
 function setProgress(percent, text = "") {
-    if (progressBar) progressBar.style.width = percent + "%";
+    if (progressBar) progressBar.style.width = `${percent}%`;
     if (statusText && text) statusText.textContent = text;
 }
 
-/**
- * Hàm delay nhỏ giữa các lượt tải file
- * @param {number} ms - Thời gian chờ (milisecond)
- */
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-/**
- * Đọc và chuẩn hóa danh sách mã đề từ UI (#examCodes)
- * @returns {Array<string>} Mảng mã đề (VD: ["201", "202", "203", "204"])
- */
 function getExamCodes() {
     const input = document.getElementById("examCodes");
+    if (!input) throw new Error("Không tìm thấy ô danh sách mã đề.");
 
-    if (!input) {
-        throw new Error("Không tìm thấy ô nhập mã đề (#examCodes).");
-    }
-
-    // Tách chuỗi theo dấu phẩy, trim khoảng trắng và lọc chuỗi rỗng
     const examCodes = input.value
         .split(",")
         .map(code => code.trim())
-        .filter(code => code.length > 0);
+        .filter(Boolean);
 
     if (examCodes.length === 0) {
         throw new Error("Vui lòng nhập ít nhất một mã đề.");
     }
 
-    // 1. Kiểm tra giới hạn số lượng mã đề
     if (examCodes.length > MAX_EXAMS) {
-        throw new Error(`Hệ thống chỉ hỗ trợ tạo tối đa ${MAX_EXAMS} mã đề trong một lần xáo trộn.`);
+        throw new Error(`Chỉ hỗ trợ tối đa ${MAX_EXAMS} mã đề trong một lần.`);
     }
 
-    // 2. Kiểm tra định dạng: Bắt buộc là 3 chữ số (VD: 101, 202, 303)
     const invalid = examCodes.find(code => !/^\d{3}$/.test(code));
     if (invalid) {
-        throw new Error(`Mã đề "${invalid}" không hợp lệ. Mã đề phải là chuỗi 3 chữ số (ví dụ: 101, 201).`);
+        throw new Error(`Mã đề "${invalid}" không hợp lệ. Mã đề phải gồm 3 chữ số.`);
     }
 
-    // 3. Kiểm tra trùng lặp
     if (new Set(examCodes).size !== examCodes.length) {
-        throw new Error("Danh sách mã đề không được có các mã trùng nhau.");
+        throw new Error("Danh sách mã đề có mã trùng nhau.");
     }
 
     return examCodes;
 }
 
-/* ---------- File Handling ---------- */
+function getExpectedQuestionCount() {
+    const input = document.getElementById("questionCount");
+    if (!input) throw new Error("Không tìm thấy ô xác nhận số câu.");
+
+    const value = Number(input.value);
+    if (!Number.isInteger(value) || value < 1 || value > 500) {
+        throw new Error("Số câu phải là số nguyên từ 1 đến 500.");
+    }
+    return value;
+}
+
 function handleFile(file) {
     if (!file) return;
     if (!file.name.toLowerCase().endsWith(".docx")) {
@@ -97,40 +80,39 @@ function handleFile(file) {
     selectedFile = file;
     if (fileName) fileName.textContent = file.name;
     if (fileInfo) fileInfo.classList.remove("hidden");
-    
+
     if (checkList) {
         checkList.innerHTML = `
             ✅ Đã chọn file DOCX<br>
-            ⏳ Sẵn sàng xáo trộn bộ đề
+            ℹ️ Nhập số câu để hệ thống khóa đúng Câu 1 → Câu N và tách đầu/cuối đề.
         `;
     }
-    log("Đã chọn file: " + file.name);
+
+    log(`Đã chọn file: ${file.name}`);
 }
 
-/* ---------- Event Listeners ---------- */
 if (fileInput) {
-    fileInput.addEventListener("change", (e) => handleFile(e.target.files[0]));
+    fileInput.addEventListener("change", event => handleFile(event.target.files[0]));
 }
 
 if (dropZone) {
-    ["dragenter", "dragover"].forEach(event => {
-        dropZone.addEventListener(event, (e) => {
-            e.preventDefault();
+    ["dragenter", "dragover"].forEach(eventName => {
+        dropZone.addEventListener(eventName, event => {
+            event.preventDefault();
             dropZone.classList.add("dragover");
         });
     });
 
-    ["dragleave", "drop"].forEach(event => {
-        dropZone.addEventListener(event, (e) => {
-            e.preventDefault();
+    ["dragleave", "drop"].forEach(eventName => {
+        dropZone.addEventListener(eventName, event => {
+            event.preventDefault();
             dropZone.classList.remove("dragover");
         });
     });
 
-    dropZone.addEventListener("drop", (e) => handleFile(e.dataTransfer.files[0]));
+    dropZone.addEventListener("drop", event => handleFile(event.dataTransfer.files[0]));
 }
 
-/* ---------- Trigger Main Pipeline ---------- */
 if (processBtn) {
     processBtn.addEventListener("click", async () => {
         if (!selectedFile) {
@@ -138,62 +120,68 @@ if (processBtn) {
             return;
         }
 
+        processBtn.disabled = true;
+        processBtn.classList.add("opacity-60", "cursor-not-allowed");
+        setProgress(0, "Bắt đầu kiểm tra đề...");
+
         try {
-            // 1. Lấy danh sách mã đề từ giao diện UI
             const examCodes = getExamCodes();
+            const expectedQuestionCount = getExpectedQuestionCount();
 
             log("====================================");
-            log(`Bắt đầu khởi chạy Pipeline xáo trộn cho ${examCodes.length} mã đề: ${examCodes.join(", ")}`);
+            log(`Xác nhận số câu: ${expectedQuestionCount}`);
+            log(`Mã đề: ${examCodes.join(", ")}`);
 
-            const options = {
-                shuffleQuestions: true,
-                shuffleChoices: true
-            };
+            const { docxFiles, excelBlob, diagnostics } = await processExamShuffling(
+                selectedFile,
+                examCodes,
+                {
+                    shuffleQuestions: true,
+                    shuffleChoices: true,
+                    expectedQuestionCount
+                },
+                (percent, message) => {
+                    setProgress(percent, message);
+                    log(message);
+                }
+            );
 
-            // 2. Gọi Pipeline xáo trộn chính thức
-            const { docxFiles, excelBlob } = await processExamShuffling(
-    selectedFile,
-    examCodes,
-    options,
-    (percent, message) => {
-        setProgress(percent, message);
-        log(message);
-    }
-);
-
-            // 3. Tải xuống tất cả các file .docx kết quả (có nhịp nghỉ 150ms)
-            log("Đang tạo file ZIP...");
-
-await exportZip({
-    exams: docxFiles.map(({ examCode, blob }) => ({
-        name: `Đề_${examCode}.docx`,
-        blob
-    })),
-    excels: [
-        {
-            name: "Dap_An_Tong_Hop.xlsx",
-            blob: excelBlob
-        }
-    ]
-});
+            setProgress(100, "Đang đóng gói ZIP...");
+            await exportZip({
+                exams: docxFiles.map(({ examCode, blob }) => ({
+                    name: `Đề_${examCode}.docx`,
+                    blob
+                })),
+                excels: [{
+                    name: "Dap_An_Tong_Hop.xlsx",
+                    blob: excelBlob
+                }],
+                zipName: "Exam-CLO.zip"
+            });
 
             if (checkList) {
                 checkList.innerHTML = `
-                    ✅ Đọc & Tách khối XML thành công<br>
-                    ✅ Phân tích chi tiết câu hỏi & CLO<br>
-                    ✅ Hoàn tất xáo trộn ${examCodes.length} mã đề (${examCodes.join(", ")})<br>
-                    ✅ Bảo toàn 100% Bảng, Ảnh, MathType<br>
-                    ✅ Đã xuất tất cả file .docx & Excel đáp án
+                    ✅ Đúng ${diagnostics.expectedQuestionCount} câu<br>
+                    ✅ Nhận CLO dạng (CLO1) / [CLO1]<br>
+                    ✅ Nhận đáp án 4 dòng, 2 dòng Tab hoặc 1 dòng Tab<br>
+                    ✅ Mỗi câu có đúng 4 phương án và 1 đáp án đúng<br>
+                    ✅ Đã làm sạch bold/italic/underline/màu của đáp án<br>
+                    ✅ Đã cập nhật mã đề trong body/header/footer nếu có<br>
+                    ✅ Giữ nguyên field PAGE/NUMPAGES của Word<br>
+                    ✅ Đã tạo ${examCodes.length} mã đề và Excel đáp án
                 `;
             }
 
-            log("✓ Hoàn tất xử lý toàn bộ bộ đề!");
-
-        } catch (err) {
-            console.error(err);
-            log("❌ Lỗi: " + err.message);
-            alert("Lỗi: " + err.message);
-            setProgress(0, "Xảy ra lỗi");
+            log("✓ Hoàn tất và đã tạo file ZIP.");
+            setProgress(100, "Hoàn tất.");
+        } catch (error) {
+            console.error(error);
+            log(`❌ Lỗi: ${error.message}`);
+            alert(`Lỗi: ${error.message}`);
+            setProgress(0, "Xảy ra lỗi - chưa xuất bộ đề.");
+        } finally {
+            processBtn.disabled = false;
+            processBtn.classList.remove("opacity-60", "cursor-not-allowed");
         }
     });
 }

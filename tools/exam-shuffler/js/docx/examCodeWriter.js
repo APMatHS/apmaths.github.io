@@ -1,96 +1,136 @@
 /* =====================================================
-   examCodeWriter.js
-   Exam Shuffler v2.1 - Robust Multi-Node Replacement Engine
-
-   Chức năng:
-   - Nhận mảng Header Nodes và mã đề mới (ví dụ: "101").
-   - Duyệt theo từng đoạn văn <w:p> để ghép chuỗi hoàn chỉnh, chống lỗi Run Splitting của Word.
-   - Ghi mã đề mới vào thẻ <w:t> đầu tiên của đoạn văn và xóa sạch các thẻ <w:t> thừa kế tiếp.
-   - Chỉ thay thế đúng giá trị số của mã đề, bảo toàn 100% văn bản đứng sau (ví dụ: "Thời gian: 60 phút").
+   examCodeWriter.js v2.6
+   - Thay mã đề trong body/header/footer.
+   - Chỉ thay các chữ số của mã đề, không gom paragraph về một w:t.
+   - Giữ nguyên field PAGE / NUMPAGES và định dạng run.
 ===================================================== */
 
 const W_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 
-/**
- * Cập nhật chuỗi Mã đề hiển thị trong một tập hợp XML Nodes (Cấp độ Paragraph)
- * 
- * @param {Array<Node>} headerNodes - Mảng các XML Nodes đại diện cho phần Header đề thi
- * @param {string|number} examCode - Mã đề thi cần ghi vào tài liệu (VD: "101")
- * @returns {boolean} True nếu tìm thấy placeholder và cập nhật thành công, False nếu không tìm thấy
- */
-export function updateExamCodeInNodes(headerNodes, examCode) {
-    if (!Array.isArray(headerNodes) || headerNodes.length === 0) {
-        return false;
+function replaceRangeAcrossTextNodes(textNodes, start, end, replacement) {
+    let offset = 0;
+    let inserted = false;
+
+    for (const textNode of textNodes) {
+        const text = textNode.textContent || "";
+        const nodeStart = offset;
+        const nodeEnd = offset + text.length;
+        offset = nodeEnd;
+
+        if (nodeEnd <= start || nodeStart >= end) continue;
+
+        const localStart = Math.max(0, start - nodeStart);
+        const localEnd = Math.min(text.length, end - nodeStart);
+        const before = text.slice(0, localStart);
+        const after = text.slice(localEnd);
+
+        if (!inserted) {
+            textNode.textContent = before + replacement + after;
+            inserted = true;
+        } else {
+            textNode.textContent = before + after;
+        }
     }
+
+    return inserted;
+}
+
+function updateParagraphExamCode(paragraph, examCode) {
+    if (!paragraph || typeof paragraph.getElementsByTagNameNS !== "function") return false;
+
+    const textNodes = Array.from(paragraph.getElementsByTagNameNS(W_NAMESPACE, "t"));
+    if (textNodes.length === 0) return false;
+
+    const fullText = textNodes.map(t => t.textContent || "").join("");
+    const match = fullText.match(/(?:Mã\s*đề|Đề\s*số|Code)\s*:?\s*(\d{1,6})/i);
+    if (!match) return false;
+
+    const relative = match[0].lastIndexOf(match[1]);
+    const start = (match.index || 0) + relative;
+    const end = start + match[1].length;
+
+    return replaceRangeAcrossTextNodes(textNodes, start, end, String(examCode));
+}
+
+function paragraphsInNode(node) {
+    if (!node || typeof node.getElementsByTagNameNS !== "function") return [];
+
+    const result = [];
+    if (node.nodeType === 1 && (node.localName === "p" || node.nodeName === "w:p")) {
+        result.push(node);
+    }
+
+    const nested = node.getElementsByTagNameNS(W_NAMESPACE, "p");
+    for (let i = 0; i < nested.length; i++) {
+        if (!result.includes(nested[i])) result.push(nested[i]);
+    }
+    return result;
+}
+
+export function updateExamCodeInNodes(nodes, examCode) {
+    if (!Array.isArray(nodes) || nodes.length === 0) return false;
 
     let updated = false;
-
-    for (const topNode of headerNodes) {
-        if (!topNode || typeof topNode.getElementsByTagNameNS !== "function") continue;
-
-        // Lấy tất cả các đoạn văn <w:p> bên trong topNode (hoặc chính topNode nếu nó là <w:p>)
-        let paragraphs = [];
-        if (topNode.nodeName === "w:p") {
-            paragraphs = [topNode];
-        } else {
-            const pNodes = topNode.getElementsByTagNameNS(W_NAMESPACE, "p");
-            paragraphs = Array.from(pNodes);
+    for (const node of nodes) {
+        for (const paragraph of paragraphsInNode(node)) {
+            if (updateParagraphExamCode(paragraph, examCode)) updated = true;
         }
-
-        for (const pNode of paragraphs) {
-            const textNodes = Array.from(pNode.getElementsByTagNameNS(W_NAMESPACE, "t"));
-            if (textNodes.length === 0) continue;
-
-            // 1. Gom toàn bộ văn bản của đoạn văn lại để kiểm tra regex chuẩn xác
-            const fullParagraphText = textNodes.map(t => t.textContent ?? "").join("");
-
-            // 2. Nhận diện đoạn văn có chứa các mẫu tiền tố: "Mã đề:", "Đề số:", "Code:"
-            if (/(\s*)(Mã\s+đề|Đề\s+số|Code)\s*:/i.test(fullParagraphText)) {
-                
-                // 3. Chỉ thay thế phần tiền tố và số mã đề cũ, giữ lại các nội dung phía sau (như Thời gian, Trang...)
-                const updatedFullText = fullParagraphText.replace(
-                    /(\s*)(Mã\s+đề|Đề\s+số|Code)\s*:\s*\d+/i,
-                    `$1$2: ${examCode}`
-                );
-
-                // 4. Ghi chuỗi đã cập nhật vào thẻ <w:t> đầu tiên
-                textNodes[0].textContent = updatedFullText;
-
-                // 5. Xóa rỗng tất cả các thẻ <w:t> còn lại trong đoạn văn để triệt tiêu các phân mảnh text cũ
-                for (let i = 1; i < textNodes.length; i++) {
-                    textNodes[i].textContent = "";
-                }
-
-                updated = true;
-                break;
-            }
-        }
-
-        if (updated) break;
     }
-
     return updated;
 }
 
-/**
- * Cập nhật Mã đề cho một đối tượng Exam trong Pipeline
- * 
- * @param {Object} exam - Object chứa dữ liệu bộ đề (bao gồm exam.header và exam.examCode)
- * @param {boolean} strict - Nếu true sẽ throw Error khi không tìm thấy placeholder "Mã đề:"
- */
 export function applyExamCodeToExam(exam, strict = false) {
-    if (!exam) {
-        throw new TypeError("Tham số 'exam' không được để trống.");
+    if (!exam) throw new TypeError("Tham số 'exam' không được để trống.");
+
+    const updatedHeader = updateExamCodeInNodes(exam.header ?? [], exam.examCode);
+    const updatedFooter = updateExamCodeInNodes(exam.footer ?? [], exam.examCode);
+    const success = updatedHeader || updatedFooter;
+
+    if (!success && strict) {
+        throw new Error("Không tìm thấy vị trí 'Mã đề/Đề số/Code' trong phần thân tài liệu.");
     }
 
-    const examCode = exam.examCode;
-    const headerNodes = exam.header ?? [];
+    return success;
+}
 
-    const isSuccess = updateExamCodeInNodes(headerNodes, examCode);
-
-    if (!isSuccess && strict) {
-        throw new Error(`Không tìm thấy vị trí ghi 'Mã đề:' trong Header của đề thi.`);
+export async function updateExamCodeInZipParts(zip, examCode) {
+    if (!zip || typeof zip.file !== "function") {
+        throw new TypeError("zip không hợp lệ.");
     }
 
-    return isSuccess;
+    const paths = Object.keys(zip.files).filter(path =>
+        /^word\/(?:header|footer)\d*\.xml$/i.test(path)
+    );
+
+    let replacements = 0;
+    const updatedParts = [];
+
+    for (const path of paths) {
+        const entry = zip.file(path);
+        if (!entry) continue;
+
+        const xmlText = await entry.async("string");
+        const xmlDoc = new DOMParser().parseFromString(xmlText, "application/xml");
+
+        if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
+            throw new Error(`Không đọc được ${path}.`);
+        }
+
+        const paragraphs = Array.from(xmlDoc.getElementsByTagNameNS(W_NAMESPACE, "p"));
+        let partUpdated = false;
+
+        for (const paragraph of paragraphs) {
+            if (updateParagraphExamCode(paragraph, examCode)) {
+                replacements++;
+                partUpdated = true;
+            }
+        }
+
+        if (partUpdated) {
+            zip.file(path, new XMLSerializer().serializeToString(xmlDoc));
+            updatedParts.push(path);
+        }
+    }
+
+    return { replacements, updatedParts };
 }
