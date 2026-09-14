@@ -1,6 +1,7 @@
 /* =====================================================
-   mappingExporter.js v1.0
+   mappingExporter.js v1.1
    - Sheet đối chiếu câu sau trộn với đề gốc.
+   - Đề gốc bắt buộc đánh số đúng 1..N, nên mapping chỉ cần Câu gốc.
    - Sheet phân tích đề gốc: đáp án, CLO, nội dung, A/B/C/D.
 ===================================================== */
 
@@ -14,8 +15,7 @@ export function exportQuestionMapping(worksheet, exams) {
     worksheet.addRow([
         "Mã đề",
         "Câu mới",
-        "Câu gốc (vị trí)",
-        "Nhãn câu gốc",
+        "Câu gốc",
         "Đáp án mới",
         "Đáp án gốc",
         "CLO"
@@ -27,7 +27,6 @@ export function exportQuestionMapping(worksheet, exams) {
                 String(exam.examCode ?? ""),
                 index + 1,
                 q.sourceIndex ?? "",
-                q.originalNumber ?? "",
                 String(q.correct ?? "").toUpperCase(),
                 String(q.originalCorrect ?? "").toUpperCase(),
                 q.clo ? `CLO${q.clo}` : ""
@@ -40,8 +39,7 @@ export function exportSourceAnalysis(worksheet, sourceQuestions) {
     if (!worksheet || !Array.isArray(sourceQuestions)) return;
 
     worksheet.addRow([
-        "Vị trí gốc",
-        "Nhãn câu gốc",
+        "Câu gốc",
         "Đáp án đúng",
         "CLO",
         "Nội dung câu hỏi",
@@ -60,7 +58,6 @@ export function exportSourceAnalysis(worksheet, sourceQuestions) {
 
         worksheet.addRow([
             q.sourceIndex ?? index + 1,
-            q.originalNumber ?? q.number ?? index + 1,
             String(q.originalCorrect || q.correct || "").toUpperCase(),
             q.clo ? `CLO${q.clo}` : "",
             cleanText(q.stemText),
