@@ -1,9 +1,9 @@
 /* =====================================================
-   questionSplitter.js v2.1
+   questionSplitter.js v2.2
    - Nhận diện Câu 1 / Câu 1. / Câu 1: / Câu 1) / Q1 / Question 1.
    - Dùng expectedQuestionCount để tìm đúng một KHỐI N câu bắt đầu từ Câu 1.
    - Không bắt buộc nhãn nguồn phải liên tục 1..N; khi xuất sẽ đánh lại số.
-   - Tách phần trước khối thành header và phần sau đáp án D của câu cuối thành footer.
+   - Nếu file chứa nhiều đề nối tiếp, chỉ giữ header gần nhất của khối được chọn.
 ===================================================== */
 
 const W_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
@@ -46,11 +46,6 @@ function candidatePools(candidates) {
     return preferred.length ? [preferred, candidates] : [candidates];
 }
 
-/**
- * Tìm một đoạn N mốc câu liên tiếp trong tài liệu, bắt đầu bằng nhãn Câu 1.
- * Nếu trước khi đủ N câu lại gặp một Câu 1 khác, đoạn trước bị loại.
- * Cách này xử lý được file có nhiều bộ đề nối tiếp và nhãn nguồn bị nhảy số (vd. 9 -> 11).
- */
 function findQuestionBlock(candidates, expectedCount) {
     if (!Number.isInteger(expectedCount) || expectedCount <= 0) return null;
 
@@ -60,10 +55,7 @@ function findQuestionBlock(candidates, expectedCount) {
 
             const slice = pool.slice(start, start + expectedCount);
             if (slice.length !== expectedCount) continue;
-
-            const anotherStart = slice.slice(1).findIndex(item => item.number === 1);
-            if (anotherStart >= 0) continue;
-
+            if (slice.slice(1).some(item => item.number === 1)) continue;
             return slice;
         }
     }
@@ -90,11 +82,33 @@ function findLastQuestionEnd(nodes, startIndex) {
         if (isSectPr(node)) continue;
         if (!node || node.nodeType !== ELEMENT_NODE) continue;
 
-        const labels = choiceLabelsInText(getParagraphText(node));
-        labels.forEach(label => seen.add(label));
+        choiceLabelsInText(getParagraphText(node)).forEach(label => seen.add(label));
         if (seen.has("A") && seen.has("B") && seen.has("C") && seen.has("D")) return i + 1;
     }
     return nodes.length;
+}
+
+function looksLikeExamTitle(text) {
+    const normalized = String(text || "").replace(/\s+/g, " ").trim().toUpperCase();
+    if (!normalized) return false;
+    return /^(ĐỀ|DE)\s+(THI|KIỂM TRA|KIEM TRA)/i.test(normalized) ||
+           /^(BÀI|BAI)\s+(THI|KIỂM TRA|KIEM TRA)/i.test(normalized);
+}
+
+/**
+ * Khi đã có một khối câu khác trước khối được chọn, tìm tiêu đề đề gần nhất để cắt bỏ đề cũ.
+ * Nếu không thấy tiêu đề rõ ràng thì giữ header từ đầu tài liệu như hành vi truyền thống.
+ */
+function findHeaderStart(nodes, firstStart, candidates) {
+    const earlierQuestionExists = candidates.some(c => c.nodeIndex < firstStart && c.number === 1);
+    if (!earlierQuestionExists) return 0;
+
+    for (let i = firstStart - 1; i >= 0; i--) {
+        if (isSectPr(nodes[i])) continue;
+        const text = getParagraphText(nodes[i]);
+        if (looksLikeExamTitle(text)) return i;
+    }
+    return 0;
 }
 
 export function splitQuestions(bodyNode, expectedQuestionCount = null) {
@@ -133,7 +147,8 @@ export function splitQuestions(bodyNode, expectedQuestionCount = null) {
     }
 
     const firstStart = selectedStarts[0].nodeIndex;
-    const headerNodes = nodes.slice(0, firstStart).filter(node => !isSectPr(node));
+    const headerStart = findHeaderStart(nodes, firstStart, candidates);
+    const headerNodes = nodes.slice(headerStart, firstStart).filter(node => !isSectPr(node));
     const questionBlocks = [];
     let footerNodes = [];
 
@@ -163,7 +178,8 @@ export function splitQuestions(bodyNode, expectedQuestionCount = null) {
         headerNodes, questionBlocks, footerNodes,
         totalNodes: nodes.length,
         detectedQuestionStarts: candidates.length,
-        selectedSourceNumbers: selectedStarts.map(item => item.number)
+        selectedSourceNumbers: selectedStarts.map(item => item.number),
+        headerStartNodeIndex: headerStart
     };
 }
 
