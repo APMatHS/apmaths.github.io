@@ -42,6 +42,7 @@
 .question-create-actions{margin:0!important;padding-top:0;justify-content:flex-end}
 
 .question-image-recognition{display:grid;gap:12px;padding:14px;border:1px solid #dfe5ee;border-radius:12px;background:#f8fafc}
+.question-image-recognition[hidden]{display:none!important}
 .question-image-heading,.question-image-actions{display:flex;align-items:center;justify-content:space-between;gap:14px}
 .question-image-heading p,.question-image-actions p{margin:3px 0 0;color:#667085;font-size:13px}
 .question-image-dropzone{padding:16px;border:2px dashed #cbd5e1;border-radius:12px;background:#fff;cursor:pointer;outline:none}
@@ -74,4 +75,3 @@
  .question-create-section,.question-create-classify{padding:11px 12px}
  .question-create-scope{padding:8px!important}
 }
-
