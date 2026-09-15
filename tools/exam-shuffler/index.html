@@ -40,8 +40,9 @@
       <ul class="text-[11px] text-amber-900/80 mt-3 space-y-1 list-disc list-inside">
         <li>Chấp nhận <b>Câu 1</b>, <b>Câu 1.</b>, <b>Câu 1:</b>, <b>Câu 1)</b>.</li>
         <li>CLO: <b>(CLO1)</b>, <b>(CLO 1)</b>, <b>[CLO1]</b> hoặc <b>[CLO 1]</b>; <b>không bắt buộc</b>.</li>
-        <li>Phương án có thể 4 dòng, 2 dòng dùng <b>Tab</b>, hoặc 1 dòng dùng <b>Tab</b>; không cần Table.</li>
-        <li>Khi xuất, nội dung phương án được bỏ dấu hiệu đáp án; nhãn <b>A. B. C. D.</b> được in đậm.</li>
+        <li>Phương án có thể gõ A/B/C/D trực tiếp hoặc dùng <b>Word Numbering</b>.</li>
+        <li>Khi xuất, hệ thống tự chọn bố cục đáp án <b>1 dòng / 2 dòng / 4 dòng</b>; không dùng Table.</li>
+        <li>Nội dung phương án được bỏ dấu hiệu đáp án; nhãn <b>A. B. C. D.</b> được in đậm.</li>
         <li>Mã đề trong phần thân, Header hoặc Footer sẽ được cập nhật; PAGE/NUMPAGES được giữ nguyên.</li>
       </ul>
     </div>
@@ -72,8 +73,14 @@
   <div id="bmMetadataPanel" class="hidden mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
     <label class="text-sm">Tên học phần<input id="bmSubject" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
     <label class="text-sm">Mã học phần<input id="bmCourseCode" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+    <label class="text-sm">Số tín chỉ<input id="bmCredits" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
     <label class="text-sm">Học kỳ<input id="bmSemester" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
     <label class="text-sm">Năm học<input id="bmAcademicYear" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+    <label class="text-sm">Lớp<input id="bmClassName" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+    <label class="text-sm md:col-span-2">Chương trình đào tạo / ngành<input id="bmTrainingProgram" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+    <label class="text-sm">Hình thức thi<input id="bmExamFormat" value="Trắc nghiệm" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+    <label class="text-sm">Khoa<input id="bmFaculty" value="KHOA CƠ BẢN 2" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+    <label class="text-sm">Bộ môn<input id="bmDepartment" value="BỘ MÔN TOÁN" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
     <label class="text-sm">Ngày thi<input id="bmExamDate" type="date" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
     <label class="text-sm">Ca thi<input id="bmExamSession" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
     <label class="text-sm">Thời gian (phút)<input id="bmDuration" type="number" min="1" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
@@ -95,9 +102,9 @@
 <button id="processBtn" class="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold shadow-lg shadow-blue-500/30">Bắt đầu trộn đề</button>
 
 <section><h2 class="font-semibold mb-3">Tiến trình</h2><div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden"><div id="progressBar" class="bg-blue-600 h-4 transition-all duration-300" style="width:0%"></div></div><div id="statusText" class="mt-2 text-sm text-slate-600">Sẵn sàng.</div></section>
-<section><h2 class="font-semibold mb-3">Nhật ký</h2><div id="logContent" class="bg-slate-900 text-green-400 rounded-xl p-4 h-40 overflow-auto font-mono text-xs">Exam Shuffler v2.9</div></section>
+<section><h2 class="font-semibold mb-3">Nhật ký</h2><div id="logContent" class="bg-slate-900 text-green-400 rounded-xl p-4 h-40 overflow-auto font-mono text-xs">Exam Shuffler v2.10</div></section>
 </div>
-<footer class="text-center text-slate-500 text-sm mt-8">Exam Shuffler v2.9<br>Runs completely in your browser.<br>No files are uploaded.</footer>
+<footer class="text-center text-slate-500 text-sm mt-8">Exam Shuffler v2.10<br>Runs completely in your browser.<br>No files are uploaded.</footer>
 </div>
 <script src="js/libs/jszip.min.js"></script>
 <script type="module" src="js/appShuffleController.js"></script>
