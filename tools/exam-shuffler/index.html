@@ -68,7 +68,7 @@
 <section class="border rounded-xl p-4 bg-slate-50">
   <label class="flex items-center gap-3 cursor-pointer">
     <input id="includeBMForms" type="checkbox" class="w-4 h-4">
-    <span><b>Xuất kèm BM06 và BM08</b><br><small class="text-slate-500">Tùy chọn. Web sẽ thử đọc thông tin từ phần đầu file Word, sau đó bạn có thể sửa/bổ sung.</small></span>
+    <span><b>Xuất kèm BM06 và BM08</b><br><small class="text-slate-500">Tùy chọn. Web sẽ đọc thông tin từ phần đầu file Word, sau đó bạn có thể sửa/bổ sung. BM06 giữ khung ma trận hiện có; BM08 được điền theo từng mã đề.</small></span>
   </label>
   <div id="bmMetadataPanel" class="hidden mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
     <label class="text-sm">Tên học phần<input id="bmSubject" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
@@ -86,6 +86,11 @@
     <label class="text-sm">Thời gian (phút)<input id="bmDuration" type="number" min="1" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
     <label class="text-sm">Giảng viên ra đề<input id="bmPreparedBy" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
     <label class="text-sm">Trưởng bộ môn / người duyệt<input id="bmApprovedBy" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+    <label class="text-sm">Ngày ký duyệt<input id="bmSignedDate" type="date" class="mt-1 w-full border rounded-lg px-3 py-2"></label>
+    <label class="text-sm md:col-span-3">Mô tả CLO cho BM08
+      <textarea id="bmCloDescriptions" rows="4" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="CLO1 | Nêu được các khái niệm...&#10;CLO2 | Thực hiện các phép tính...&#10;CLO3 | Giải các bài toán..."></textarea>
+      <small class="text-slate-500">Mỗi dòng: CLO | nội dung đánh giá. Nếu bỏ trống, biểu mẫu vẫn liệt kê CLO và câu liên quan.</small>
+    </label>
     <div class="md:col-span-3 text-xs text-slate-500" id="bmAutoReadStatus">Chưa đọc thông tin từ đề.</div>
   </div>
 </section>
@@ -102,9 +107,9 @@
 <button id="processBtn" class="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold shadow-lg shadow-blue-500/30">Bắt đầu trộn đề</button>
 
 <section><h2 class="font-semibold mb-3">Tiến trình</h2><div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden"><div id="progressBar" class="bg-blue-600 h-4 transition-all duration-300" style="width:0%"></div></div><div id="statusText" class="mt-2 text-sm text-slate-600">Sẵn sàng.</div></section>
-<section><h2 class="font-semibold mb-3">Nhật ký</h2><div id="logContent" class="bg-slate-900 text-green-400 rounded-xl p-4 h-40 overflow-auto font-mono text-xs">Exam Shuffler v2.10</div></section>
+<section><h2 class="font-semibold mb-3">Nhật ký</h2><div id="logContent" class="bg-slate-900 text-green-400 rounded-xl p-4 h-40 overflow-auto font-mono text-xs">Exam Shuffler v2.11</div></section>
 </div>
-<footer class="text-center text-slate-500 text-sm mt-8">Exam Shuffler v2.10<br>Runs completely in your browser.<br>No files are uploaded.</footer>
+<footer class="text-center text-slate-500 text-sm mt-8">Exam Shuffler v2.11<br>Runs completely in your browser.<br>No files are uploaded.</footer>
 </div>
 <script src="js/libs/jszip.min.js"></script>
 <script type="module" src="js/appShuffleController.js"></script>

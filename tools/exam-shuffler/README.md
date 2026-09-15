@@ -13,6 +13,8 @@ A browser-based application for generating multiple randomized versions of Micro
 - ✅ Automatically update answer keys
 - 📊 Export Answer Key to Excel
 - 📈 Export CLO Statistics by exam version
+- 📄 Export BM06 and BM08 answer/rubric forms
+- 🧾 Read administrative metadata from the content before Question 1
 - 📝 Renumber questions automatically
 - 🖼 Preserve images
 - 📐 Preserve equations (OMML / MathType)

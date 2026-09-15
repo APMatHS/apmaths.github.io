@@ -1,6 +1,6 @@
 /* =====================================================
    appShuffleController.js
-   Exam Shuffler v2.10
+   Exam Shuffler v2.11
 ===================================================== */
 
 import { analyzeExamSource, processExamShuffling } from "./appShuffle.js";
@@ -45,7 +45,9 @@ const bmFields = {
     examSession: document.getElementById("bmExamSession"),
     durationMinutes: document.getElementById("bmDuration"),
     preparedBy: document.getElementById("bmPreparedBy"),
-    approvedBy: document.getElementById("bmApprovedBy")
+    approvedBy: document.getElementById("bmApprovedBy"),
+    signedDate: document.getElementById("bmSignedDate"),
+    cloDescriptions: document.getElementById("bmCloDescriptions")
 };
 
 function log(message) {
@@ -225,6 +227,10 @@ if (processBtn) {
 
             const manualOverrides = collectManualOverrides(analysisPreview);
             validateOverrides(manualOverrides, expectedQuestionCount);
+            if (includeBMForms?.checked) {
+                const missingClo = manualOverrides.map((item, index) => item?.clo ? null : index + 1).filter(Boolean);
+                if (missingClo.length) throw new Error(`Muốn xuất BM08, cần nhập CLO cho câu: ${missingClo.slice(0, 12).join(", ")}${missingClo.length > 12 ? "..." : ""}.`);
+            }
             const badChoices = (lastAnalysis.questions || []).filter(q => (q.choices || []).length !== 4);
             if (badChoices.length) throw new Error(`Có ${badChoices.length} câu không đủ 4 phương án A/B/C/D. Cần sửa file Word trước khi trộn.`);
 
@@ -256,7 +262,7 @@ if (processBtn) {
                     ✅ Đã tạo ${examCodes.length} mã đề.<br>
                     ✅ Excel chuẩn 4 sheet: Đáp án, Đáp án ngang, Phân bố CLO, Đối chiếu đề.<br>
                     ✅ Phân bố CLO giữ kiểu liệt kê số câu theo từng mã đề; ${cloText}.<br>
-                    ${docs.length ? "✅ Đã xuất kèm BM06/BM08 theo mẫu PTIT; ma trận BM06 để trống nội dung và mô tả CLO BM08 để trống.<br>" : ""}
+                    ${docs.length ? "✅ Đã xuất BM06 và BM08 có đáp án/phân bố CLO theo từng mã đề.<br>" : ""}
                     ✅ Mã đề body/header/footer và PAGE/NUMPAGES được giữ đúng.
                 `;
             }
