@@ -1,6 +1,6 @@
 /* =====================================================
    appShuffleController.js
-   Exam Shuffler v2.9
+   Exam Shuffler v2.10
 ===================================================== */
 
 import { analyzeExamSource, processExamShuffling } from "./appShuffle.js";
@@ -33,8 +33,14 @@ const MAX_EXAMS = 20;
 const bmFields = {
     subject: document.getElementById("bmSubject"),
     courseCode: document.getElementById("bmCourseCode"),
+    credits: document.getElementById("bmCredits"),
     semester: document.getElementById("bmSemester"),
     academicYear: document.getElementById("bmAcademicYear"),
+    className: document.getElementById("bmClassName"),
+    trainingProgram: document.getElementById("bmTrainingProgram"),
+    examFormat: document.getElementById("bmExamFormat"),
+    faculty: document.getElementById("bmFaculty"),
+    department: document.getElementById("bmDepartment"),
     examDate: document.getElementById("bmExamDate"),
     examSession: document.getElementById("bmExamSession"),
     durationMinutes: document.getElementById("bmDuration"),
@@ -234,7 +240,7 @@ if (processBtn) {
             );
 
             const docs = includeBMForms?.checked ? await exportBMForms(exams, collectBMMetadata()) : [];
-            if (docs.length) log(`Đã tạo BM06 và ${examCodes.length} file BM08.`);
+            if (docs.length) log(`Đã tạo BM06 và ${examCodes.length} file BM08 theo mẫu PTIT.`);
 
             setProgress(100, "Đang đóng gói ZIP...");
             await exportZip({
@@ -250,7 +256,7 @@ if (processBtn) {
                     ✅ Đã tạo ${examCodes.length} mã đề.<br>
                     ✅ Excel chuẩn 4 sheet: Đáp án, Đáp án ngang, Phân bố CLO, Đối chiếu đề.<br>
                     ✅ Phân bố CLO giữ kiểu liệt kê số câu theo từng mã đề; ${cloText}.<br>
-                    ${docs.length ? "✅ Đã xuất kèm BM06 và BM08 trong thư mục Docs/.<br>" : ""}
+                    ${docs.length ? "✅ Đã xuất kèm BM06/BM08 theo mẫu PTIT; ma trận BM06 để trống nội dung và mô tả CLO BM08 để trống.<br>" : ""}
                     ✅ Mã đề body/header/footer và PAGE/NUMPAGES được giữ đúng.
                 `;
             }
