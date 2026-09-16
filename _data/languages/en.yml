@@ -10,7 +10,7 @@ site:
 # ==========================================
 nav:
   home: "Home"
-  knowledge: "Knowledge"
+  knowledge: "Mathematics"
   blog: "Blog"
   tools: "Tools"
   resources: "Resources"
@@ -82,7 +82,7 @@ resources:
 # ==========================================
 submenu:
   calculus: "Calculus"
-  algebra: "Algebra"
+  algebra: "Linear Algebra"
   statistics: "Statistics"
 
   tags: "Tags"
