@@ -35,8 +35,7 @@
         transition: color .18s ease, background-color .18s ease;
     }
 
-    /* Draw the active underline independently so it sits at exactly
-       the same bottom edge as the other navigation links. */
+    /* Draw one single 3px underline for the whole Knowledge item. */
     .has-submenu > .nav-item-row::after {
         content: "";
         position: absolute;
@@ -48,10 +47,12 @@
         pointer-events: none;
     }
 
+    /* Important: suppress the link's own active border so the Knowledge
+       item does not show a doubled/thicker underline. */
     .has-submenu > .nav-item-row > .nav-link,
     .has-submenu > .nav-item-row > .submenu-toggle {
         background: transparent;
-        border-bottom-color: transparent;
+        border-bottom-color: transparent !important;
     }
 
     .has-submenu:hover > .nav-item-row,
@@ -78,7 +79,7 @@
     .has-submenu.is-current > .nav-item-row > .submenu-toggle {
         color: var(--primary);
         background: transparent;
-        border-bottom-color: transparent;
+        border-bottom-color: transparent !important;
     }
 }
 
