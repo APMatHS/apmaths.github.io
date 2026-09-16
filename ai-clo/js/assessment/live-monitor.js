@@ -1,4 +1,4 @@
-/* AI-CLO PTITHCM V12.6.37 — Teacher Live monitoring for online assessments. */
+/* AI·CLO APMaths V12.8 — Teacher Live monitoring for online assessments. */
 (() => {
   "use strict";
   window.AICLO_ASSESSMENT_MODULES = window.AICLO_ASSESSMENT_MODULES || {};
@@ -60,7 +60,7 @@
       tab_hidden: "Chuyển sang tab khác",
       fullscreen_exit: "Thoát toàn màn hình",
       window_blur: "Rời cửa sổ làm bài",
-      app_navigation: "Rời trang làm bài trong AI-CLO",
+      app_navigation: "Rời trang làm bài trong AI·CLO",
     })[type] || type || "Sự kiện";
 
     function rowState(row) {
@@ -118,7 +118,7 @@
         button.id = "aicloLiveButton";
         button.type = "button";
         button.className = "aiclo-live-entry";
-        button.innerHTML = '<span class="aiclo-live-dot" aria-hidden="true"></span><b>AI-CLO</b><span>|</span><strong>LIVE</strong>';
+        button.innerHTML = '<span class="aiclo-live-dot" aria-hidden="true"></span><b>AI·CLO</b><span>|</span><strong>LIVE</strong>';
         row.appendChild(button);
       }
       button.onclick = () => openExamLive(examId);
@@ -228,7 +228,7 @@
           <div class="aiclo-live-event-list">${mine.map((event) => `<div><span>${escapeHtml(eventLabel(event.event_type))}</span><small>${formatDateTime(event.started_at)} · ${escapeHtml(event.duration_ms == null ? "đang diễn ra" : fmtAway(event.duration_ms))}</small></div>`).join("") || '<p class="hint">Chưa ghi nhận sự kiện rời màn hình.</p>'}</div>
           <p class="hint">Live chỉ hiển thị câu đã trả lời/chưa trả lời; không hiển thị phương án A/B/C/D sinh viên đang chọn.</p>
         </div>`;
-        if (typeof openDrawer === "function") openDrawer(`AI-CLO | LIVE · ${row.full_name || "Sinh viên"}`, html, null, { wide: true, eyebrow: "THEO DÕI TRỰC TIẾP" });
+        if (typeof openDrawer === "function") openDrawer(`AI·CLO | LIVE · ${row.full_name || "Sinh viên"}`, html, null, { wide: true, eyebrow: "THEO DÕI TRỰC TIẾP" });
       } catch (error) { showError?.(error); }
     }
 
@@ -242,7 +242,7 @@
         const body = qs("#aicloLiveBody", root);
         if (backendUnavailable(error)) {
           stopRefresh();
-          if (body) body.innerHTML = '<div class="panel migration-panel"><h3>Cần bật backend AI-CLO | LIVE</h3><p>Chạy migration <code>supabase/migrations/assessment-v12.6.34-live-monitoring.sql</code> trong Supabase SQL Editor, sau đó tải lại trang.</p></div>';
+          if (body) body.innerHTML = '<div class="panel migration-panel"><h3>Cần bật backend AI·CLO | LIVE</h3><p>Chạy migration <code>supabase/migrations/assessment-v12.6.34-live-monitoring.sql</code> trong Supabase SQL Editor, sau đó tải lại trang.</p></div>';
           return;
         }
         if (!quiet) showError?.(error);
@@ -255,11 +255,11 @@
         const exam = typeof examOrId === "object" && examOrId?.id ? examOrId : await fetchExamById(examOrId);
         if (!exam) throw new Error("Không tìm thấy bài kiểm tra.");
         const root = getAssessmentRoot();
-        if (!root) throw new Error("Không mở được trang AI-CLO | LIVE.");
+        if (!root) throw new Error("Không mở được trang AI·CLO | LIVE.");
         liveExamId = String(exam.id);
         root.innerHTML = `<section class="assessment-live-page" data-assessment-exam-id="${escapeHtml(exam.id)}">
           <div class="aiclo-live-page-head">
-            <div><button id="aicloLiveBack" type="button" class="secondary compact">← Chi tiết bài kiểm tra</button><small>AI-CLO | LIVE</small><h3>Theo dõi trực tiếp</h3><p>${escapeHtml(exam.title || "Bài kiểm tra")} · Tự cập nhật mỗi 5 giây, không hiển thị đáp án sinh viên đang chọn.</p></div>
+            <div><button id="aicloLiveBack" type="button" class="secondary compact">← Chi tiết bài kiểm tra</button><small>AI·CLO | LIVE</small><h3>Theo dõi trực tiếp</h3><p>${escapeHtml(exam.title || "Bài kiểm tra")} · Tự cập nhật mỗi 5 giây, không hiển thị đáp án sinh viên đang chọn.</p></div>
             <div class="aiclo-live-head-actions"><span id="aicloLiveUpdated" class="hint">Đang tải…</span><button id="aicloLiveExport" type="button" class="secondary">Tải lịch sử Excel</button></div>
           </div>
           <div id="aicloLiveBody"><div class="panel">Đang tải dữ liệu Live…</div></div>
@@ -304,9 +304,9 @@
           list.push(event); byAttempt.set(event.attempt_id, list);
         }
         const wb = new ExcelJS.Workbook();
-        wb.creator = "AI-CLO PTITHCM"; wb.created = new Date();
+        wb.creator = "AI·CLO APMaths"; wb.created = new Date();
         const summary = wb.addWorksheet("Tong_hop");
-        summary.addRow(["AI-CLO | LIVE — LỊCH SỬ GIÁM SÁT BÀI KIỂM TRA"]);
+        summary.addRow(["AI·CLO | LIVE — LỊCH SỬ GIÁM SÁT BÀI KIỂM TRA"]);
         summary.mergeCells(1,1,1,14);
         summary.addRow(["Bài kiểm tra", exam.title || "—"]);
         summary.addRow(["Ngày xuất", new Date().toLocaleString("vi-VN")]);
@@ -346,11 +346,11 @@
         const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
         a.download = `AI-CLO-LIVE_${safeFile(exam.title)}_${new Date().toISOString().slice(0,10)}.xlsx`;
         document.body.appendChild(a); a.click(); a.remove(); window.setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-        notify?.("Đã tạo lịch sử AI-CLO | LIVE");
+        notify?.("Đã tạo lịch sử AI·CLO | LIVE");
       } catch (error) { showError?.(error); }
       finally { if (button) { button.disabled = false; button.textContent = old || "Tải lịch sử Excel"; } }
     }
 
-    return Object.freeze({ attachDetailButton, openExamLive, stopRefresh, version: "12.6.37" });
+    return Object.freeze({ attachDetailButton, openExamLive, stopRefresh, version: "12.8" });
   };
 })();
