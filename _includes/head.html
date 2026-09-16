@@ -14,89 +14,32 @@
 {% endif %}
 </title>
 
-<meta name="description"
-      content="{{ page_description }}">
+<meta name="description" content="{{ page_description }}">
+<meta name="author" content="{{ site.author.name | default: site.author }}">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#1478f5">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
 
-<meta name="author"
-      content="{{ site.author.name | default: site.author }}">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-<meta name="robots"
-      content="index,follow,max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ page_description }}">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:site_name" content="{{ site.title }}">
+<meta property="og:image" content="{{ '/assets/images/logo/og-image.jpg' | absolute_url }}">
 
-<meta name="theme-color"
-      content="#1e5fe8">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page_title }}">
+<meta name="twitter:description" content="{{ page_description }}">
+<meta name="twitter:image" content="{{ '/assets/images/logo/og-image.jpg' | absolute_url }}">
 
-<link rel="canonical"
-      href="{{ page.url | absolute_url }}">
+<!-- Final AP brand mark is used for both header logo and favicon. -->
+<link rel="icon" type="image/svg+xml" sizes="any" href="/assets/images/ap-mark.svg?v=20260916">
 
-<!-- ===================== -->
-<!-- Performance           -->
-<!-- ===================== -->
-
-<link rel="preconnect"
-      href="https://cdn.jsdelivr.net">
-
-<link rel="preconnect"
-      href="https://cdnjs.cloudflare.com">
-
-<!-- ===================== -->
-<!-- Open Graph            -->
-<!-- ===================== -->
-
-<meta property="og:type"
-      content="website">
-
-<meta property="og:title"
-      content="{{ page_title }}">
-
-<meta property="og:description"
-      content="{{ page_description }}">
-
-<meta property="og:url"
-      content="{{ page.url | absolute_url }}">
-
-<meta property="og:site_name"
-      content="{{ site.title }}">
-
-<meta property="og:image"
-      content="{{ '/assets/images/logo/og-image.jpg' | absolute_url }}">
-
-<!-- ===================== -->
-<!-- Twitter Card          -->
-<!-- ===================== -->
-
-<meta name="twitter:card"
-      content="summary_large_image">
-
-<meta name="twitter:title"
-      content="{{ page_title }}">
-
-<meta name="twitter:description"
-      content="{{ page_description }}">
-
-<meta name="twitter:image"
-      content="{{ '/assets/images/logo/og-image.jpg' | absolute_url }}">
-
-<!-- ===================== -->
-<!-- Favicon               -->
-<!-- ===================== -->
-
-<link rel="icon" type="image/svg+xml" href="/assets/images/ap-mark.svg">
-<link rel="alternate icon" href="/assets/images/favicon.ico">
-
-<!-- ===================== -->
-<!-- CSS                   -->
-<!-- ===================== -->
-
-<link rel="stylesheet"
-      href="/css/style.css">
-
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-<!-- ===================== -->
-<!-- MathJax Config        -->
-<!-- ===================== -->
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <script>
 window.MathJax = {
@@ -107,51 +50,16 @@ window.MathJax = {
         processEnvironments: true
     },
     options: {
-        skipHtmlTags: [
-            'script',
-            'noscript',
-            'style',
-            'textarea',
-            'pre',
-            'code'
-        ]
+        skipHtmlTags: ['script','noscript','style','textarea','pre','code']
     }
 };
 </script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.43/polyfill.min.js"></script>
-
-<script id="MathJax-script"
-        async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-      <!-- ===================== -->
-<!-- MathJax               -->
-<!-- ===================== -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.43/polyfill.min.js"></script>
-
-<script id="MathJax-script"
-        async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-<!-- ===================== -->
-<!-- Google Analytics      -->
-<!-- Google Adsense        -->
-<!-- ===================== -->
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 {% include google.html %}
 
-<!-- ===================== -->
-<!-- Facebook SDK          -->
-<!-- ===================== -->
-
-<script async
-        defer
-        crossorigin="anonymous"
-        src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v18.0&appId=3686401291644500">
-</script>
-
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v18.0&appId=3686401291644500"></script>
 <script type="module" src="{{ '/js/supabase.js' | relative_url }}"></script>
 
 </head>
