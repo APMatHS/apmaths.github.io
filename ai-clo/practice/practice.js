@@ -1,70 +1,21 @@
 (()=>{
-  const $=id=>document.getElementById(id);
-  const cfg=window.AICLO_CONFIG||{};
-  const endpoint=`${String(cfg.SUPABASE_URL||"").replace(/\/$/,"")}/functions/v1/practice-public`;
-  let currentCode="",practiceInfo=null,currentBlobUrl="",currentFilename="";
-
-  function setMessage(el,text,type=""){el.textContent=text||"";el.className=`message ${type}`.trim();}
-  function normalizeCode(v){return String(v||"").trim().toUpperCase().replace(/\s+/g,"");}
-  async function api(body){
-    if(!cfg.SUPABASE_URL||!cfg.SUPABASE_PUBLISHABLE_KEY)throw new Error("Thiếu cấu hình Supabase.");
-    const res=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json","apikey":cfg.SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify(body)});
-    let data={};try{data=await res.json();}catch{}
-    if(!res.ok||!data.success)throw new Error(data.error||"Không thể kết nối máy chủ.");
-    return data;
-  }
-  function setBusy(button,busy,label){
-    if(!button)return; if(!button.dataset.label)button.dataset.label=button.textContent;
-    button.disabled=busy; button.textContent=busy?label:(button.dataset.label||button.textContent);
-  }
-  function clearPdf(){
-    if(currentBlobUrl)URL.revokeObjectURL(currentBlobUrl); currentBlobUrl=""; currentFilename="";
-    $("pdfPreview").removeAttribute("src"); $("resultPanel").classList.add("hidden");
-  }
-  async function openCourse(){
-    const code=normalizeCode($("accessCode").value); $("accessCode").value=code;
-    if(code.length<4){setMessage($("codeMessage"),"Vui lòng nhập mã môn hợp lệ.","error");return;}
-    setBusy($("openBtn"),true,"Đang kiểm tra…"); setMessage($("codeMessage"),"");
-    try{
-      const data=await api({action:"resolve",code});
-      currentCode=code; practiceInfo=data;
-      $("subjectMeta").textContent=[data.subject?.semester,data.subject?.academic_year].filter(Boolean).join(" • ");
-      $("practiceTitle").textContent=data.practice?.title||data.subject?.name||"Đề ôn tập";
-      $("practiceMeta").textContent=`${data.subject?.name||""} • ${data.practice?.question_count||0} câu${data.practice?.include_answers?" • có đáp án cuối PDF":""}`;
-      $("codeCard").classList.add("hidden"); $("practicePanel").classList.remove("hidden");
-      $("redrawBtn").classList.toggle("hidden",data.practice?.allow_unlimited_redraw===false);
-      clearPdf();
-    }catch(err){setMessage($("codeMessage"),err.message||String(err),"error");}
-    finally{setBusy($("openBtn"),false);}
-  }
-  async function draw(){
-    if(!currentCode)return;
-    const button=$("drawBtn"); setBusy(button,true,"Đang rút và tạo PDF…"); $("redrawBtn").disabled=true; setMessage($("drawStatus"),"Đang lấy câu hỏi…"); clearPdf();
-    try{
-      const data=await api({action:"draw",code:currentCode});
-      setMessage($("drawStatus"),`Đã rút ${data.questions?.length||0} câu. Đang biên dịch PDF…`);
-      const built=await window.PracticePDF.build(data);
-      currentFilename=built.filename; currentBlobUrl=URL.createObjectURL(built.blob);
-      $("seedText").textContent=data.seed||"—"; $("pdfPreview").src=currentBlobUrl;
-      $("resultPanel").classList.remove("hidden"); setMessage($("drawStatus"),"PDF đã sẵn sàng.","ok");
-      if(data.practice?.allow_unlimited_redraw===false) button.disabled=true;
-    }catch(err){setMessage($("drawStatus"),err.message||String(err),"error");}
-    finally{
-      if(practiceInfo?.practice?.allow_unlimited_redraw!==false)setBusy(button,false);
-      $("redrawBtn").disabled=false;
-    }
-  }
-  function download(){
-    if(!currentBlobUrl)return; const a=document.createElement("a"); a.href=currentBlobUrl; a.download=currentFilename||"de-on-tap.pdf"; document.body.appendChild(a); a.click(); a.remove();
-  }
-  function changeCode(){
-    clearPdf(); currentCode=""; practiceInfo=null; $("practicePanel").classList.add("hidden"); $("codeCard").classList.remove("hidden"); setMessage($("drawStatus"),""); $("accessCode").focus();
-  }
-
-  $("openBtn").addEventListener("click",openCourse);
-  $("accessCode").addEventListener("keydown",e=>{if(e.key==="Enter")openCourse();});
-  $("drawBtn").addEventListener("click",draw); $("redrawBtn").addEventListener("click",draw);
-  $("downloadBtn").addEventListener("click",download); $("changeCodeBtn").addEventListener("click",changeCode);
-  const preset=new URLSearchParams(location.search).get("code"); if(preset){$("accessCode").value=normalizeCode(preset); openCourse();}
-  window.addEventListener("beforeunload",()=>{if(currentBlobUrl)URL.revokeObjectURL(currentBlobUrl);});
+ const $=id=>document.getElementById(id),cfg=window.AICLO_CONFIG||{};
+ const endpoint=`${String(cfg.SUPABASE_URL||"").replace(/\/$/,"")}/functions/v1/practice-public`;
+ let currentCode="",practiceInfo=null,currentPackageId="",currentBlobUrl="",currentFilename="",hasDrawn=false;
+ const setMessage=(el,text,type="")=>{el.textContent=text||"";el.className=`message ${type}`.trim();};
+ const normalizeCode=v=>String(v||"").trim().toUpperCase().replace(/\s+/g,"");
+ const esc=v=>String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+ async function api(body){if(!cfg.SUPABASE_URL||!cfg.SUPABASE_PUBLISHABLE_KEY)throw new Error("Thiếu cấu hình Supabase.");const res=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json","apikey":cfg.SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify(body)});let data={};try{data=await res.json();}catch{}if(!res.ok||!data.success)throw new Error(data.error||"Không thể kết nối máy chủ.");return data;}
+ function setBusy(button,on,label){if(!button)return;if(!button.dataset.label)button.dataset.label=button.textContent;button.disabled=on;button.textContent=on?label:(button.dataset.label||button.textContent);}
+ function clearPdf(){if(currentBlobUrl)URL.revokeObjectURL(currentBlobUrl);currentBlobUrl="";currentFilename="";$("pdfPreview").removeAttribute("src");$("resultPanel").classList.add("hidden");}
+ function packageById(id){return(practiceInfo?.packages||[]).find(p=>p.id===id)||null;}
+ function selectPackage(id){currentPackageId=id;document.querySelectorAll(".public-package-card").forEach(n=>n.classList.toggle("active",n.dataset.id===id));const p=packageById(id);if(p){const scope=(p.chapters||[]).join(" • ");setMessage($("packageMessage"),`${p.name}: ${p.question_count} câu${p.include_answers?" • có đáp án cuối PDF":""}${scope?` • ${scope}`:""}`,"ok");if(!hasDrawn||practiceInfo?.practice?.allow_unlimited_redraw!==false)$("drawBtn").disabled=false;}clearPdf();}
+ function renderPackages(){const host=$("publicPackageList"),packs=practiceInfo?.packages||[];host.innerHTML="";currentPackageId="";if(!packs.length){setMessage($("packageMessage"),"Môn này chưa có gói ôn tập đang được mở.","error");$("drawBtn").disabled=true;return;}setMessage($("packageMessage"),"");packs.forEach(p=>{const n=document.createElement("button");n.type="button";n.className="public-package-card";n.dataset.id=p.id;n.innerHTML=`<strong>${esc(p.name)}</strong><span>${p.question_count} câu${p.include_answers?" • có đáp án":""}</span><small>${esc((p.chapters||[]).join(" • "))}</small>`;n.onclick=()=>selectPackage(p.id);host.appendChild(n);});selectPackage(packs[0].id);}
+ async function openCourse(){const code=normalizeCode($("accessCode").value);$("accessCode").value=code;if(code.length<4){setMessage($("codeMessage"),"Vui lòng nhập mã môn hợp lệ.","error");return;}setBusy($("openBtn"),true,"Đang kiểm tra…");setMessage($("codeMessage"),"");try{const data=await api({action:"resolve",code});currentCode=code;practiceInfo=data;hasDrawn=false;$("subjectMeta").textContent=[data.subject?.semester,data.subject?.academic_year].filter(Boolean).join(" • ");$("practiceTitle").textContent=data.practice?.title||data.subject?.name||"Đề ôn tập";$("practiceMeta").textContent=`${data.subject?.name||""} • ${data.packages?.length||0} gói ôn tập đang mở`;$("codeCard").classList.add("hidden");$("practicePanel").classList.remove("hidden");$("redrawBtn").classList.toggle("hidden",data.practice?.allow_unlimited_redraw===false);clearPdf();renderPackages();}catch(err){setMessage($("codeMessage"),err.message||String(err),"error");}finally{setBusy($("openBtn"),false);}}
+ async function draw(){if(!currentCode||!currentPackageId)return;const button=$("drawBtn");setBusy(button,true,"Đang rút và tạo PDF…");$("redrawBtn").disabled=true;setMessage($("drawStatus"),"Đang lấy câu hỏi…");clearPdf();try{const data=await api({action:"draw",code:currentCode,package_id:currentPackageId});setMessage($("drawStatus"),`Đã rút ${data.questions?.length||0} câu. Đang biên dịch PDF…`);const built=await window.PracticePDF.build(data);currentFilename=built.filename;currentBlobUrl=URL.createObjectURL(built.blob);$("seedText").textContent=data.seed||"—";$("pdfPreview").src=currentBlobUrl;$("resultPanel").classList.remove("hidden");setMessage($("drawStatus"),"PDF đã sẵn sàng.","ok");hasDrawn=true;if(data.practice?.allow_unlimited_redraw===false)button.disabled=true;}catch(err){setMessage($("drawStatus"),err.message||String(err),"error");}finally{if(practiceInfo?.practice?.allow_unlimited_redraw!==false)setBusy(button,false);$("redrawBtn").disabled=false;}}
+ function download(){if(!currentBlobUrl)return;const a=document.createElement("a");a.href=currentBlobUrl;a.download=currentFilename||"de-on-tap.pdf";document.body.appendChild(a);a.click();a.remove();}
+ function changeCode(){clearPdf();currentCode="";currentPackageId="";practiceInfo=null;hasDrawn=false;$("practicePanel").classList.add("hidden");$("codeCard").classList.remove("hidden");setMessage($("drawStatus"),"");$("accessCode").focus();}
+ $("openBtn").onclick=openCourse;$("accessCode").addEventListener("keydown",e=>{if(e.key==="Enter")openCourse();});$("drawBtn").onclick=draw;$("redrawBtn").onclick=draw;$("downloadBtn").onclick=download;$("changeCodeBtn").onclick=changeCode;
+ const preset=new URLSearchParams(location.search).get("code");if(preset){$("accessCode").value=normalizeCode(preset);openCourse();}
+ window.addEventListener("beforeunload",()=>{if(currentBlobUrl)URL.revokeObjectURL(currentBlobUrl);});
 })();
