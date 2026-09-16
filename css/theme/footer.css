@@ -1,263 +1,141 @@
 /* ==========================================================
-   APMaths Theme V3.2
+   APMaths Theme V3.3
    File    : footer.css
    Module  : Footer
    ========================================================== */
 
-
-/* ==========================================================
-   1. FOOTER
-   ========================================================== */
-
 .footer {
-
     margin-top: 60px;
-
-    padding: 42px 24px 0;
-
+    padding: 40px 24px 0;
     background: #1e3a73;
-
     color: #dbe5f5;
-
 }
 
-
-/* ==========================================================
-   2. FOOTER GRID
-   ========================================================== */
+.footer p {
+    text-align: left;
+}
 
 .footer-grid {
-
     max-width: 1200px;
-
     margin: 0 auto;
-
+    padding-bottom: 32px;
     display: grid;
-
-    grid-template-columns:
-        1.5fr
-        1fr
-        1fr;
-
-    gap: 70px;
-
-    padding-bottom: 36px;
-
+    grid-template-columns: 1.45fr 1fr 1fr;
+    gap: 48px;
 }
-
-
-/* ==========================================================
-   3. FOOTER COLUMN
-   ========================================================== */
 
 .footer-column {
-
     min-width: 0;
-
 }
-
-
-/* ==========================================================
-   4. FOOTER TITLE
-   ========================================================== */
 
 .footer-column h4 {
-
-    margin: 0 0 16px;
-
+    margin: 0 0 14px;
     color: #ffffff;
-
-    font-size: 1.15rem;
-
+    font-size: 1.08rem;
     font-weight: 700;
-
     line-height: 1.4;
-
 }
 
-
-/* ==========================================================
-   5. WEBSITE DESCRIPTION
-   ========================================================== */
-
-.footer-column:first-child p {
-
-    max-width: 330px;
-
+.footer-brand p {
+    max-width: 360px;
     margin: 0;
-
     color: #c7d5ea;
-
     font-size: .95rem;
-
     line-height: 1.7;
-
 }
-
-
-/* ==========================================================
-   6. FOOTER LIST
-   ========================================================== */
 
 .footer-column ul {
-
-    list-style: none;
-
     margin: 0;
-
     padding: 0;
-
+    list-style: none;
 }
-
 
 .footer-column li {
-
-    margin: 0 0 11px;
-
+    margin: 0 0 10px;
 }
-
-
-/* ==========================================================
-   7. FOOTER LINKS
-   ========================================================== */
 
 .footer-column a {
-
     display: inline-flex;
-
     align-items: center;
-
     gap: 8px;
-
     color: #c7d5ea;
-
     font-size: .95rem;
-
     line-height: 1.5;
-
     text-decoration: none;
-
-    transition:
-        color .2s ease,
-        transform .2s ease;
-
+    transition: color .18s ease, transform .18s ease;
 }
-
 
 .footer-column a:hover {
-
     color: #ffffff;
-
     text-decoration: none;
-
-    transform: translateX(3px);
-
+    transform: translateX(2px);
 }
 
-
-/* ==========================================================
-   8. ICONS
-   ========================================================== */
+.footer-column a:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+    border-radius: 3px;
+}
 
 .footer-column a i {
-
     width: 18px;
-
-    text-align: center;
-
     color: #9fb8df;
-
+    text-align: center;
 }
 
-
-.footer-column a:hover i {
-
+.footer-column a:hover i,
+.footer-column a:focus-visible i {
     color: #ffffff;
-
 }
-
-
-/* ==========================================================
-   9. COPYRIGHT
-   ========================================================== */
 
 .copyright {
-
     max-width: 1200px;
-
     margin: 0 auto;
-
-    padding: 18px 0 20px;
-
+    padding: 17px 0 20px;
     border-top: 1px solid rgba(255,255,255,.14);
-
     color: #9fb0ca;
-
     font-size: .88rem;
-
     line-height: 1.5;
-
+    text-align: left;
 }
-
-
-/* ==========================================================
-   10. RESPONSIVE
-   ========================================================== */
 
 @media (max-width: 800px) {
-
     .footer {
-
-        padding: 36px 20px 0;
-
+        padding: 34px 20px 0;
     }
-
 
     .footer-grid {
-
-        grid-template-columns:
-            1fr 1fr;
-
-        gap: 35px;
-
+        grid-template-columns: 1.35fr 1fr;
+        gap: 30px 36px;
     }
 
+    .footer-contact {
+        grid-column: 1 / -1;
+    }
 }
 
-
 @media (max-width: 550px) {
-
     .footer {
-
-        padding: 32px 18px 0;
-
+        margin-top: 42px;
+        padding: 30px 18px 0;
     }
-
 
     .footer-grid {
-
         grid-template-columns: 1fr;
-
-        gap: 28px;
-
-        padding-bottom: 28px;
-
+        gap: 24px;
+        padding-bottom: 26px;
     }
 
+    .footer-contact {
+        grid-column: auto;
+    }
 
-    .footer-column:first-child p {
-
+    .footer-brand p {
         max-width: none;
-
     }
-
 
     .copyright {
-
-        padding: 16px 0 18px;
-
-        font-size: .85rem;
-
+        padding: 15px 0 18px;
+        font-size: .84rem;
     }
-
 }
