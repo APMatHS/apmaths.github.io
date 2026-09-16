@@ -1,0 +1,39 @@
+/* ==========================================================
+   APMaths Theme V3.4
+   File    : mobile-compact.css
+   Module  : Compact mobile spacing
+   ========================================================== */
+
+/* Reduce the double side spacing created by container margin + padding. */
+@media (max-width: 768px) {
+    main.container {
+        margin: 8px;
+        padding: 18px;
+        border-radius: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    main.container {
+        margin: 6px;
+        padding: 14px;
+        border-radius: 8px;
+    }
+
+    .home-hero {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .home-card {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    main.container {
+        margin: 4px;
+        padding: 12px;
+    }
+}
