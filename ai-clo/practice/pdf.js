@@ -47,18 +47,35 @@
     }
     return root;
   }
+  function makeRenderMask(){
+    const mask=document.createElement("div");
+    mask.className="pdf-render-mask";
+    mask.innerHTML='<div><strong>Đang tạo PDF…</strong><span>Đang dàn trang câu hỏi và công thức.</span></div>';
+    return mask;
+  }
   async function build(data){
     if(typeof html2pdf==="undefined")throw new Error("Không tải được bộ tạo PDF.");
-    const source=makeSource(data); document.body.appendChild(source);
+    const questions=Array.isArray(data?.questions)?data.questions:[];
+    if(!questions.length)throw new Error("Không có câu hỏi để tạo PDF. Vui lòng rút đề lại.");
+    const source=makeSource(data),mask=makeRenderMask();
+    document.body.classList.add("pdf-rendering");
+    document.body.appendChild(source);
+    document.body.appendChild(mask);
     try{
       if(window.MathJax?.typesetPromise) await window.MathJax.typesetPromise([source]);
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      const renderedCount=source.querySelectorAll(".pdf-question").length;
+      if(renderedCount!==questions.length)throw new Error(`Không dàn đủ câu hỏi (${renderedCount}/${questions.length}). Vui lòng thử lại.`);
       const filename=`${String(data.subject?.name||"de-on-tap").replace(/[^\p{L}\p{N}]+/gu,"-").replace(/^-|-$/g,"")||"de-on-tap"}-${data.seed||""}.pdf`;
+      const rect=source.getBoundingClientRect();
+      const renderWidth=Math.max(760,Math.ceil(rect.width+48));
+      const renderHeight=Math.max(window.innerHeight,Math.ceil(source.scrollHeight+48));
       const worker=html2pdf().set({
         margin:[10,12,14,12],filename,
         image:{type:"jpeg",quality:.96},
-        html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:"#ffffff"},
+        html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:"#ffffff",scrollX:0,scrollY:0,windowWidth:renderWidth,windowHeight:renderHeight},
         jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},
-        pagebreak:{mode:["css","legacy"],avoid:[".pdf-question"]}
+        pagebreak:{mode:["css","legacy"]}
       }).from(source).toPdf();
       await worker.get("pdf").then(pdf=>{
         const total=pdf.internal.getNumberOfPages();
@@ -68,8 +85,13 @@
         }
       });
       const blob=await worker.outputPdf("blob");
+      if(!blob||blob.size<1000)throw new Error("PDF tạo ra không hợp lệ. Vui lòng thử lại.");
       return {blob,filename};
-    }finally{source.remove();}
+    }finally{
+      source.remove();
+      mask.remove();
+      document.body.classList.remove("pdf-rendering");
+    }
   }
   window.PracticePDF={build,renderRich};
 })();
