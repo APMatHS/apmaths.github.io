@@ -15,6 +15,9 @@ nav:
   tools: "Công cụ"
   resources: "Tài nguyên"
   about: "Giới thiệu"
+  menu: "Mở menu điều hướng"
+  knowledge_menu: "Mở menu Toán học"
+  tools_menu: "Mở menu Công cụ"
 
 # ==========================================
 # Homepage
