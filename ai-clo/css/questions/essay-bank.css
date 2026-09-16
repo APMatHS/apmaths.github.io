@@ -14,9 +14,12 @@
 .essay-count-row{min-height:24px;display:flex;align-items:center;margin:0 0 8px}
 .essay-selection-actions{display:flex;align-items:center;gap:8px;margin:0 0 12px}
 .essay-selection-toggle{min-width:160px;min-height:44px;font-weight:800}
-/* Raw V12.7 controls are never painted; essay-tools moves them into the stable layout in the same render turn. */
+/* Raw V12.7 controls are never painted; enhanced states are also defined here so no late CSS flash occurs. */
 .essay-question-tools:not(.essay-filter-source){display:none!important}
+.essay-question-tools.essay-filter-source{display:none!important}
+.essay-question-tools.essay-filter-source.open{display:grid!important}
 .essay-bank-actions:not(.essay-legacy-actions){visibility:hidden;height:0;min-height:0;margin:0!important;padding:0!important;overflow:hidden}
+.essay-bank-actions.essay-legacy-actions{display:none!important}
 
 .essay-question-tools{display:grid;grid-template-columns:minmax(190px,1.4fr) repeat(6,minmax(120px,1fr));gap:7px;margin:10px 0}
 .essay-question-tools input,.essay-question-tools select{min-width:0;width:100%}
