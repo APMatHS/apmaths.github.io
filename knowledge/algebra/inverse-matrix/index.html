@@ -1,0 +1,169 @@
+---
+layout: page
+title: Ma trận nghịch đảo – Điều kiện và cách tìm
+description: Bài học cơ bản về ma trận nghịch đảo: điều kiện tồn tại, công thức cấp 2, phương pháp Gauss–Jordan, phương pháp phần bù đại số, ví dụ và bài tập tự luyện.
+permalink: /knowledge/algebra/inverse-matrix/
+---
+
+<h1>Ma trận nghịch đảo</h1>
+
+<p>Ma trận nghịch đảo đóng vai trò tương tự số nghịch đảo trong đại số thông thường. Nếu \(A\) khả nghịch thì ta có thể dùng \(A^{-1}\) để giải nhiều bài toán, đặc biệt là hệ phương trình tuyến tính.</p>
+
+<h2>1. Mục tiêu học tập</h2>
+<ul>
+  <li>Hiểu định nghĩa ma trận nghịch đảo.</li>
+  <li>Kiểm tra được điều kiện tồn tại của \(A^{-1}\).</li>
+  <li>Tính được nghịch đảo của ma trận cấp 2 bằng công thức.</li>
+  <li>Tìm được ma trận nghịch đảo bằng phương pháp Gauss–Jordan.</li>
+</ul>
+
+<h2>2. Định nghĩa</h2>
+<div class="academic-box definition">
+  <h4>Định nghĩa</h4>
+  <p>Cho ma trận vuông \(A\) cấp \(n\). Nếu tồn tại ma trận \(B\) cùng cấp sao cho</p>
+  <p>\[
+  AB=BA=I_n,
+  \]</p>
+  <p>thì \(A\) được gọi là <strong>khả nghịch</strong> và \(B\) là ma trận nghịch đảo của \(A\), ký hiệu \(A^{-1}\).</p>
+</div>
+
+<h2>3. Điều kiện tồn tại</h2>
+<div class="academic-box theorem">
+  <h4>Tiêu chuẩn</h4>
+  <p>Ma trận vuông \(A\) khả nghịch khi và chỉ khi</p>
+  <p>\[
+  \det A\ne0.
+  \]</p>
+</div>
+
+<p>Nếu \(\det A=0\) thì \(A^{-1}\) không tồn tại.</p>
+
+<h2>4. Công thức cho ma trận cấp 2</h2>
+<p>Với</p>
+<p>\[
+A=\begin{pmatrix}a&b\\c&d\end{pmatrix},\qquad ad-bc\ne0,
+\]</p>
+<p>ta có</p>
+<p>\[
+A^{-1}=\frac{1}{ad-bc}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}.
+\]</p>
+
+<h3>Ví dụ 1</h3>
+<p>Cho</p>
+<p>\[
+A=\begin{pmatrix}2&1\\3&2\end{pmatrix}.
+\]</p>
+<p>Ta có</p>
+<p>\[
+\det A=2\cdot2-1\cdot3=1\ne0.
+\]</p>
+<p>Vì vậy</p>
+<p>\[
+A^{-1}=\begin{pmatrix}2&-1\\-3&2\end{pmatrix}.
+\]</p>
+<p>Kiểm tra:</p>
+<p>\[
+AA^{-1}=\begin{pmatrix}1&0\\0&1\end{pmatrix}=I_2.
+\]</p>
+
+<h2>5. Phương pháp Gauss–Jordan</h2>
+<p>Để tìm \(A^{-1}\), ta ghép ma trận \(A\) với ma trận đơn vị:</p>
+<p>\[
+[A\mid I].
+\]</p>
+<p>Sau đó thực hiện các phép biến đổi sơ cấp trên hàng cho đến khi vế trái trở thành \(I\):</p>
+<p>\[
+[A\mid I]\longrightarrow[I\mid A^{-1}].
+\]</p>
+
+<h3>Ví dụ 2</h3>
+<p>Tìm nghịch đảo của</p>
+<p>\[
+A=\begin{pmatrix}1&2\\3&5\end{pmatrix}.
+\]</p>
+<p>Bắt đầu với</p>
+<p>\[
+\left[\begin{array}{cc|cc}
+1&2&1&0\\
+3&5&0&1
+\end{array}\right].
+\]</p>
+<p>Thực hiện \(R_2\leftarrow R_2-3R_1\):</p>
+<p>\[
+\left[\begin{array}{cc|cc}
+1&2&1&0\\
+0&-1&-3&1
+\end{array}\right].
+\]</p>
+<p>Tiếp tục \(R_2\leftarrow-R_2\):</p>
+<p>\[
+\left[\begin{array}{cc|cc}
+1&2&1&0\\
+0&1&3&-1
+\end{array}\right].
+\]</p>
+<p>Cuối cùng \(R_1\leftarrow R_1-2R_2\):</p>
+<p>\[
+\left[\begin{array}{cc|cc}
+1&0&-5&2\\
+0&1&3&-1
+\end{array}\right].
+\]</p>
+<p>Do đó</p>
+<p>\[
+A^{-1}=\begin{pmatrix}-5&2\\3&-1\end{pmatrix}.
+\]</p>
+
+<h2>6. Phương pháp phần bù đại số</h2>
+<p>Với ma trận vuông khả nghịch \(A\), ta có</p>
+<p>\[
+A^{-1}=\frac{1}{\det A}\operatorname{adj}(A),
+\]</p>
+<p>trong đó \(\operatorname{adj}(A)\) là ma trận phụ hợp, tức chuyển vị của ma trận các phần bù đại số.</p>
+
+<h3>Ví dụ 3</h3>
+<p>Cho ma trận đường chéo</p>
+<p>\[
+D=\begin{pmatrix}2&0&0\\0&-1&0\\0&0&4\end{pmatrix}.
+\]</p>
+<p>Vì các phần tử đường chéo đều khác \(0\),</p>
+<p>\[
+D^{-1}=\begin{pmatrix}\frac12&0&0\\0&-1&0\\0&0&\frac14\end{pmatrix}.
+\]</p>
+
+<h2>7. Các tính chất cần nhớ</h2>
+<p>Nếu các ma trận liên quan đều khả nghịch thì</p>
+<p>\[
+(A^{-1})^{-1}=A,\qquad (AB)^{-1}=B^{-1}A^{-1},\qquad (A^T)^{-1}=(A^{-1})^T.
+\]</p>
+
+<div class="academic-box warning">
+  <h4>Sai lầm thường gặp</h4>
+  <p>Không được viết \((AB)^{-1}=A^{-1}B^{-1}\). Thứ tự phải đảo lại:</p>
+  <p>\[
+  (AB)^{-1}=B^{-1}A^{-1}.
+  \]</p>
+</div>
+
+<h2>8. Bài tập tự luyện</h2>
+<ol>
+  <li>Tìm nghịch đảo của \(A=\begin{pmatrix}3&1\\2&1\end{pmatrix}\).</li>
+  <li>Cho \(A=\begin{pmatrix}1&2\\2&4\end{pmatrix}\). Ma trận \(A\) có nghịch đảo không?</li>
+  <li>Tìm \(m\) để \(A=\begin{pmatrix}m&1\\1&m\end{pmatrix}\) khả nghịch.</li>
+  <li>Tính nghịch đảo của \(D=\operatorname{diag}(2,3,-1)\).</li>
+  <li>Biết \(A\) và \(B\) khả nghịch. Viết nghịch đảo của \(AB\).</li>
+</ol>
+
+<details>
+  <summary><strong>Đáp số</strong></summary>
+  <ol>
+    <li>\(A^{-1}=\begin{pmatrix}1&-1\\-2&3\end{pmatrix}\).</li>
+    <li>Không, vì \(\det A=0\).</li>
+    <li>\(m\ne\pm1\).</li>
+    <li>\(D^{-1}=\operatorname{diag}(\tfrac12,\tfrac13,-1)\).</li>
+    <li>\((AB)^{-1}=B^{-1}A^{-1}\).</li>
+  </ol>
+</details>
+
+<hr>
+<p><a href="/knowledge/algebra/determinant/">← Định thức</a> &nbsp; | &nbsp; <a href="/knowledge/algebra/">Đại số tuyến tính</a> &nbsp; | &nbsp; <a href="/knowledge/algebra/matrix-rank/">Hạng ma trận →</a></p>
