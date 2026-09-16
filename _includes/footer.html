@@ -1,46 +1,11 @@
 <footer class="footer">
-
     <div class="footer-grid">
-
-        <div class="footer-column footer-brand">
-            <h4>{{ include.t.site.title }}</h4>
-            <p>{{ include.t.site.tagline }}</p>
-        </div>
-
+        <div class="footer-column footer-brand"><h4>{{ include.t.site.title }}</h4><p>{{ include.t.site.tagline }}</p></div>
         <nav class="footer-column footer-nav" aria-label="{{ include.t.footer.navigation | default: 'Điều hướng' }}">
             <h4>{{ include.t.footer.navigation | default: "Điều hướng" }}</h4>
-            <ul>
-                <li><a href="/knowledge/">{{ include.t.nav.knowledge }}</a></li>
-                <li><a href="/blog/">{{ include.t.nav.blog }}</a></li>
-                <li><a href="/tools/">{{ include.t.nav.tools }}</a></li>
-                <li><a href="/resources/">{{ include.t.nav.resources }}</a></li>
-                <li><a href="/about/">{{ include.t.nav.about }}</a></li>
-            </ul>
+            <ul><li><a href="/knowledge/">{{ include.t.nav.knowledge }}</a></li><li><a href="/blog/">{{ include.t.nav.blog }}</a></li><li><a href="/tools/">{{ include.t.nav.tools }}</a></li><li><a href="/courses/">{{ include.t.nav.resources }}</a></li><li><a href="/about/">{{ include.t.nav.about }}</a></li></ul>
         </nav>
-
-        <div class="footer-column footer-contact">
-            <h4>{{ include.t.footer.contact | default: "Liên hệ" }}</h4>
-            <ul>
-                <li>
-                    <a href="mailto:hoangnam.sp101@gmail.com">
-                        <i class="fa fa-envelope" aria-hidden="true"></i>
-                        <span>Email</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/APMatHS/apmaths.github.io" target="_blank" rel="noopener noreferrer">
-                        <i class="fa fa-github" aria-hidden="true"></i>
-                        <span>GitHub</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
+        <div class="footer-column footer-contact"><h4>{{ include.t.footer.contact | default: "Liên hệ" }}</h4><ul><li><a href="mailto:hoangnam.sp101@gmail.com"><i class="fa fa-envelope" aria-hidden="true"></i><span>Email</span></a></li><li><a href="https://github.com/APMatHS/apmaths.github.io" target="_blank" rel="noopener noreferrer"><i class="fa fa-github" aria-hidden="true"></i><span>GitHub</span></a></li></ul></div>
     </div>
-
-    <p class="copyright">
-        &copy; {{ "now" | date: "%Y" }} {{ include.t.site.title }}.
-        {{ include.t.footer.copyright | default: "All rights reserved." }}
-    </p>
-
+    <p class="copyright">&copy; {{ "now" | date: "%Y" }} {{ include.t.site.title }}. {{ include.t.footer.copyright | default: "All rights reserved." }}</p>
 </footer>
