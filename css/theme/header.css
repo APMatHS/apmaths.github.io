@@ -81,9 +81,11 @@
     padding: 0;
 }
 
+/* Fixed width: desktop navigation must not stretch with screen width. */
 .main-nav > .nav-item:not(.nav-item--clo) {
-    flex: 1 1 0;
-    min-width: 0;
+    flex: 0 0 122px;
+    width: 122px;
+    min-width: 122px;
 }
 
 .nav-item-row {
@@ -315,6 +317,12 @@
         font-size: 1.32rem;
     }
 
+    .main-nav > .nav-item:not(.nav-item--clo) {
+        flex: 0 0 104px;
+        width: 104px;
+        min-width: 104px;
+    }
+
     .nav-link {
         padding: 0 7px;
         font-size: .92rem;
@@ -374,6 +382,7 @@
     .main-nav > .nav-item,
     .main-nav > .nav-item:not(.nav-item--clo) {
         width: 100%;
+        min-width: 0;
         flex: none;
         border-bottom: 1px solid var(--border);
     }
