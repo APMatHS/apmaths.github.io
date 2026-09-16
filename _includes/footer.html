@@ -12,9 +12,18 @@
             <ul>
                 <li><a href="/knowledge/">{{ include.t.nav.knowledge }}</a></li>
                 <li><a href="/blog/">{{ include.t.nav.blog }}</a></li>
-                <li><a href="/tools/">{{ include.t.nav.tools }}</a></li>
                 <li><a href="/courses/">{{ include.t.nav.resources }}</a></li>
                 <li><a href="/about/">{{ include.t.nav.about }}</a></li>
+            </ul>
+        </nav>
+
+        <nav class="footer-column footer-tools" aria-label="{{ include.t.nav.tools }}">
+            <h4>{{ include.t.nav.tools }}</h4>
+            <ul>
+                <li><a href="/tools/exam-clo/">{{ include.t.submenu.exam_clo }}</a></li>
+                <li><a href="/tools/exam-shuffler/">{{ include.t.submenu.exam_shuffler }}</a></li>
+                <li><a href="/tools/qr/">{{ include.t.submenu.qr }}</a></li>
+                <li><a href="/tools/html-code.html">{{ include.t.submenu.html_code }}</a></li>
             </ul>
         </nav>
 
