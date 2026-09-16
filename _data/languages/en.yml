@@ -15,6 +15,9 @@ nav:
   tools: "Tools"
   resources: "Resources"
   about: "About"
+  menu: "Open navigation menu"
+  knowledge_menu: "Open Mathematics menu"
+  tools_menu: "Open Tools menu"
 
 # ==========================================
 # Homepage
