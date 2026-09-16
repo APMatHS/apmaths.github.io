@@ -1,82 +1,44 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-
 const cfg=window.AICLO_CONFIG||{};
 const supabase=createClient(cfg.SUPABASE_URL,cfg.SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id);
-let subjects=[],selectedSubject=null,detail=null;
-
-function msg(el,text,type=""){el.textContent=text||"";el.className=`message ${type}`.trim();}
+let subjects=[],selectedSubject=null,detail=null,editingPackage=null;
+const esc=v=>String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+const msg=(el,text,type="")=>{el.textContent=text||"";el.className=`message ${type}`.trim();};
 function busy(btn,on,label="Đang xử lý…"){if(!btn.dataset.label)btn.dataset.label=btn.textContent;btn.disabled=on;btn.textContent=on?label:btn.dataset.label;}
-function normalizeCode(v){return String(v||"").trim().toUpperCase().replace(/\s+/g,"");}
-function localValue(iso){if(!iso)return"";const d=new Date(iso);if(Number.isNaN(d.getTime()))return"";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`;}
+const normalizeCode=v=>String(v||"").trim().toUpperCase().replace(/\s+/g,"");
+function localValue(iso){if(!iso)return"";const d=new Date(iso);if(Number.isNaN(d.getTime()))return"";const z=n=>String(n).padStart(2,"0");return`${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`;}
 function isoValue(v){if(!v)return null;const d=new Date(v);return Number.isNaN(d.getTime())?null:d.toISOString();}
-async function fn(body){const {data,error}=await supabase.functions.invoke("practice-admin",{body});if(error){let text=error.message||"Lỗi máy chủ.";try{const payload=await error.context?.json?.();if(payload?.error)text=payload.error;}catch{}throw new Error(text);}if(!data?.success)throw new Error(data?.error||"Không thể xử lý yêu cầu.");return data;}
+async function fn(body){const {data,error}=await supabase.functions.invoke("practice-admin",{body});if(error){let text=error.message||"Lỗi máy chủ.";try{const p=await error.context?.json?.();if(p?.error)text=p.error;}catch{}throw new Error(text);}if(!data?.success)throw new Error(data?.error||"Không thể xử lý yêu cầu.");return data;}
 
-async function restoreSession(){
-  const {data:{session}}=await supabase.auth.getSession();
-  if(session)showAdmin(session.user);else showLogin();
-}
-function showLogin(){ $("loginView").classList.remove("hidden"); $("adminView").classList.add("hidden"); }
-async function showAdmin(user){
-  $("loginView").classList.add("hidden"); $("adminView").classList.remove("hidden");
-  $("accountName").textContent="Giảng viên / Admin"; $("accountEmail").textContent=user?.email||""; await loadSubjects();
-}
-async function login(){
-  busy($("loginBtn"),true,"Đang đăng nhập…");msg($("loginMessage"),"");
-  try{const {data,error}=await supabase.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await showAdmin(data.user);}catch(e){msg($("loginMessage"),e.message||String(e),"error");}finally{busy($("loginBtn"),false);}
-}
+async function restoreSession(){const {data:{session}}=await supabase.auth.getSession();if(session)showAdmin(session.user);else showLogin();}
+function showLogin(){$("loginView").classList.remove("hidden");$("adminView").classList.add("hidden");}
+async function showAdmin(user){$("loginView").classList.add("hidden");$("adminView").classList.remove("hidden");$("accountEmail").textContent=user?.email||"";await loadSubjects();}
+async function login(){busy($("loginBtn"),true,"Đang đăng nhập…");msg($("loginMessage"),"");try{const {data,error}=await supabase.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await showAdmin(data.user);}catch(e){msg($("loginMessage"),e.message||String(e),"error");}finally{busy($("loginBtn"),false);}}
 async function logout(){await supabase.auth.signOut();subjects=[];selectedSubject=null;detail=null;showLogin();}
 
-function renderSubjects(){
-  const host=$("subjectList");host.innerHTML="";
-  if(!subjects.length){host.innerHTML='<p class="muted">Chưa có môn được phân công.</p>';return;}
-  subjects.forEach(s=>{
-    const node=document.createElement("div");node.className=`subject-card ${selectedSubject?.id===s.id?"active":""}`;
-    const on=!!s.practice?.is_enabled;
-    node.innerHTML=`<div><span class="status-dot ${on?"on":""}"></span><strong>${escapeHtml(s.name)}</strong></div><div class="muted small">${escapeHtml(s.semester||"")} • ${escapeHtml(s.academic_year||"")}</div><div class="small" style="margin-top:6px">${s.practice?`Mã: <strong>${escapeHtml(s.practice.access_code)}</strong>`:"Chưa cấu hình"}</div>`;
-    node.addEventListener("click",()=>openSubject(s));host.appendChild(node);
-  });
-}
-function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));}
-async function loadSubjects(){
-  msg($("listMessage"),"Đang tải…");
-  try{const data=await fn({action:"list"});subjects=data.subjects||[];msg($("listMessage"),"");renderSubjects();if(selectedSubject){const fresh=subjects.find(x=>x.id===selectedSubject.id);if(fresh)selectedSubject=fresh;}}
-  catch(e){msg($("listMessage"),e.message||String(e),"error");}
-}
-async function openSubject(subject){
-  selectedSubject=subject;renderSubjects();$("editorCard").classList.remove("hidden");msg($("saveMessage"),"Đang tải cấu hình…");
-  try{detail=await fn({action:"detail",subject_id:subject.id});fillEditor();msg($("saveMessage"),"");}
-  catch(e){msg($("saveMessage"),e.message||String(e),"error");}
-}
-function fillEditor(){
-  const c=detail.config||{};$("editorMeta").textContent=[detail.subject.semester,detail.subject.academic_year].filter(Boolean).join(" • ");$("editorTitle").textContent=detail.subject.name;
-  $("editorStatus").innerHTML=c.is_enabled?'<span class="status-dot on"></span><strong>Đang bật</strong>':'<span class="status-dot"></span><strong>Đang tắt</strong>';
-  $("practiceTitleInput").value=c.title||`Đề ôn tập – ${detail.subject.name}`;$("accessCodeInput").value=c.access_code||"";$("enabledInput").checked=!!c.is_enabled;$("answersInput").checked=!!c.include_answers;$("redrawInput").checked=c.allow_unlimited_redraw!==false;
-  $("openAtInput").value=localValue(c.open_at);$("closeAtInput").value=localValue(c.close_at);$("fallbackCountInput").value=c.question_count||20;
-  $("statAvailable").textContent=detail.total_available||0;$("statWeek").textContent=detail.stats?.week_draws||0;$("statTotal").textContent=detail.stats?.total_draws||0;
-  buildMatrix();updatePublicLink();
-}
-function buildMatrix(){
-  const clos=detail.clos||[],chapters=detail.chapters||[],saved=new Map((detail.config?.matrix||[]).map(x=>[`${x.chapter_id}|${x.clo_id}`,Number(x.count)||0]));
-  $("matrixHead").innerHTML=`<tr><th>Chương</th>${clos.map(c=>`<th>${escapeHtml(c.code)}</th>`).join("")}</tr>`;
-  $("matrixBody").innerHTML=chapters.map(ch=>`<tr><td><strong>${escapeHtml(ch.name)}</strong></td>${clos.map(cl=>{const key=`${ch.id}|${cl.id}`,have=detail.availability?.[key]||0,val=saved.get(key)||0;return `<td><input class="matrix-input" type="number" min="0" max="${have}" value="${val}" data-chapter="${ch.id}" data-clo="${cl.id}"><span class="availability">có ${have}</span></td>`;}).join("")}</tr>`).join("");
-  document.querySelectorAll(".matrix-input").forEach(i=>i.addEventListener("input",recalcMatrix));recalcMatrix();
-}
-function recalcMatrix(){let total=0;document.querySelectorAll(".matrix-input").forEach(i=>{const n=Math.max(0,Number(i.value)||0);total+=n;});$("matrixTotalInput").value=total;$("fallbackCountInput").disabled=total>0;}
-function collectMatrix(){return [...document.querySelectorAll(".matrix-input")].map(i=>({chapter_id:i.dataset.chapter,clo_id:i.dataset.clo,count:Math.max(0,Number(i.value)||0)})).filter(x=>x.count>0);}
-function updatePublicLink(){const code=normalizeCode($("accessCodeInput").value);const url=new URL("./index.html",location.href);if(code)url.searchParams.set("code",code);$("publicLink").href=url.toString();}
-async function rotateCode(){
-  if(!selectedSubject)return;busy($("rotateCodeBtn"),true,"Đang tạo…");msg($("saveMessage"),"");
-  try{const data=await fn({action:"rotate_code",subject_id:selectedSubject.id});$("accessCodeInput").value=data.config.access_code;detail.config=data.config;updatePublicLink();msg($("saveMessage"),"Đã tạo mã mới. Mã cũ hết hiệu lực ngay.","ok");await loadSubjects();}
-  catch(e){msg($("saveMessage"),e.message||String(e),"error");}finally{busy($("rotateCodeBtn"),false);}
-}
-async function save(){
-  if(!selectedSubject)return;busy($("saveBtn"),true,"Đang lưu…");msg($("saveMessage"),"");
-  try{
-    const payload={action:"save",subject_id:selectedSubject.id,title:$("practiceTitleInput").value.trim(),access_code:normalizeCode($("accessCodeInput").value),is_enabled:$("enabledInput").checked,include_answers:$("answersInput").checked,allow_unlimited_redraw:$("redrawInput").checked,open_at:isoValue($("openAtInput").value),close_at:isoValue($("closeAtInput").value),question_count:Number($("fallbackCountInput").value||20),matrix:collectMatrix()};
-    const data=await fn(payload);detail.config=data.config;$("accessCodeInput").value=data.config.access_code;updatePublicLink();msg($("saveMessage"),"Đã lưu cấu hình.","ok");await loadSubjects();await openSubject(subjects.find(x=>x.id===selectedSubject.id)||selectedSubject);
-  }catch(e){msg($("saveMessage"),e.message||String(e),"error");}finally{busy($("saveBtn"),false);}
-}
+function renderSubjects(){const host=$("subjectList");host.innerHTML="";if(!subjects.length){host.innerHTML='<p class="muted">Chưa có môn được phân công.</p>';return;}subjects.forEach(s=>{const n=document.createElement("div");n.className=`subject-card ${selectedSubject?.id===s.id?"active":""}`;const on=!!s.practice?.is_enabled;n.innerHTML=`<div><span class="status-dot ${on?"on":""}"></span><strong>${esc(s.name)}</strong></div><div class="muted small">${esc(s.semester||"")} • ${esc(s.academic_year||"")}</div><div class="small" style="margin-top:6px">${s.practice?`Mã: <strong>${esc(s.practice.access_code)}</strong>`:"Chưa cấu hình"}</div>`;n.onclick=()=>openSubject(s);host.appendChild(n);});}
+async function loadSubjects(){msg($("listMessage"),"Đang tải…");try{const d=await fn({action:"list"});subjects=d.subjects||[];msg($("listMessage"),"");renderSubjects();}catch(e){msg($("listMessage"),e.message||String(e),"error");}}
+async function openSubject(subject){selectedSubject=subject;renderSubjects();$("editorCard").classList.remove("hidden");closePackageEditor();msg($("saveMessage"),"Đang tải cấu hình…");try{detail=await fn({action:"detail",subject_id:subject.id});fillEditor();msg($("saveMessage"),"");}catch(e){msg($("saveMessage"),e.message||String(e),"error");}}
+function fillEditor(){const c=detail.config||{};$("editorMeta").textContent=[detail.subject.semester,detail.subject.academic_year].filter(Boolean).join(" • ");$("editorTitle").textContent=detail.subject.name;$("editorStatus").innerHTML=c.is_enabled?'<span class="status-dot on"></span><strong>Đang bật</strong>':'<span class="status-dot"></span><strong>Đang tắt</strong>';$("practiceTitleInput").value=c.title||`Đề ôn tập – ${detail.subject.name}`;$("accessCodeInput").value=c.access_code||"";$("enabledInput").checked=!!c.is_enabled;$("redrawInput").checked=c.allow_unlimited_redraw!==false;$("openAtInput").value=localValue(c.open_at);$("closeAtInput").value=localValue(c.close_at);$("statAvailable").textContent=detail.total_available||0;$("statWeek").textContent=detail.stats?.week_draws||0;$("statTotal").textContent=detail.stats?.total_draws||0;updatePublicLink();renderPackages();}
+function updatePublicLink(){const code=normalizeCode($("accessCodeInput").value),url=new URL("./index.html",location.href);if(code)url.searchParams.set("code",code);$("publicLink").href=url.toString();}
 
-$("loginBtn").addEventListener("click",login);$("password").addEventListener("keydown",e=>{if(e.key==="Enter")login();});$("logoutBtn").addEventListener("click",logout);$("refreshBtn").addEventListener("click",loadSubjects);$("rotateCodeBtn").addEventListener("click",rotateCode);$("saveBtn").addEventListener("click",save);$("accessCodeInput").addEventListener("input",()=>{$("accessCodeInput").value=normalizeCode($("accessCodeInput").value);updatePublicLink();});
+async function saveConfig(){if(!selectedSubject)return;busy($("saveConfigBtn"),true,"Đang lưu…");msg($("saveMessage"),"");try{const d=await fn({action:"save_config",subject_id:selectedSubject.id,title:$("practiceTitleInput").value.trim(),access_code:normalizeCode($("accessCodeInput").value),is_enabled:$("enabledInput").checked,allow_unlimited_redraw:$("redrawInput").checked,open_at:isoValue($("openAtInput").value),close_at:isoValue($("closeAtInput").value)});detail.config=d.config;$("accessCodeInput").value=d.config.access_code;fillEditor();msg($("saveMessage"),"Đã lưu cấu hình môn.","ok");await loadSubjects();}catch(e){msg($("saveMessage"),e.message||String(e),"error");}finally{busy($("saveConfigBtn"),false);}}
+async function rotateCode(){if(!selectedSubject)return;busy($("rotateCodeBtn"),true,"Đang tạo…");try{const d=await fn({action:"rotate_code",subject_id:selectedSubject.id});detail.config=d.config;$("accessCodeInput").value=d.config.access_code;updatePublicLink();msg($("saveMessage"),"Đã tạo mã mới; mã cũ hết hiệu lực ngay.","ok");await loadSubjects();}catch(e){msg($("saveMessage"),e.message||String(e),"error");}finally{busy($("rotateCodeBtn"),false);}}
+
+function chapterNames(ids){const map=new Map((detail?.chapters||[]).map(c=>[c.id,c.name]));return(ids||[]).map(id=>map.get(id)).filter(Boolean);}
+function renderPackages(){const host=$("packageList"),packs=detail?.packages||[];host.innerHTML="";if(!packs.length){host.innerHTML='<div class="empty-box">Chưa có gói ôn tập. Bấm <strong>+ Thêm gói</strong> để tạo.</div>';return;}packs.forEach(p=>{const names=chapterNames(p.chapter_ids),n=document.createElement("div");n.className="package-card";n.innerHTML=`<div class="package-main"><div><span class="status-dot ${p.is_enabled?"on":""}"></span><strong>${esc(p.name)}</strong></div><div class="muted small">${esc(names.join(" • "))}</div><div class="package-tags"><span>${p.draw_mode==="matrix"?`Ma trận • ${p.question_count} câu`:`${p.question_count} câu`}</span>${p.include_answers?'<span>Có đáp án</span>':''}</div></div><div class="package-actions"><button class="secondary edit">Sửa</button><button class="danger delete">Xóa</button></div>`;n.querySelector(".edit").onclick=()=>openPackageEditor(p);n.querySelector(".delete").onclick=()=>deletePackage(p);host.appendChild(n);});}
+function selectedChapters(){return[...document.querySelectorAll('.chapter-check:checked')].map(x=>x.value);}
+function matrixSnapshot(){const m=new Map();document.querySelectorAll(".matrix-input").forEach(i=>m.set(`${i.dataset.chapter}|${i.dataset.clo}`,Math.max(0,Number(i.value)||0)));return m;}
+function renderChapterPicker(selected=[]){const set=new Set(selected),host=$("chapterPicker");host.innerHTML=(detail.chapters||[]).map((ch,i)=>`<label class="chapter-option"><input class="chapter-check" type="checkbox" value="${ch.id}" ${set.has(ch.id)||(!selected.length&&i===0)?"checked":""}><span><strong>${esc(ch.name)}</strong><small>${detail.chapter_availability?.[ch.id]||0} câu</small></span></label>`).join("");document.querySelectorAll(".chapter-check").forEach(x=>x.addEventListener("change",()=>{const snap=matrixSnapshot();buildMatrix(snap);}));}
+function buildMatrix(snapshot=null){const ids=selectedChapters(),clos=detail.clos||[],chapters=(detail.chapters||[]).filter(c=>ids.includes(c.id)),saved=snapshot||new Map((editingPackage?.matrix||[]).map(x=>[`${x.chapter_id}|${x.clo_id}`,Number(x.count)||0]));$("matrixHead").innerHTML=`<tr><th>Chương</th>${clos.map(c=>`<th>${esc(c.code)}</th>`).join("")}</tr>`;$("matrixBody").innerHTML=chapters.map(ch=>`<tr><td><strong>${esc(ch.name)}</strong></td>${clos.map(cl=>{const key=`${ch.id}|${cl.id}`,have=detail.availability?.[key]||0,val=saved.get(key)||0;return`<td><input class="matrix-input" type="number" min="0" max="${have}" value="${val}" data-chapter="${ch.id}" data-clo="${cl.id}"><span class="availability">có ${have}</span></td>`;}).join("")}</tr>`).join("");document.querySelectorAll(".matrix-input").forEach(i=>i.addEventListener("input",recalcMatrix));recalcMatrix();}
+function recalcMatrix(){let n=0;document.querySelectorAll(".matrix-input").forEach(i=>n+=Math.max(0,Number(i.value)||0));$("matrixTotal").textContent=n;}
+function updateMode(){const matrix=$("drawModeInput").value==="matrix";$("countField").classList.toggle("hidden",matrix);$("matrixSection").classList.toggle("hidden",!matrix);if(matrix)buildMatrix(matrixSnapshot());}
+function openPackageEditor(p=null){editingPackage=p;$("packageEditor").classList.remove("hidden");$("packageEditorTitle").textContent=p?"Sửa gói ôn tập":"Thêm gói ôn tập";$("packageNameInput").value=p?.name||"";$("packageEnabledInput").checked=p?.is_enabled!==false;$("packageAnswersInput").checked=!!p?.include_answers;$("drawModeInput").value=p?.draw_mode||"count";$("questionCountInput").value=p?.question_count||20;renderChapterPicker(p?.chapter_ids||[]);buildMatrix();updateMode();msg($("packageMessage"),"");$("packageEditor").scrollIntoView({behavior:"smooth",block:"start"});}
+function closePackageEditor(){editingPackage=null;$("packageEditor").classList.add("hidden");msg($("packageMessage"),"");}
+function collectMatrix(){return[...document.querySelectorAll(".matrix-input")].map(i=>({chapter_id:i.dataset.chapter,clo_id:i.dataset.clo,count:Math.max(0,Number(i.value)||0)})).filter(x=>x.count>0);}
+async function savePackage(){if(!selectedSubject)return;const chapters=selectedChapters();if(!chapters.length){msg($("packageMessage"),"Hãy chọn ít nhất một chương.","error");return;}busy($("savePackageBtn"),true,"Đang lưu…");try{await fn({action:"save_package",subject_id:selectedSubject.id,package_id:editingPackage?.id||null,name:$("packageNameInput").value.trim(),is_enabled:$("packageEnabledInput").checked,include_answers:$("packageAnswersInput").checked,chapter_ids:chapters,draw_mode:$("drawModeInput").value,question_count:Number($("questionCountInput").value||20),matrix:collectMatrix(),sort_order:editingPackage?.sort_order??(detail.packages?.length||0)});detail=await fn({action:"detail",subject_id:selectedSubject.id});fillEditor();closePackageEditor();msg($("packageListMessage"),"Đã lưu gói ôn tập.","ok");}catch(e){msg($("packageMessage"),e.message||String(e),"error");}finally{busy($("savePackageBtn"),false);}}
+async function deletePackage(p){if(!confirm(`Xóa gói “${p.name}”? Các PDF đã rút trước đây không bị ảnh hưởng.`))return;msg($("packageListMessage"),"Đang xóa…");try{await fn({action:"delete_package",subject_id:selectedSubject.id,package_id:p.id});detail=await fn({action:"detail",subject_id:selectedSubject.id});fillEditor();closePackageEditor();msg($("packageListMessage"),"Đã xóa gói ôn tập.","ok");}catch(e){msg($("packageListMessage"),e.message||String(e),"error");}}
+
+$("loginBtn").onclick=login;$("password").addEventListener("keydown",e=>{if(e.key==="Enter")login();});$("logoutBtn").onclick=logout;$("refreshBtn").onclick=loadSubjects;$("rotateCodeBtn").onclick=rotateCode;$("saveConfigBtn").onclick=saveConfig;$("addPackageBtn").onclick=()=>openPackageEditor();$("savePackageBtn").onclick=savePackage;$("cancelPackageBtn").onclick=closePackageEditor;$("cancelPackageBtn2").onclick=closePackageEditor;$("drawModeInput").onchange=updateMode;$("accessCodeInput").addEventListener("input",()=>{$("accessCodeInput").value=normalizeCode($("accessCodeInput").value);updatePublicLink();});
 restoreSession();
