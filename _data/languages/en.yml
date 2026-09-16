@@ -10,11 +10,14 @@ site:
 # ==========================================
 nav:
   home: "Home"
-  knowledge: "Knowledge"
+  knowledge: "Mathematics"
   blog: "Blog"
   tools: "Tools"
   resources: "Resources"
   about: "About"
+  menu: "Open navigation menu"
+  knowledge_menu: "Open Mathematics menu"
+  tools_menu: "Open Tools menu"
 
 # ==========================================
 # Homepage
@@ -82,7 +85,7 @@ resources:
 # ==========================================
 submenu:
   calculus: "Calculus"
-  algebra: "Algebra"
+  algebra: "Linear Algebra"
   statistics: "Statistics"
 
   tags: "Tags"

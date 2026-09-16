@@ -10,11 +10,14 @@ site:
 # ==========================================
 nav:
   home: "Trang chủ"
-  knowledge: "Kiến thức"
+  knowledge: "Toán học"
   blog: "Blog"
   tools: "Công cụ"
   resources: "Tài nguyên"
   about: "Giới thiệu"
+  menu: "Mở menu điều hướng"
+  knowledge_menu: "Mở menu Toán học"
+  tools_menu: "Mở menu Công cụ"
 
 # ==========================================
 # Homepage
@@ -78,11 +81,11 @@ resources:
   downloads: "Tải xuống"
 
 # ==========================================
-# Sub Menu   
+# Sub Menu
 # ==========================================
 submenu:
   calculus: "Giải tích"
-  algebra: "Đại số"
+  algebra: "Đại số tuyến tính"
   statistics: "Xác suất thống kê"
 
   tags: "Thẻ"

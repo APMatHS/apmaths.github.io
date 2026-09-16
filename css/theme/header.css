@@ -1,23 +1,41 @@
 /* ==========================================================
-   APMaths Theme V3.2
+   APMaths Theme V3.3
    File    : header.css
    Module  : Header & Navigation
    Author  : Phan Hoang Nam
    ========================================================== */
 
-
 /* ==========================================================
    1. SITE HEADER
    ========================================================== */
 
-   .site-header {
+.site-header {
+    width: 100%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.site-header-inner {
     max-width: 1200px;
     margin: 0 auto;
     padding: 12px 24px 10px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 18px;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.site-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+}
+
+.site-brand:hover {
+    text-decoration: none;
 }
 
 .site-logo {
@@ -25,446 +43,389 @@
     height: 62px;
     object-fit: contain;
     flex-shrink: 0;
+    border-radius: 0;
 }
 
-.site-header > div {
-    text-align: left;
+.site-brand-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
-.site-header h1 {
-    margin: 0;
+.site-title {
     color: var(--primary);
     font-family: Georgia, "Times New Roman", serif;
     font-size: 2.45rem;
     font-weight: 700;
-    line-height: 1.1;
+    line-height: 1.05;
+    letter-spacing: -.03em;
 }
 
-.site-header p {
-    margin: 6px 0 0;
+.site-tagline {
+    margin-top: 6px;
     color: var(--text-light);
     font-size: .95rem;
     line-height: 1.35;
 }
 
-
-/* ==========================================================
-   2. NAVIGATION
-   ========================================================== */
-
-
-
-nav {
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 1000;
-
-    width: 100%;
-
-    background: #ffffff;
-
-    border-top: 1px solid var(--border);
-
-    border-bottom: 1px solid var(--border);
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, .04);
-
+.mobile-nav-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
 }
 
+.mobile-nav-toggle__line {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 999px;
+    transition: transform .2s ease, opacity .2s ease;
+}
 
-/* ---------- Main navigation ---------- */
+.mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
 
+.mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(2) {
+    opacity: 0;
+}
 
-nav > ul {
+.mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ==========================================================
+   2. MAIN NAVIGATION
+   ========================================================== */
+
+.site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+}
+
+.main-nav {
     max-width: 1200px;
     min-height: 58px;
     margin: 0 auto;
     padding: 0 24px;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     list-style: none;
 }
 
-/* ==========================================================
-   3. MENU ITEMS
-   ========================================================== */
-
-nav > ul > li {
-
+.main-nav > .nav-item {
     position: relative;
-
     margin: 0;
-
     padding: 0;
-
 }
 
-
-/* ---------- Main links ---------- */
+.nav-item-row {
+    display: flex;
+    align-items: stretch;
+    min-height: 58px;
+}
 
 .nav-link {
+    min-height: 58px;
+    padding: 0 17px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 7px;
-
-    min-height: 58px;
-
-    padding: 0 17px;
-
     color: var(--text);
-
+    background: transparent;
     font-size: 1rem;
     font-weight: 600;
-
     text-decoration: none;
-
     border-bottom: 3px solid transparent;
-
-    transition:
-        color .2s ease,
-        background-color .2s ease,
-        border-color .2s ease;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease;
 }
 
-
-/* ---------- Hover ---------- */
-
-.nav-link:hover {
-
+.nav-link:hover,
+.nav-item.is-current > .nav-link,
+.nav-item.is-current > .nav-item-row > .nav-link,
+.nav-link[aria-current="page"] {
     color: var(--primary);
-
     background: var(--primary-soft);
-
     border-bottom-color: var(--primary);
-
     text-decoration: none;
-
 }
-
-
-/* ---------- Home icon ---------- */
 
 .nav-link .fa-home {
-
     font-size: 1rem;
-
 }
 
-
 /* ==========================================================
-   4. DROPDOWN ARROW
+   3. SUBMENU BUTTON
    ========================================================== */
 
-.toggle-subnav {
-
-    position: absolute;
-
-    right: 7px;
-
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    cursor: pointer;
-
-    font-size: .65rem;
-
-    line-height: 1;
-
+.submenu-toggle {
+    width: 34px;
+    min-height: 58px;
+    margin-left: -10px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: var(--text-muted);
-
-    padding: 6px;
-
-    user-select: none;
-
-    pointer-events: none;
-
+    background: transparent;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
 }
 
-
-/* Make room for the arrow */
-
-nav > ul > li:has(.toggle-subnav) > .nav-link {
-
-    padding-right: 34px;
-
+.submenu-toggle:hover {
+    color: var(--primary);
 }
 
+.submenu-toggle__icon {
+    display: inline-block;
+    font-size: .72rem;
+    line-height: 1;
+    transition: transform .18s ease;
+}
+
+.has-submenu:hover > .nav-item-row .submenu-toggle__icon,
+.has-submenu:focus-within > .nav-item-row .submenu-toggle__icon,
+.has-submenu.is-open > .nav-item-row .submenu-toggle__icon {
+    transform: rotate(180deg);
+}
 
 /* ==========================================================
-   5. DROPDOWN MENU
+   4. DROPDOWN MENU
    ========================================================== */
 
 .sub-menu {
-
     position: absolute;
-
-    left: 50%;
-
     top: calc(100% - 1px);
-
-    transform: translate(-50%, 8px);
-
-    min-width: 220px;
-
+    left: 50%;
+    z-index: 1200;
+    min-width: 230px;
     margin: 0;
-
     padding: 8px;
-
     list-style: none;
-
-    background: #ffffff;
-
+    background: var(--surface);
     border: 1px solid var(--border);
-
     border-radius: 10px;
-
     box-shadow: var(--shadow-md);
-
     opacity: 0;
-
     visibility: hidden;
-
-    transition:
-        opacity .18s ease,
-        transform .18s ease,
-        visibility .18s ease;
-
+    transform: translate(-50%, 8px);
+    transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
 }
 
-
-/* ---------- Show dropdown ---------- */
-
-nav li:hover > .sub-menu {
-
+.has-submenu:hover > .sub-menu,
+.has-submenu:focus-within > .sub-menu,
+.has-submenu.is-open > .sub-menu {
     opacity: 1;
-
     visibility: visible;
-
     transform: translate(-50%, 0);
-
 }
-
-
-/* ---------- Dropdown items ---------- */
 
 .sub-menu li {
-
     margin: 0;
-
     padding: 0;
-
 }
-
 
 .sub-menu a {
-
     display: block;
-
     padding: 10px 13px;
-
     color: var(--text);
-
     font-size: .95rem;
-
     font-weight: 500;
-
+    line-height: 1.45;
     text-decoration: none;
-
     border-radius: 7px;
-
-    transition:
-        color .18s ease,
-        background-color .18s ease;
-
+    transition: color .15s ease, background-color .15s ease;
 }
 
-
-.sub-menu a:hover {
-
+.sub-menu a:hover,
+.sub-menu a:focus-visible {
     color: var(--primary);
-
     background: var(--primary-soft);
-
     text-decoration: none;
-
 }
 
-
 /* ==========================================================
-   6. ACTIVE PAGE
+   5. KEYBOARD ACCESSIBILITY
    ========================================================== */
 
-.nav-link.active {
-
-    color: var(--primary);
-
-    font-weight: 700;
-
-    border-bottom-color: var(--primary);
-
-}
-
-
-/* ==========================================================
-   7. KEYBOARD ACCESSIBILITY
-   ========================================================== */
-
-.nav-link:focus,
-.sub-menu a:focus {
-
+.nav-link:focus-visible,
+.submenu-toggle:focus-visible,
+.mobile-nav-toggle:focus-visible,
+.sub-menu a:focus-visible {
     outline: 2px solid var(--primary-light);
-
     outline-offset: -2px;
-
 }
 
-
 /* ==========================================================
-   8. SITE NAVIGATION
+   6. TABLET & MOBILE
    ========================================================== */
 
-.site-nav {
+@media (max-width: 780px) {
 
-    position: relative;
-
-}
-
-
-/* ==========================================================
-   9. RESPONSIVE
-   ========================================================== */
-
-@media (max-width: 900px) {
-
-    .site-header {
-
-        padding: 20px;
-
-        gap: 14px;
-
-    }
-
-
-    .site-logo {
-
-        width: 64px;
-
-        height: 64px;
-
-    }
-
-
-    .site-header h1 {
-
-        font-size: 2.2rem;
-
-    }
-
-
-    .site-header p {
-
-        font-size: .9rem;
-
-    }
-
-
-    nav > ul {
-
-        justify-content: flex-start;
-
-        overflow-x: auto;
-
-        padding: 0 12px;
-
-    }
-
-
-    .nav-link {
-
-        padding-left: 14px;
-
-        padding-right: 14px;
-
-        white-space: nowrap;
-
-    }
-
-
-    nav > ul > li:has(.toggle-subnav) > .nav-link {
-
-        padding-right: 30px;
-
-    }
-
-}
-
-
-/* ==========================================================
-   10. SMALL SCREENS
-   ========================================================== */
-
-@media (max-width: 600px) {
-
-    .site-header {
-
-        padding: 16px;
-
+    .site-header-inner {
+        padding: 11px 16px;
         gap: 12px;
-
     }
 
+    .site-brand {
+        gap: 12px;
+    }
 
     .site-logo {
-
-        width: 52px;
-
-        height: 52px;
-
+        width: 54px;
+        height: 54px;
     }
 
-
-    .site-header h1 {
-
-        font-size: 1.8rem;
-
+    .site-title {
+        font-size: 1.85rem;
     }
 
-
-    .site-header p {
-
-        margin-top: 5px;
-
+    .site-tagline {
+        margin-top: 4px;
         font-size: .78rem;
-
     }
 
-
-    nav > ul {
-
-        min-height: 52px;
-
+    .mobile-nav-toggle {
+        display: inline-flex;
     }
 
-
-    .nav-link {
-
-        min-height: 52px;
-
-        font-size: .9rem;
-
+    .site-nav {
+        position: static;
+        display: none;
+        box-shadow: none;
+        border-top: 0;
     }
 
+    .site-nav.is-open {
+        display: block;
+    }
+
+    .main-nav {
+        min-height: 0;
+        padding: 6px 14px 12px;
+        display: block;
+    }
+
+    .main-nav > .nav-item {
+        width: 100%;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .main-nav > .nav-item:last-child {
+        border-bottom: 0;
+    }
+
+    .nav-item-row {
+        min-height: 50px;
+        width: 100%;
+    }
+
+    .nav-link,
+    .nav-item-row .nav-link {
+        width: 100%;
+        min-height: 50px;
+        padding: 0 10px;
+        justify-content: flex-start;
+        white-space: normal;
+        font-size: .98rem;
+        border-bottom: 0;
+    }
+
+    .nav-item-row .nav-link {
+        flex: 1 1 auto;
+    }
+
+    .nav-link:hover,
+    .nav-item.is-current > .nav-link,
+    .nav-item.is-current > .nav-item-row > .nav-link,
+    .nav-link[aria-current="page"] {
+        background: transparent;
+        border-bottom-color: transparent;
+    }
+
+    .submenu-toggle {
+        width: 50px;
+        min-height: 50px;
+        margin-left: 0;
+        padding: 0;
+        flex: 0 0 50px;
+        border-bottom: 0;
+    }
 
     .sub-menu {
-
-        min-width: 190px;
-
+        position: static;
+        display: none;
+        min-width: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0 0 9px 18px;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        transition: none;
     }
 
+    .has-submenu:hover > .sub-menu,
+    .has-submenu:focus-within > .sub-menu {
+        display: none;
+        transform: none;
+    }
+
+    .has-submenu.is-open > .sub-menu {
+        display: block;
+    }
+
+    .sub-menu a {
+        padding: 9px 12px;
+        font-size: .94rem;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .site-header-inner {
+        padding: 10px 14px;
+    }
+
+    .site-logo {
+        width: 48px;
+        height: 48px;
+    }
+
+    .site-title {
+        font-size: 1.65rem;
+    }
+
+    .site-tagline {
+        display: none;
+    }
+
+    .mobile-nav-toggle {
+        width: 42px;
+        height: 42px;
+    }
 }
