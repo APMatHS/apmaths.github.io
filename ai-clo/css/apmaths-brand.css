@@ -1,0 +1,52 @@
+/* AI·CLO APMaths V12.8 — brand-only overrides. Red remains reserved for errors/destructive states. */
+:root{
+  --aiclo-brand:#1e3a8a;
+  --aiclo-brand-hover:#2563eb;
+  --aiclo-brand-soft:#eff6ff;
+  --aiclo-brand-line:#bfdbfe;
+}
+
+/* App shell */
+.app>aside{background:#172554!important}
+.app>aside>.aside-foot{background:#172554!important}
+.app>aside>#nav button:hover,.app>aside>#nav button.active{background:#ffffff16!important;color:#fff!important}
+.app>aside>#nav button.active{border-left-color:#60a5fa!important}
+.app>aside>.aside-foot #logoutBtn{color:#bfdbfe!important}
+.app>aside>.aside-foot #logoutBtn:hover{color:#fff!important}
+.system-home{border-color:var(--aiclo-brand-line)!important;background:var(--aiclo-brand-soft)!important;color:var(--aiclo-brand)!important;box-shadow:0 4px 14px #1e3a8a18!important}
+.system-home:hover{background:var(--aiclo-brand)!important;color:#fff!important}
+.app-ai-button{border-color:var(--aiclo-brand-line)!important;background:#f8fbff!important;color:var(--aiclo-brand)!important}
+.app-ai-button:hover{background:var(--aiclo-brand-soft)!important}
+.app-context-badge.course{background:var(--aiclo-brand-soft)!important;color:var(--aiclo-brand)!important}
+.app-footer.site-footer a:hover{color:var(--aiclo-brand)!important}
+
+/* General brand accents */
+.stat i,.question-code{color:var(--aiclo-brand)!important}
+.bar span{background:var(--aiclo-brand)!important}
+a:not(.danger-link):focus-visible,button:not(.danger):focus-visible{outline-color:var(--aiclo-brand-hover)}
+
+/* Question bank */
+.v105-bank-tab.active,.v105-bank-tab.secure.active{color:var(--aiclo-brand)!important}
+.v105-bank-tab.active b,.v105-bank-tab.secure.active b{background:var(--aiclo-brand)!important;color:#fff!important}
+.v105-bank-note strong,.question-hover-preview-head b{color:var(--aiclo-brand)!important}
+.v105-scope-option:has(input:checked){border-color:var(--aiclo-brand-hover)!important;background:var(--aiclo-brand-soft)!important;box-shadow:0 0 0 2px #2563eb18!important}
+.v105-scope-option input{accent-color:var(--aiclo-brand)!important}
+
+/* Keep secure/destructive semantics red. */
+.v105-scope-option.secure:has(input:checked){border-color:#c51f36!important;background:#fff5f6!important;box-shadow:0 0 0 2px #c51f3614!important}
+.answer-review details.wrong{border-left-color:#a61d2d!important}
+.toast.error{background:#a61d2d!important}
+.danger,.danger-link{color:#9b1c2e}
+
+/* Common selected/active controls from older modules */
+.question-create-mode-btn.active,.qbank-filter-chip.active,.qbank-function-card:hover{border-color:var(--aiclo-brand-line)!important;color:var(--aiclo-brand)!important;background:var(--aiclo-brand-soft)!important}
+
+/* Dashboard/course accents */
+.v109-hero small{color:var(--aiclo-brand)!important}
+.v109-hero.course small{color:#bfdbfe!important}
+
+/* Drawer and interactive links */
+.side-drawer a:not(.danger-link),.question-analysis a,.student-name-link:hover,.message-student{color:var(--aiclo-brand)!important}
+
+/* Selection */
+::selection{background:#bfdbfe;color:#172554}
