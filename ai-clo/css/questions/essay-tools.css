@@ -1,0 +1,35 @@
+/* AI-CLO PTITHCM V12.7.2 — unified essay-bank controls. */
+.essay-primary-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0 16px}
+.essay-primary-actions>button{min-height:58px;border-radius:12px;font-weight:800;font-size:16px}
+.essay-primary-actions #aiCreateEssayQuestion{background:linear-gradient(135deg,#5232d9,#804ee4);color:#fff;border-color:transparent}
+.essay-search-row{display:grid;grid-template-columns:minmax(0,1fr) 218px;gap:14px;align-items:stretch;margin:0 0 12px}
+.essay-search-row>input{min-height:58px;border:1px solid var(--border,#d8dee8);border-radius:12px;background:#fff;padding:0 16px;font-size:16px}
+.essay-filter-button{min-height:58px;border-radius:12px;font-weight:800}
+.essay-filter-button.active{border-color:#315be8;color:#2449cc;background:#f4f7ff}
+.essay-question-tools.essay-filter-source{display:none!important;margin:0 0 12px!important;padding:14px!important;border:1px solid var(--border,#d8dee8);border-radius:14px;background:#fff;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.essay-question-tools.essay-filter-source.open{display:grid!important}
+.essay-question-tools.essay-filter-source>input{display:none!important}
+.essay-count-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 10px;color:var(--muted,#667085)}
+.essay-selection-actions{display:flex;gap:10px;margin:0 0 14px}
+.essay-selection-toggle{min-width:170px;min-height:48px;border-radius:11px;font-weight:800}
+.essay-selection-toggle.active{background:#eef4ff;border-color:#3b64dc;color:#234ab9}
+.essay-bank-actions.essay-legacy-actions{display:none!important}
+.essay-question-table .essay-select-head,.essay-question-table .essay-select-cell{display:none;width:54px;text-align:center}
+.essay-question-table.selection-mode .essay-select-head,.essay-question-table.selection-mode .essay-select-cell{display:table-cell}
+.essay-select-cell input{width:18px;height:18px}
+.essay-function-list{display:grid;gap:12px;margin-top:14px}
+.essay-function-card{width:100%;display:grid;grid-template-columns:48px minmax(0,1fr) 24px;gap:12px;align-items:center;text-align:left;padding:15px;border:1px solid #d8dee8;border-radius:14px;background:#fff;cursor:pointer}
+.essay-function-card:hover{border-color:#315be8;background:#f8faff}
+.essay-function-card>span:first-child{font-size:25px;text-align:center}
+.essay-function-card b{display:block;font-size:15px}.essay-function-card small{display:block;margin-top:4px;color:#667085;line-height:1.4}
+.essay-matrix-tabs{display:flex;gap:8px;margin:0 0 14px}.essay-matrix-tabs button{border-radius:10px}.essay-matrix-tabs button.active{background:#244ed8;color:#fff;border-color:#244ed8}
+.essay-matrix-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.essay-matrix-summary>div{padding:12px;border:1px solid #e0e5ed;border-radius:12px;background:#f8fafc}.essay-matrix-summary small{display:block;color:#667085}.essay-matrix-summary b{display:block;margin-top:3px;font-size:17px}
+.essay-matrix-table th,.essay-matrix-table td{vertical-align:middle}.essay-matrix-cell b{display:block}.essay-matrix-cell small{display:block;color:#667085;white-space:nowrap}.essay-matrix-row-label small{display:block;color:#667085;margin-top:3px}
+.essay-duplicate-results{display:grid;gap:12px}.essay-duplicate-pair{border:1px solid #e0e5ed;border-radius:14px;padding:14px;background:#fff}.essay-duplicate-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}.essay-duplicate-pair p{margin:7px 0;color:#344054}.essay-duplicate-score{font-weight:800;color:#b42318}
+.essay-ai-session-list{display:grid;gap:10px}.essay-ai-session{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:14px;border:1px solid #e0e5ed;border-radius:13px;background:#fff}.essay-ai-session small,.essay-ai-session span{color:#667085}.essay-ai-session-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.essay-clone-source{border:1px solid #e0e5ed;border-radius:14px;padding:15px;background:#fff;margin-bottom:14px}.essay-clone-source h4{margin:0 0 8px}.essay-clone-config{border:1px solid #e0e5ed;border-radius:14px;padding:16px;background:#fff}.essay-clone-config-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.essay-clone-config-grid .wide{grid-column:1/-1}
+.essay-clone-preserve{margin-top:12px;padding:12px;border-radius:11px;background:#f4f7ff;color:#2949a6}
+.essay-variant-review{display:grid;gap:14px}.essay-variant-editor{display:grid;gap:12px}.essay-variant-part{border:1px solid #e0e5ed;border-radius:13px;padding:13px;background:#fff}.essay-variant-rubric-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 90px;gap:8px;align-items:end;margin-top:8px}.essay-variant-fixed{padding:10px;border:1px solid #e1e5ec;border-radius:9px;background:#f8fafc;font-weight:700}.essay-variant-actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.essay-ai-draft-banner[data-session-state="logged"]{box-shadow:inset 3px 0 #36a269}
+@media(max-width:900px){.essay-primary-actions{grid-template-columns:1fr 1fr}.essay-search-row{grid-template-columns:1fr}.essay-question-tools.essay-filter-source.open{grid-template-columns:1fr 1fr!important}.essay-matrix-summary{grid-template-columns:1fr}.essay-clone-config-grid{grid-template-columns:1fr}.essay-variant-rubric-row{grid-template-columns:1fr}.essay-ai-session{grid-template-columns:1fr}}
+@media(max-width:560px){.essay-primary-actions{grid-template-columns:1fr 1fr;gap:8px}.essay-primary-actions>button{min-height:50px;font-size:14px}.essay-question-tools.essay-filter-source.open{grid-template-columns:1fr!important}.essay-selection-toggle{width:100%}.essay-selection-actions{width:100%}}
