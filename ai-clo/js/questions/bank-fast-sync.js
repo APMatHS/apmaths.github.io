@@ -1,4 +1,4 @@
-/* AI-CLO PTITHCM V12.7.3 — keep the outer bank (practice/secure) synchronized when question type changes. */
+/* AI-CLO PTITHCM V12.7.3 — keep the outer bank synchronized and invalidate fast caches on essay writes. */
 (()=>{
 'use strict';
 if(window.AICLO_QBANK_FAST_BANK_SYNC)return;
@@ -26,6 +26,11 @@ async function setKind(kind){
  if(bank)setTimeout(()=>applyMcqBank(bank),0);
  return result;
 }
+function invalidateFastCache(){window.AICLO_QBANK_FAST_SWITCH?.clear?.()}
+document.addEventListener('submit',event=>{if(event.target?.matches?.('#essayForm'))invalidateFastCache()},true);
+document.addEventListener('click',event=>{
+ if(event.target.closest?.('#essayVariantSave,#saveEssayQuestion,#deleteEssayQuestion'))invalidateFastCache();
+},true);
 window.AICLO_ESSAY_BANK_V127=Object.freeze({...api,setKind});
-window.AICLO_QBANK_FAST_BANK_SYNC=Object.freeze({version:'12.7.3',applyMcqBank});
+window.AICLO_QBANK_FAST_BANK_SYNC=Object.freeze({version:'12.7.3',applyMcqBank,invalidate:invalidateFastCache});
 })();
