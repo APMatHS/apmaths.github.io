@@ -1,0 +1,157 @@
+---
+layout: page
+title: Hạng ma trận – Cách tìm bằng biến đổi sơ cấp
+description: Bài học cơ bản về hạng ma trận dành cho sinh viên: định nghĩa, cách tìm bằng biến đổi sơ cấp, minor, liên hệ với hệ phương trình, ví dụ và bài tập tự luyện.
+permalink: /knowledge/algebra/matrix-rank/
+---
+
+<h1>Hạng ma trận</h1>
+
+<p>Hạng của ma trận cho biết số hàng hoặc số cột độc lập tuyến tính của ma trận. Đây là khái niệm quan trọng để xét hệ phương trình tuyến tính, tính độc lập tuyến tính và nhiều bài toán khác trong đại số tuyến tính.</p>
+
+<h2>1. Mục tiêu học tập</h2>
+<ul>
+  <li>Hiểu ý nghĩa của hạng ma trận.</li>
+  <li>Tìm được hạng bằng phép biến đổi sơ cấp trên hàng.</li>
+  <li>Nhận biết được hạng bằng các định thức con trong trường hợp đơn giản.</li>
+  <li>Biết liên hệ hạng của ma trận với số nghiệm của hệ phương trình tuyến tính.</li>
+</ul>
+
+<h2>2. Định nghĩa</h2>
+<div class="academic-box definition">
+  <h4>Định nghĩa</h4>
+  <p>Hạng của ma trận \(A\), ký hiệu \(\operatorname{rank}(A)\) hoặc \(r(A)\), là số hàng khác không của dạng bậc thang thu được từ \(A\) bằng các phép biến đổi sơ cấp trên hàng.</p>
+</div>
+
+<p>Nếu \(A\) có kích thước \(m\times n\) thì</p>
+<p>\[
+0\le \operatorname{rank}(A)\le \min\{m,n\}.
+\]</p>
+
+<h2>3. Các phép biến đổi sơ cấp không làm thay đổi hạng</h2>
+<ul>
+  <li>Đổi chỗ hai hàng.</li>
+  <li>Nhân một hàng với một số khác \(0\).</li>
+  <li>Cộng vào một hàng một bội của hàng khác.</li>
+</ul>
+
+<p>Vì vậy, cách thực hành phổ biến nhất để tìm hạng là đưa ma trận về dạng bậc thang.</p>
+
+<h2>4. Tìm hạng bằng dạng bậc thang</h2>
+<h3>Ví dụ 1</h3>
+<p>Cho</p>
+<p>\[
+A=\begin{pmatrix}
+1&2&1\\
+2&4&0\\
+-1&-2&2
+\end{pmatrix}.
+\]</p>
+<p>Thực hiện</p>
+<p>\[
+R_2\leftarrow R_2-2R_1,\qquad R_3\leftarrow R_3+R_1,
+\]</p>
+<p>ta được</p>
+<p>\[
+\begin{pmatrix}
+1&2&1\\
+0&0&-2\\
+0&0&3
+\end{pmatrix}.
+\]</p>
+<p>Tiếp tục khử hàng thứ ba bằng hàng thứ hai, ta được một dạng bậc thang có đúng hai hàng khác không. Do đó</p>
+<p>\[
+\operatorname{rank}(A)=2.
+\]</p>
+
+<h3>Ví dụ 2</h3>
+<p>Cho</p>
+<p>\[
+B=\begin{pmatrix}
+1&2&3\\
+2&4&6\\
+3&6&9
+\end{pmatrix}.
+\]</p>
+<p>Hàng thứ hai bằng \(2\) lần hàng thứ nhất và hàng thứ ba bằng \(3\) lần hàng thứ nhất. Vì vậy sau biến đổi sơ cấp chỉ còn một hàng khác không:</p>
+<p>\[
+\operatorname{rank}(B)=1.
+\]</p>
+
+<h2>5. Tìm hạng bằng định thức con</h2>
+<p>Ta cũng có thể dùng các định thức con (minor):</p>
+<ul>
+  <li>Nếu tồn tại một định thức con cấp \(r\) khác \(0\), thì \(\operatorname{rank}(A)\ge r\).</li>
+  <li>Nếu mọi định thức con cấp \(r+1\) đều bằng \(0\), thì \(\operatorname{rank}(A)\le r\).</li>
+</ul>
+
+<p>Do đó, nếu tồn tại một minor cấp \(r\) khác \(0\) và mọi minor cấp lớn hơn đều bằng \(0\), thì \(\operatorname{rank}(A)=r\).</p>
+
+<h3>Ví dụ 3</h3>
+<p>Cho</p>
+<p>\[
+C=\begin{pmatrix}
+1&2&3\\
+0&1&4\\
+2&5&10
+\end{pmatrix}.
+\]</p>
+<p>Ta có</p>
+<p>\[
+\det C=0,
+\]</p>
+<p>nên \(\operatorname{rank}(C)<3\). Tuy nhiên minor cấp 2</p>
+<p>\[
+\begin{vmatrix}1&2\\0&1\end{vmatrix}=1\ne0.
+\]</p>
+<p>Suy ra</p>
+<p>\[
+\operatorname{rank}(C)=2.
+\]</p>
+
+<h2>6. Một số trường hợp cần nhớ</h2>
+<ul>
+  <li>Ma trận không có hạng bằng \(0\).</li>
+  <li>Ma trận vuông cấp \(n\) có \(\det A\ne0\) thì \(\operatorname{rank}(A)=n\).</li>
+  <li>Nếu một hàng là tổ hợp tuyến tính của các hàng khác thì hàng đó không làm tăng hạng.</li>
+  <li>\(\operatorname{rank}(A)=\operatorname{rank}(A^T)\).</li>
+</ul>
+
+<h2>7. Liên hệ với hệ phương trình tuyến tính</h2>
+<p>Xét hệ</p>
+<p>\[
+AX=b.
+\]</p>
+<p>Gọi \([A\mid b]\) là ma trận mở rộng. Định lý Kronecker–Capelli cho biết hệ có nghiệm khi và chỉ khi</p>
+<p>\[
+\operatorname{rank}(A)=\operatorname{rank}([A\mid b]).
+\]</p>
+<p>Nếu hệ có nghiệm và hạng bằng số ẩn thì nghiệm là duy nhất; nếu hạng nhỏ hơn số ẩn thì hệ có vô số nghiệm.</p>
+
+<div class="academic-box warning">
+  <h4>Sai lầm thường gặp</h4>
+  <p>Không được kết luận hạng bằng số hàng ban đầu. Hạng là số hàng khác không <strong>sau khi đã đưa ma trận về dạng bậc thang</strong>, hoặc được xác định tương đương bằng các minor.</p>
+</div>
+
+<h2>8. Bài tập tự luyện</h2>
+<ol>
+  <li>Tìm hạng của \(A=\begin{pmatrix}1&2\\2&4\end{pmatrix}\).</li>
+  <li>Tìm hạng của \(B=\begin{pmatrix}1&0&2\\0&1&3\\0&0&0\end{pmatrix}\).</li>
+  <li>Cho \(C=\begin{pmatrix}1&2\\3&4\end{pmatrix}\). Tìm hạng của \(C\).</li>
+  <li>Tìm \(m\) để \(A=\begin{pmatrix}1&2\\2&m\end{pmatrix}\) có hạng bằng \(1\).</li>
+  <li>Ma trận \(D\) kích thước \(3\times5\). Hạng lớn nhất của \(D\) là bao nhiêu?</li>
+</ol>
+
+<details>
+  <summary><strong>Đáp số</strong></summary>
+  <ol>
+    <li>\(1\).</li>
+    <li>\(2\).</li>
+    <li>\(2\), vì \(\det C=-2\ne0\).</li>
+    <li>\(m=4\).</li>
+    <li>\(3\).</li>
+  </ol>
+</details>
+
+<hr>
+<p><a href="/knowledge/algebra/inverse-matrix/">← Ma trận nghịch đảo</a> &nbsp; | &nbsp; <a href="/knowledge/algebra/">Đại số tuyến tính</a></p>
