@@ -12,15 +12,16 @@
     }
 
     .main-nav > .nav-item:not(.nav-item--clo) {
-        flex: 0 0 104px;
-        width: 104px;
-        min-width: 104px;
-        max-width: 104px;
+        flex: 0 0 120px;
+        width: 120px;
+        min-width: 120px;
+        max-width: 120px;
     }
 
-    /* Slightly smaller desktop navigation text. */
+    /* Keep every desktop nav label on one line. */
     .nav-link {
         font-size: .90rem;
+        white-space: nowrap;
     }
 
     /* Keep CLO as the final item, pinned to the far right. */
@@ -47,12 +48,11 @@
         pointer-events: none;
     }
 
-    /* Important: suppress the link's own active border so the Knowledge
-       item does not show a doubled/thicker underline. */
+    /* Suppress the child borders so the underline stays exactly 3px. */
     .has-submenu > .nav-item-row > .nav-link,
     .has-submenu > .nav-item-row > .submenu-toggle {
         background: transparent;
-        border-bottom-color: transparent !important;
+        border-bottom: 0 !important;
     }
 
     .has-submenu:hover > .nav-item-row,
@@ -79,12 +79,11 @@
     .has-submenu.is-current > .nav-item-row > .submenu-toggle {
         color: var(--primary);
         background: transparent;
-        border-bottom-color: transparent !important;
+        border-bottom: 0 !important;
     }
 }
 
-/* Also reduce text slightly inside the opened mobile menu,
-   without changing the mobile layout or spacing. */
+/* Mobile keeps the current layout and spacing. */
 @media (max-width: 780px) {
     .nav-link,
     .nav-item-row .nav-link {
