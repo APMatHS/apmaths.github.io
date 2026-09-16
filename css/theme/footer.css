@@ -1,5 +1,5 @@
 /* ==========================================================
-   APMaths Theme V3.3
+   APMaths Theme V3.4
    File    : footer.css
    Module  : Footer
    ========================================================== */
@@ -20,8 +20,8 @@
     margin: 0 auto;
     padding-bottom: 32px;
     display: grid;
-    grid-template-columns: 1.45fr 1fr 1fr;
-    gap: 48px;
+    grid-template-columns: 1.35fr 1fr 1fr 1fr;
+    gap: 38px;
 }
 
 .footer-column {
@@ -99,18 +99,10 @@
     text-align: left;
 }
 
-@media (max-width: 800px) {
-    .footer {
-        padding: 34px 20px 0;
-    }
-
+@media (max-width: 920px) {
     .footer-grid {
-        grid-template-columns: 1.35fr 1fr;
+        grid-template-columns: 1.25fr 1fr;
         gap: 30px 36px;
-    }
-
-    .footer-contact {
-        grid-column: 1 / -1;
     }
 }
 
@@ -124,10 +116,6 @@
         grid-template-columns: 1fr;
         gap: 24px;
         padding-bottom: 26px;
-    }
-
-    .footer-contact {
-        grid-column: auto;
     }
 
     .footer-brand p {
