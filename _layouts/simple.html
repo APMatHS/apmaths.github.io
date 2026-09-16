@@ -1,6 +1,53 @@
 <!DOCTYPE html>
-<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ page.title | default: site.title }}</title><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">{% include google.html %}</head><body>
-<header class="simple-header"><a class="home-link" href="/"><i class="fa fa-home"></i> APMaths</a></header>
-<main class="simple-container">{{ content }}</main>
-<footer class="simple-footer"><p>© {{ "now" | date: "%Y" }} <strong>APMaths</strong></p><ul><li><a href="/">Trang chủ</a></li><li><a href="/knowledge/">Kiến thức</a></li><li><a href="/blog/">Blog</a></li><li><a href="/tools/">Công cụ</a></li><li><a href="/courses/">Khóa học</a></li><li><a href="/about/">Giới thiệu</a></li></ul></footer>
-</body></html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ page.title | default: site.title }}</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    {% include google.html %}
+</head>
+
+<body>
+
+<header class="simple-header">
+
+    <a class="home-link" href="/">
+        <i class="fa fa-home"></i>
+        APMaths
+    </a>
+
+</header>
+
+<main class="simple-container">
+
+    {{ content }}
+
+</main>
+
+<footer class="simple-footer">
+
+    <p>
+        © {{ "now" | date: "%Y" }}
+        <strong>APMaths</strong>
+    </p>
+
+    <ul>
+        <li><a href="/">Trang chủ</a></li>
+        <li><a href="/knowledge/">Kiến thức</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/tools/">Công cụ</a></li>
+        <li><a href="/courses/">Khóa học</a></li>
+        <li><a href="/about/">Giới thiệu</a></li>
+    </ul>
+
+</footer>
+
+</body>
+</html>
