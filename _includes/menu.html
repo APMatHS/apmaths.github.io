@@ -37,29 +37,6 @@
         </a>
     </li>
 
-    <li class="nav-item has-submenu{% if current_url contains '/tools/' %} is-current{% endif %}">
-        <div class="nav-item-row">
-            <a class="nav-link" href="/tools/"{% if current_url == '/tools/' %} aria-current="page"{% endif %}>
-                <span>{{ include.t.nav.tools }}</span>
-            </a>
-            <button
-                class="submenu-toggle"
-                type="button"
-                aria-expanded="false"
-                aria-controls="submenu-tools"
-                aria-label="{{ include.t.nav.tools_menu }}">
-                <span class="submenu-toggle__icon" aria-hidden="true">▾</span>
-            </button>
-        </div>
-
-        <ul class="sub-menu" id="submenu-tools">
-            <li><a href="/tools/exam-clo/">{{ include.t.submenu.exam_clo }}</a></li>
-            <li><a href="/tools/exam-shuffler/">{{ include.t.submenu.exam_shuffler }}</a></li>
-            <li><a href="/tools/qr/">{{ include.t.submenu.qr }}</a></li>
-            <li><a href="/tools/html-code.html">{{ include.t.submenu.html_code }}</a></li>
-        </ul>
-    </li>
-
     <li class="nav-item{% if current_url contains '/courses/' %} is-current{% endif %}">
         <a class="nav-link" href="/courses/"{% if current_url == '/courses/' %} aria-current="page"{% endif %}>
             <span>{{ include.t.nav.resources }}</span>
@@ -70,6 +47,10 @@
         <a class="nav-link" href="/about/"{% if current_url == '/about/' %} aria-current="page"{% endif %}>
             <span>{{ include.t.nav.about }}</span>
         </a>
+    </li>
+
+    <li class="nav-item nav-item--clo{% if current_url contains '/ai-clo/' %} is-current{% endif %}">
+        <a class="nav-clo" href="/ai-clo/" aria-label="AI-CLO">CLO</a>
     </li>
 
 </ul>
