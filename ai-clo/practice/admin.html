@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <title>Quản lý ôn tập PDF | AI-CLO PTITHCM</title>
+  <link rel="stylesheet" href="./practice.css">
+  <script src="../js/config.js"></script>
+  <script type="module" src="./admin.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="brandbar">
+      <div>
+        <div class="eyebrow">AI-CLO PTITHCM</div>
+        <h1>Quản lý rút đề ôn tập PDF</h1>
+        <p class="muted">Mỗi môn có mã riêng, trạng thái bật/tắt và ma trận Chương × CLO.</p>
+      </div>
+      <a class="ghost-link" href="./index.html">Trang sinh viên</a>
+    </header>
+
+    <section id="loginView" class="card login-card">
+      <h2>Đăng nhập giảng viên</h2>
+      <p class="muted">Dùng tài khoản AI-CLO hiện có.</p>
+      <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username"></div>
+      <div class="field"><label for="password">Mật khẩu</label><input id="password" type="password" autocomplete="current-password"></div>
+      <button id="loginBtn" class="primary">Đăng nhập</button>
+      <p id="loginMessage" class="message" aria-live="polite"></p>
+    </section>
+
+    <section id="adminView" class="hidden">
+      <div class="card panel-head">
+        <div><strong id="accountName">—</strong><div id="accountEmail" class="muted small"></div></div>
+        <button id="logoutBtn" class="secondary">Đăng xuất</button>
+      </div>
+
+      <div class="admin-grid">
+        <aside class="card">
+          <div class="panel-head"><div><h2>Môn học</h2><p class="muted small">Chọn môn để cấu hình.</p></div><button id="refreshBtn" class="secondary">Làm mới</button></div>
+          <div id="subjectList" class="subject-list"></div>
+          <p id="listMessage" class="message"></p>
+        </aside>
+
+        <section id="editorCard" class="card hidden">
+          <div class="panel-head">
+            <div><div id="editorMeta" class="eyebrow"></div><h2 id="editorTitle">Cấu hình</h2></div>
+            <div id="editorStatus"></div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><strong id="statAvailable">0</strong><div class="muted small">câu đủ điều kiện</div></div>
+            <div class="stat"><strong id="statWeek">0</strong><div class="muted small">lượt rút 7 ngày</div></div>
+            <div class="stat"><strong id="statTotal">0</strong><div class="muted small">tổng lượt rút</div></div>
+          </div>
+
+          <div class="form-grid" style="margin-top:16px">
+            <div class="field full"><label for="practiceTitleInput">Tiêu đề PDF</label><input id="practiceTitleInput" placeholder="Đề ôn tập – Tên môn"></div>
+            <div class="field"><label for="accessCodeInput">Mã truy cập</label><input id="accessCodeInput" maxlength="32" autocapitalize="characters"></div>
+            <div class="field"><label>&nbsp;</label><button id="rotateCodeBtn" class="secondary">Tạo mã mới</button></div>
+            <div class="field"><label for="openAtInput">Mở từ (không bắt buộc)</label><input id="openAtInput" type="datetime-local"></div>
+            <div class="field"><label for="closeAtInput">Đóng lúc (không bắt buộc)</label><input id="closeAtInput" type="datetime-local"></div>
+            <div class="field"><label for="fallbackCountInput">Số câu nếu không dùng ma trận</label><input id="fallbackCountInput" type="number" min="1" max="200" value="20"></div>
+            <div class="field"><label>Tổng theo ma trận</label><input id="matrixTotalInput" readonly value="0"></div>
+          </div>
+
+          <div class="switch-row" style="margin:18px 0">
+            <label><input id="enabledInput" type="checkbox"> Bật môn</label>
+            <label><input id="answersInput" type="checkbox"> Kèm đáp án cuối PDF</label>
+            <label><input id="redrawInput" type="checkbox" checked> Cho rút lại không giới hạn</label>
+          </div>
+
+          <div class="panel-head" style="margin-top:8px"><div><h3>Ma trận Chương × CLO</h3><p class="muted small">Để toàn bộ bằng 0 nếu muốn rút ngẫu nhiên theo “Số câu” ở trên.</p></div></div>
+          <div class="matrix-wrap"><table class="matrix"><thead id="matrixHead"></thead><tbody id="matrixBody"></tbody></table></div>
+          <p id="saveMessage" class="message" aria-live="polite"></p>
+          <div class="admin-actions"><button id="saveBtn" class="primary">Lưu cấu hình</button><a id="publicLink" class="ghost-link" href="./index.html" target="_blank" rel="noopener">Mở trang sinh viên</a></div>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
