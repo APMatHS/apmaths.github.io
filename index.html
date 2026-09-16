@@ -1,105 +1,74 @@
 ---
 layout: page
-title: Apmaths
+title: APMaths
 permalink: /
 ---
 
-<section class="feed">
-    <section class="feed__description">
-        <h1>{{ site.title }}</h1>
-        <p>{{ site.description }}</p>
-    </section>
+<div class="home-page">
+
+<section class="home-intro">
+    <h1>{{ site.title }}</h1>
+    <p>{{ site.description }}</p>
 </section>
 
-<div class="page">
-<h1>{{ page.title }}</h1>
-
-<!-- This loops through the paginated posts -->
-{% for post in paginator.posts %}
-  <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
-  <p class="author">
-    <span class="date">{{ post.date | date_to_string  }}</span>
-  </p>
-{% endfor %}
-</div>
-
-<!-- ========================================== -->
-<!-- 2. KHU VỰC CHÍNH (HERO SECTION)            -->
-<!-- ========================================== -->
-<section class="hero-section" style="padding: 40px 20px; text-align: center; background-color: #f8f9fa;">
-    <h1 style="font-size: 2.5rem; color: #1a73e8; margin-bottom: 20px;">
-        APMaths – Thư viện Toán cao cấp & Giải pháp Tự động hóa Giáo dục
-    </h1>
-    <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto 30px auto; line-height: 1.6; color: #3c4043;">
+<section class="home-hero">
+    <h2>APMaths – Thư viện Toán cao cấp & Giải pháp Tự động hóa Giáo dục</h2>
+    <p>
         Nơi chia sẻ các bài giảng chuyên sâu về <strong>Đại số tuyến tính</strong>, <strong>Giải tích</strong>, <strong>Toán rời rạc</strong> và các giải pháp lập trình ứng dụng. Chúng tôi cung cấp các công cụ và mã nguồn <strong>Python</strong>, <strong>LaTeX</strong> giúp tối ưu hóa quy trình quản lý học thuật, trộn đề thi trắc nghiệm và xử lý dữ liệu giáo dục một cách hiệu quả, chuyên nghiệp.
     </p>
-    <div class="cta-buttons">
-        <a href="#knowledge" style="padding: 12px 24px; background-color: #1a73e8; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; margin-right: 15px; display: inline-block;">Khám phá bài giảng</a>
-        <a href="#resources" style="padding: 12px 24px; border: 2px solid #1a73e8; color: #1a73e8; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">Tải tài nguyên miễn phí</a>
+    <div class="home-actions">
+        <a class="home-button home-button--primary" href="#courses">Khám phá bài giảng</a>
+        <a class="home-button home-button--secondary" href="#resources">Tải tài nguyên miễn phí</a>
     </div>
 </section>
 
-<hr style="border: 0; border-top: 1px solid #dadce0; margin: 40px 0;">
+<hr>
 
-<!-- ========================================== -->
-<!-- 3. KHU VỰC 1: TOÁN HỌC CHUYÊN SÂU          -->
-<!-- ========================================== -->
-<section id="courses" class="math-section" style="padding: 20px;">
-    <h2 style="font-size: 2rem; color: #202124; margin-bottom: 10px;">Nền tảng Toán học Cao cấp</h2>
-    <p style="color: #5f6368; margin-bottom: 30px;">Hệ thống hóa lý thuyết nền tảng, các bài tập chuyên sâu và các hướng nghiên cứu toán học hiện đại dành cho sinh viên, giảng viên và nhà nghiên cứu.</p>
-    
-    <div class="course-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-        <!-- Chuyên mục Đại số -->
-        <article style="border: 1px solid #dadce0; padding: 20px; border-radius: 8px;">
-            <h3 style="color: #1a73e8; margin-top: 0;">Đại số tuyến tính & Hình học</h3>
-            <p style="line-height: 1.5; color: #3c4043;">Khám phá từ không gian vectơ, hệ phương trình tuyến tính, ma trận cơ bản cho đến các chủ đề nghiên cứu chuyên sâu về phân rã ma trận, ma trận Symplectic, cấu trúc nhóm và dạng chuẩn Jordan.</p>
-            <a href="/algebra" style="color: #1a73e8; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px;">Xem chuỗi bài viết về Đại số &rarr;</a>
+<section id="courses" class="home-section">
+    <h2>Nền tảng Toán học Cao cấp</h2>
+    <p>Hệ thống hóa lý thuyết nền tảng, các bài tập chuyên sâu và các hướng nghiên cứu toán học hiện đại dành cho sinh viên, giảng viên và nhà nghiên cứu.</p>
+
+    <div class="home-card-grid">
+        <article class="home-card">
+            <h3>Đại số tuyến tính & Hình học</h3>
+            <p>Khám phá từ không gian vectơ, hệ phương trình tuyến tính, ma trận cơ bản cho đến các chủ đề nghiên cứu chuyên sâu về phân rã ma trận, ma trận Symplectic, cấu trúc nhóm và dạng chuẩn Jordan.</p>
+            <a href="/knowledge/algebra/">Xem chuỗi bài viết về Đại số &rarr;</a>
         </article>
 
-        <!-- Chuyên mục Giải tích -->
-        <article style="border: 1px solid #dadce0; padding: 20px; border-radius: 8px;">
-            <h3 style="color: #1a73e8; margin-top: 0;">Giải tích Toán học</h3>
-            <p style="line-height: 1.5; color: #3c4043;">Hệ thống toàn bộ kiến thức về vi tích phân, lý thuyết giới hạn, hàm liên tục, tính toán chuỗi vô hạn và các lý thuyết liên quan trên trường số thực và số phức.</p>
-            <a href="/calculus" style="color: #1a73e8; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px;">Xem chuỗi bài viết về Giải tích &rarr;</a>
+        <article class="home-card">
+            <h3>Giải tích Toán học</h3>
+            <p>Hệ thống toàn bộ kiến thức về vi tích phân, lý thuyết giới hạn, hàm liên tục, tính toán chuỗi vô hạn và các lý thuyết liên quan trên trường số thực và số phức.</p>
+            <a href="/knowledge/calculus/">Xem chuỗi bài viết về Giải tích &rarr;</a>
         </article>
 
-        <!-- Chuyên mục Xác suất thống kê -->
-        <article style="border: 1px solid #dadce0; padding: 20px; border-radius: 8px;">
-            <h3 style="color: #1a73e8; margin-top: 0;">Xác suất và biến ngẫu nhiên</h3>
-            <p style="line-height: 1.5; color: #3c4043;">Thống kê mô tả, thống kê suy diễn và ứng dụng của chúng. Đặc biệt, áp dụng trong kinh tế lượng.</p>
-            <a href="/statistics" style="color: #1a73e8; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px;">Xem chuỗi bài viết về Xác suất thống kê&rarr;</a>
+        <article class="home-card">
+            <h3>Xác suất và biến ngẫu nhiên</h3>
+            <p>Thống kê mô tả, thống kê suy diễn và ứng dụng của chúng. Đặc biệt, áp dụng trong kinh tế lượng.</p>
+            <a href="/knowledge/statistics/">Xem chuỗi bài viết về Xác suất thống kê &rarr;</a>
         </article>
     </div>
 </section>
 
-<hr style="border: 0; border-top: 1px solid #dadce0; margin: 40px 0;">
+<hr>
 
-<!-- ========================================== -->
-<!-- 5. KHU VỰC 3: BÀI VIẾT MỚI & TÀI NGUYÊN    -->
-<!-- ========================================== -->
-<section id="resources" class="updates-section" style="padding: 20px;">
-    <h2 style="font-size: 2rem; color: #202124; margin-bottom: 15px;">Cập nhật mới nhất & Tài nguyên học thuật</h2>
-    <p style="color: #5f6368; margin-bottom: 25px;">Tổng hợp các bài viết chuyên đề mới nhất cùng kho tài nguyên, công cụ lập trình hỗ trợ giáo dục được cập nhật liên tục.</p>
-    
-    <ul style="line-height: 1.8; color: #3c4043; margin-bottom: 40px; padding-left: 20px;">
-        <li><strong>Bài viết mới:</strong> <a href="/posts/matrix-structures" style="color: #1a73e8; text-decoration: none;">[Hướng dẫn cấu trúc ma trận và ứng dụng trong các bài toán biến đổi hình học]</a> – <em>Cập nhật 2026</em></li>
-        <li><strong>Thủ thuật Code:</strong> <a href="/posts/python-responsive-table" style="color: #1a73e8; text-decoration: none;">[Chia sẻ script Python xử lý, căn chỉnh bảng dữ liệu tự động tối ưu hiển thị trên giao diện di động]</a></li>
-        <li><strong>Ngân hàng đề thi:</strong> <a href="/posts/discrete-math-clo" style="color: #1a73e8; text-decoration: none;">[Tổng hợp câu hỏi Toán rời rạc và Logic mệnh đề chuẩn hóa theo Chuẩn đầu ra (CLO)]</a></li>
+<section id="resources" class="home-section">
+    <h2>Cập nhật mới nhất & Tài nguyên học thuật</h2>
+    <p>Tổng hợp các bài viết chuyên đề mới nhất cùng kho tài nguyên, công cụ lập trình hỗ trợ giáo dục được cập nhật liên tục.</p>
+
+    <ul class="home-updates">
+        <li><strong>Bài viết mới:</strong> <a href="/posts/matrix-structures">Hướng dẫn cấu trúc ma trận và ứng dụng trong các bài toán biến đổi hình học</a> – <em>Cập nhật 2026</em></li>
+        <li><strong>Thủ thuật Code:</strong> <a href="/posts/python-responsive-table">Chia sẻ script Python xử lý, căn chỉnh bảng dữ liệu tự động tối ưu hiển thị trên giao diện di động</a></li>
+        <li><strong>Ngân hàng đề thi:</strong> <a href="/posts/discrete-math-clo">Tổng hợp câu hỏi Toán rời rạc và Logic mệnh đề chuẩn hóa theo Chuẩn đầu ra (CLO)</a></li>
     </ul>
 
-    <h3 style="font-size: 1.5rem; color: #202124; margin-bottom: 15px;">Kho tài nguyên tải về miễn phí</h3>
-    <p style="color: #5f6368; margin-bottom: 20px;">Tối ưu hóa công việc biên soạn tài liệu và quản lý kiểm tra với các bộ công cụ được định dạng sẵn:</p>
-    
-    <div class="download-links" style="display: flex; flex-direction: column; gap: 12px; max-width: 500px;">
-        <a href="/downloads/de-thi-clo.docx" style="padding: 10px 15px; background-color: #f1f3f4; color: #3c4043; text-decoration: none; border-radius: 4px; font-weight: 500; border-left: 4px solid #1a73e8;">
-            📥 Tải Mẫu Đề thi & Đáp án chuẩn hóa CLO
-        </a>
-        <a href="/downloads/template-latex.zip" style="padding: 10px 15px; background-color: #f1f3f4; color: #3c4043; text-decoration: none; border-radius: 4px; font-weight: 500; border-left: 4px solid #1a73e8;">
-            📥 Tải Template LaTeX / MathType chuẩn học thuật
-        </a>
-        <a href="/downloads/python-shuffler.py" style="padding: 10px 15px; background-color: #f1f3f4; color: #3c4043; text-decoration: none; border-radius: 4px; font-weight: 500; border-left: 4px solid #1a73e8;">
-            📥 Tải Mã nguồn Python hỗ trợ quản lý file đề thi
-        </a>
+    <h3>Kho tài nguyên tải về miễn phí</h3>
+    <p>Tối ưu hóa công việc biên soạn tài liệu và quản lý kiểm tra với các bộ công cụ được định dạng sẵn:</p>
+
+    <div class="home-downloads">
+        <a href="/downloads/de-thi-clo.docx">📥 Tải Mẫu Đề thi & Đáp án chuẩn hóa CLO</a>
+        <a href="/downloads/template-latex.zip">📥 Tải Template LaTeX / MathType chuẩn học thuật</a>
+        <a href="/downloads/python-shuffler.py">📥 Tải Mã nguồn Python hỗ trợ quản lý file đề thi</a>
     </div>
 </section>
 
+</div>
