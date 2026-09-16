@@ -43,12 +43,6 @@
         </a>
     </li>
 
-    <li class="nav-item{% if current_url contains '/about/' or current_url contains '/cv/' or current_url contains '/other/people/' %} is-current{% endif %}">
-        <a class="nav-link" href="/about/"{% if current_url == '/about/' %} aria-current="page"{% endif %}>
-            <span>{{ include.t.nav.about }}</span>
-        </a>
-    </li>
-
     <li class="nav-item nav-item--clo{% if current_url contains '/ai-clo/' %} is-current{% endif %}">
         <a class="nav-clo" href="/ai-clo/" aria-label="AI-CLO">CLO</a>
     </li>
