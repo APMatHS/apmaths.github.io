@@ -1,9 +1,23 @@
-/* AI-CLO PTITHCM V12.7 — essay question bank. */
+/* AI-CLO PTITHCM V12.7.3 — essay question bank. */
 .essay-kind-tabs{display:flex;gap:6px;margin:8px 0 10px;padding:4px;background:var(--surface-2,#f3f6fb);border:1px solid var(--border,#dbe3ef);border-radius:10px;width:max-content;max-width:100%}
 .essay-kind-tab{border:0;background:transparent;padding:7px 14px;border-radius:7px;font-weight:700;color:var(--muted,#5f6b7a);cursor:pointer}
 .essay-kind-tab.active{background:var(--surface,#fff);color:var(--primary,#1d4ed8);box-shadow:0 1px 4px rgba(15,23,42,.12)}
 .essay-main-bank-tabs{margin-bottom:0}
 .essay-bank-note{margin-top:0}
+
+/* First-paint stabilization: final toolbar sizing is available before essay-tools.js runs. */
+.essay-primary-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 12px}
+.essay-primary-actions>button{width:100%;min-height:48px;margin:0!important;font-weight:800;font-size:15px;white-space:nowrap;border-radius:10px}
+.essay-search-row{display:grid;grid-template-columns:minmax(0,1fr) 148px;gap:10px;align-items:center;margin:0 0 8px}
+.essay-search-row>input{width:100%;height:48px;min-height:48px;font-size:14px}
+.essay-filter-button{height:48px;min-height:48px;font-weight:800}
+.essay-count-row{min-height:24px;display:flex;align-items:center;margin:0 0 8px}
+.essay-selection-actions{display:flex;align-items:center;gap:8px;margin:0 0 12px}
+.essay-selection-toggle{min-width:160px;min-height:44px;font-weight:800}
+/* Raw V12.7 controls are never painted; essay-tools moves them into the stable layout in the same render turn. */
+.essay-question-tools:not(.essay-filter-source){display:none!important}
+.essay-bank-actions:not(.essay-legacy-actions){visibility:hidden;height:0;min-height:0;margin:0!important;padding:0!important;overflow:hidden}
+
 .essay-question-tools{display:grid;grid-template-columns:minmax(190px,1.4fr) repeat(6,minmax(120px,1fr));gap:7px;margin:10px 0}
 .essay-question-tools input,.essay-question-tools select{min-width:0;width:100%}
 .essay-bank-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
@@ -54,5 +68,8 @@
 .essay-revision-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border,#e2e8f0)}
 .essay-migration-panel{margin-top:10px}
 @media(max-width:1100px){.essay-question-tools{grid-template-columns:repeat(3,minmax(0,1fr))}.essay-question-tools input{grid-column:span 2}}
-@media(max-width:720px){.essay-kind-tabs{width:100%;display:grid;grid-template-columns:1fr 1fr}.essay-kind-tab{width:100%}.essay-question-tools{grid-template-columns:1fr 1fr}.essay-question-tools input{grid-column:1/-1}.essay-bank-actions{align-items:stretch;flex-direction:column}.essay-bank-actions button{width:100%}.essay-scope-options{grid-template-columns:1fr}.essay-editor-title{flex-direction:column}.essay-editor-title button{width:100%}.essay-part-meta{grid-template-columns:1fr}.essay-rubric-row{grid-template-columns:1fr 90px 1fr 34px}.essay-rubric-row .rubric-criterion{grid-column:1/-1}.essay-detail-audit{grid-template-columns:1fr}}
+@media(max-width:1000px){.essay-primary-actions{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.essay-kind-tabs{width:100%;display:grid;grid-template-columns:1fr 1fr}.essay-kind-tab{width:100%}.essay-question-tools{grid-template-columns:1fr 1fr}.essay-question-tools input{grid-column:1/-1}.essay-scope-options{grid-template-columns:1fr}.essay-editor-title{flex-direction:column}.essay-editor-title button{width:100%}.essay-part-meta{grid-template-columns:1fr}.essay-rubric-row{grid-template-columns:1fr 90px 1fr 34px}.essay-rubric-row .rubric-criterion{grid-column:1/-1}.essay-detail-audit{grid-template-columns:1fr}}
+@media(max-width:700px){.essay-primary-actions{grid-template-columns:1fr 1fr;gap:8px}.essay-primary-actions>button{min-height:44px;font-size:13px}.essay-search-row{grid-template-columns:minmax(0,1fr) 112px;gap:8px}.essay-search-row>input,.essay-filter-button{height:44px;min-height:44px}.essay-selection-toggle{min-width:132px;min-height:42px}}
 @media(max-width:480px){.essay-question-tools{grid-template-columns:1fr}.essay-question-tools input{grid-column:auto}.essay-rubric-row{grid-template-columns:1fr 1fr 34px}.essay-rubric-row .rubric-criterion{grid-column:1/-1}.essay-rubric-row .rubric-points{grid-column:1}.essay-rubric-row .rubric-clo{grid-column:2}}
+@media(max-width:430px){.essay-search-row{grid-template-columns:1fr}.essay-filter-button,.essay-selection-toggle{width:100%}.essay-selection-actions{display:grid;grid-template-columns:1fr}}
