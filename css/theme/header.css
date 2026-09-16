@@ -6,15 +6,10 @@
    ========================================================== */
 
 .site-header { width: 100%; background: var(--surface); border-bottom: 1px solid var(--border); }
-.site-header-inner { max-width: 1200px; margin: 0 auto; padding: 12px 24px 10px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.site-brand { display: inline-flex; align-items: center; gap: 14px; min-width: 0; color: inherit; text-decoration: none; }
+.site-header-inner { max-width: 1200px; margin: 0 auto; padding: 10px 24px 8px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.site-brand { display: inline-flex; align-items: center; min-width: 0; color: inherit; text-decoration: none; }
 .site-brand:hover { text-decoration: none; }
-.site-logo { width: 66px; height: 66px; object-fit: contain; flex-shrink: 0; }
-.site-brand-copy { display: flex; flex-direction: column; min-width: 0; }
-.site-title { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 2.22rem; font-weight: 800; line-height: .98; letter-spacing: -.055em; white-space: nowrap; }
-.site-title-ap { color: #1478f5; }
-.site-title-maths { color: #071b48; }
-.site-tagline { margin-top: 7px; color: #65738c; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: .91rem; font-weight: 400; line-height: 1.2; letter-spacing: .16em; white-space: nowrap; }
+.site-logo-horizontal { display: block; width: 300px; height: auto; max-width: calc(100vw - 116px); object-fit: contain; flex: 0 1 auto; }
 .mobile-nav-toggle { display: none; width: 44px; height: 44px; padding: 10px; flex: 0 0 auto; align-items: center; justify-content: center; flex-direction: column; gap: 5px; color: var(--text); background: transparent; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
 .mobile-nav-toggle__line { display: block; width: 20px; height: 2px; background: currentColor; border-radius: 999px; transition: transform .2s ease, opacity .2s ease; }
 .mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -40,11 +35,8 @@
 .nav-link:focus-visible, .submenu-toggle:focus-visible, .mobile-nav-toggle:focus-visible, .sub-menu a:focus-visible { outline: 2px solid var(--primary-light); outline-offset: -2px; }
 
 @media (max-width: 780px) {
-    .site-header-inner { padding: 11px 16px; gap: 12px; }
-    .site-brand { gap: 11px; }
-    .site-logo { width: 52px; height: 52px; }
-    .site-title { font-size: 1.8rem; }
-    .site-tagline { margin-top: 4px; font-size: .74rem; letter-spacing: .12em; }
+    .site-header-inner { padding: 9px 16px; gap: 12px; }
+    .site-logo-horizontal { width: 260px; max-width: calc(100vw - 92px); }
     .mobile-nav-toggle { display: inline-flex; }
     .site-nav { position: static; display: none; box-shadow: none; border-top: 0; }
     .site-nav.is-open { display: block; }
@@ -63,9 +55,7 @@
 }
 
 @media (max-width: 480px) {
-    .site-header-inner { padding: 10px 14px; }
-    .site-logo { width: 48px; height: 48px; }
-    .site-title { font-size: 1.58rem; }
-    .site-tagline { font-size: .65rem; letter-spacing: .095em; }
+    .site-header-inner { padding: 8px 14px; }
+    .site-logo-horizontal { width: 235px; max-width: calc(100vw - 84px); }
     .mobile-nav-toggle { width: 42px; height: 42px; }
 }
