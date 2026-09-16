@@ -11,7 +11,7 @@
 </head>
 <body>
 <main class="shell">
-  <header class="brandbar"><div><div class="eyebrow">AI-CLO PTITHCM</div><h1>Quản lý rút đề ôn tập PDF</h1><p class="muted">Một mã cho mỗi môn, bên trong có nhiều gói ôn tập theo một hoặc nhiều chương.</p></div><a class="ghost-link" href="./index.html">Trang sinh viên</a></header>
+  <header class="brandbar"><div><div class="eyebrow">AI-CLO PTITHCM</div><h1>Quản lý rút đề ôn tập PDF</h1><p class="muted">Một mã cho mỗi môn, bên trong có nhiều gói ôn tập theo Chương · Mục · CLO.</p></div><a class="ghost-link" href="./index.html">Trang sinh viên</a></header>
 
   <section id="loginView" class="card login-card">
     <h2>Đăng nhập giảng viên</h2><p class="muted">Dùng tài khoản AI-CLO hiện có.</p>
@@ -54,12 +54,18 @@
             <div class="field full"><label for="packageNameInput">Tên gói</label><input id="packageNameInput" placeholder="Ví dụ: Ôn Chương 1–2"></div>
             <div class="field"><label for="drawModeInput">Cách rút câu</label><select id="drawModeInput"><option value="count">Theo số câu</option><option value="matrix">Theo ma trận CLO</option></select></div>
             <div id="countField" class="field"><label for="questionCountInput">Số câu</label><input id="questionCountInput" type="number" min="1" max="200" value="20"></div>
+            <div id="matrixScopeField" class="field hidden"><label for="matrixScopeInput">Kiểu ma trận CLO</label><select id="matrixScopeInput"><option value="chapter">CLO theo Chương</option><option value="topic">CLO theo Mục</option></select></div>
           </div>
           <div class="switch-row"><label><input id="packageEnabledInput" type="checkbox" checked> Bật gói</label><label><input id="packageAnswersInput" type="checkbox"> Kèm đáp án cuối PDF</label></div>
 
-          <h4>Chọn chương</h4><p class="muted small">Có thể chọn một, hai hoặc nhiều chương trong cùng một gói.</p><div id="chapterPicker" class="chapter-picker"></div>
+          <h4>Phạm vi Chương · Mục</h4>
+          <p class="muted small">Chọn Chương trước, sau đó có thể bỏ bớt Mục không muốn rút. Chọn/bỏ tên Chương sẽ chọn/bỏ toàn bộ Mục của Chương đó.</p>
+          <div id="chapterPicker" class="chapter-picker"></div>
 
-          <div id="matrixSection" class="hidden"><div class="panel-head matrix-heading"><div><h4>Ma trận Chương × CLO</h4><p class="muted small">Chỉ các chương đã chọn mới xuất hiện.</p></div><strong>Tổng: <span id="matrixTotal">0</span> câu</strong></div><div class="matrix-wrap"><table class="matrix"><thead id="matrixHead"></thead><tbody id="matrixBody"></tbody></table></div></div>
+          <div id="matrixSection" class="hidden">
+            <div class="panel-head matrix-heading"><div><h4 id="matrixTitle">Ma trận Chương × CLO</h4><p id="matrixHelp" class="muted small">CLO chung các Mục đã chọn trong từng Chương.</p></div><strong>Tổng: <span id="matrixTotal">0</span> câu</strong></div>
+            <div class="matrix-wrap"><table class="matrix"><thead id="matrixHead"></thead><tbody id="matrixBody"></tbody><tfoot id="matrixFoot"></tfoot></table></div>
+          </div>
           <p id="packageMessage" class="message" aria-live="polite"></p>
           <div class="admin-actions"><button id="savePackageBtn" class="primary">Lưu gói ôn tập</button><button id="cancelPackageBtn2" class="secondary">Hủy</button></div>
         </div>
