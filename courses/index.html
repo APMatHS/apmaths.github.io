@@ -1,0 +1,6 @@
+---
+layout: default
+title: Khóa học
+permalink: /courses/
+---
+<h1>Khóa học</h1><p>Các học phần và trang lớp được sắp xếp theo năm học.</p>{% assign years = site.pages | where: "course_year_index", true | sort: "academic_year" | reverse %}<ul>{% for y in years %}<li><a href="{{ y.url }}">Năm học {{ y.academic_year }}</a></li>{% endfor %}</ul>

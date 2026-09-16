@@ -1,0 +1,8 @@
+---
+layout: default
+title: Khóa học 2024–2025
+academic_year: "2024-2025"
+course_year_index: true
+permalink: /courses/2024-2025/
+---
+<h1>Khóa học 2024–2025</h1><ul><li><a href="/courses/2024-2025/gt2-tuxa-ptit242.html">Giải tích 2 – PTIT từ xa HK242</a></li><li><a href="/courses/2024-2025/ptit-241-tx-gt2.html">Giải tích 2 – PTIT HK241</a></li><li><a href="/courses/2024-2025/ptit241-gt1/">Giải tích 1 – PTIT HK241</a></li><li><a href="/courses/2024-2025/ptit241-tcc1.html">Toán cao cấp 1 – PTIT HK241</a></li><li><a href="/courses/2024-2025/ptit243-gt1.html">Giải tích 1 – PTIT HK243</a></li><li><a href="/courses/2024-2025/dstx-ptit241/">Đại số – PTIT từ xa HK241</a></li><li><a href="/courses/2024-2025/ptit-ds-c2/">Đại số – PTIT</a></li><li><a href="/courses/2024-2025/ptit-ds241-c3.html">Đại số – PTIT HK241 C3</a></li><li><a href="/courses/2024-2025/ptit243-tcc2.html">Toán cao cấp 2 – PTIT HK243</a></li><li><a href="/courses/2024-2025/tcc2-ptit-242.html">Toán cao cấp 2 – PTIT HK242</a></li><li><a href="/courses/2024-2025/toana3-stu241/">Toán A3 – STU HK241</a></li><li><a href="/courses/2024-2025/toanc2-stu242.html">Toán C2 – STU HK242</a></li></ul><h2>Trang phụ</h2><ul><li><a href="/courses/2024-2025/test01.html">Test 01</a></li></ul>{% assign courses = site.pages | where: "course", true | where: "academic_year", "2024-2025" | sort: "title" %}{% if courses.size > 0 %}<h2>Khóa học bổ sung</h2><ul>{% for c in courses %}<li><a href="{{ c.url }}">{{ c.title }}</a></li>{% endfor %}</ul>{% endif %}
