@@ -1,0 +1,170 @@
+---
+layout: page
+title: Định thức – Cách tính, tính chất và ví dụ
+description: Bài học cơ bản về định thức dành cho sinh viên: định thức cấp 2, cấp 3, khai triển theo hàng cột, biến đổi sơ cấp, tính chất, ví dụ và bài tập tự luyện.
+permalink: /knowledge/algebra/determinant/
+---
+
+<h1>Định thức</h1>
+
+<p>Định thức gắn với ma trận vuông và xuất hiện trong nhiều bài toán của đại số tuyến tính: kiểm tra khả nghịch, giải hệ phương trình, xác định hạng và nghiên cứu ánh xạ tuyến tính.</p>
+
+<h2>1. Mục tiêu học tập</h2>
+<ul>
+  <li>Tính được định thức của ma trận cấp 2 và cấp 3.</li>
+  <li>Sử dụng được khai triển Laplace theo một hàng hoặc một cột.</li>
+  <li>Vận dụng được các tính chất của định thức để tính nhanh.</li>
+  <li>Hiểu mối liên hệ giữa \(\det A\) và tính khả nghịch của ma trận vuông.</li>
+</ul>
+
+<h2>2. Định thức cấp 2</h2>
+<div class="academic-box definition">
+  <h4>Công thức</h4>
+  <p>Với</p>
+  <p>\[
+  A=\begin{pmatrix}a&b\\c&d\end{pmatrix},
+  \]</p>
+  <p>ta có</p>
+  <p>\[
+  \det A=ad-bc.
+  \]</p>
+</div>
+
+<h3>Ví dụ 1</h3>
+<p>Cho</p>
+<p>\[
+A=\begin{pmatrix}2&-1\\3&4\end{pmatrix}.
+\]</p>
+<p>Khi đó</p>
+<p>\[
+\det A=2\cdot4-(-1)\cdot3=11.
+\]</p>
+
+<h2>3. Định thức cấp 3</h2>
+<p>Với</p>
+<p>\[
+A=\begin{pmatrix}
+a_{11}&a_{12}&a_{13}\\
+a_{21}&a_{22}&a_{23}\\
+a_{31}&a_{32}&a_{33}
+\end{pmatrix},
+\]</p>
+<p>ta có thể khai triển theo hàng thứ nhất:</p>
+<p>\[
+\det A
+=a_{11}\begin{vmatrix}a_{22}&a_{23}\\a_{32}&a_{33}\end{vmatrix}
+-a_{12}\begin{vmatrix}a_{21}&a_{23}\\a_{31}&a_{33}\end{vmatrix}
++a_{13}\begin{vmatrix}a_{21}&a_{22}\\a_{31}&a_{32}\end{vmatrix}.
+\]</p>
+
+<h3>Ví dụ 2</h3>
+<p>Tính định thức</p>
+<p>\[
+A=\begin{pmatrix}
+1&2&0\\
+3&-1&2\\
+2&1&1
+\end{pmatrix}.
+\]</p>
+<p>Khai triển theo hàng thứ nhất:</p>
+<p>\[
+\det A
+=1\begin{vmatrix}-1&2\\1&1\end{vmatrix}
+-2\begin{vmatrix}3&2\\2&1\end{vmatrix}
+=(-3)-2(-1)=-1.
+\]</p>
+
+<h2>4. Khai triển Laplace</h2>
+<p>Gọi \(M_{ij}\) là định thức con thu được bằng cách bỏ hàng \(i\) và cột \(j\). Phần bù đại số của phần tử \(a_{ij}\) là</p>
+<p>\[
+A_{ij}=(-1)^{i+j}M_{ij}.
+\]</p>
+<p>Ta có thể khai triển định thức theo bất kỳ hàng \(i\):</p>
+<p>\[
+\det A=\sum_{j=1}^{n}a_{ij}A_{ij},
+\]</p>
+<p>hoặc theo bất kỳ cột \(j\):</p>
+<p>\[
+\det A=\sum_{i=1}^{n}a_{ij}A_{ij}.
+\]</p>
+
+<div class="academic-box tip">
+  <h4>Mẹo tính</h4>
+  <p>Khi khai triển Laplace, nên chọn hàng hoặc cột có nhiều phần tử bằng \(0\) để giảm số phép tính.</p>
+</div>
+
+<h2>5. Các tính chất quan trọng</h2>
+<ul>
+  <li>\(\det I_n=1\).</li>
+  <li>\(\det(A^T)=\det A\).</li>
+  <li>\(\det(AB)=\det A\,\det B\).</li>
+  <li>Đổi chỗ hai hàng của ma trận thì định thức đổi dấu.</li>
+  <li>Nhân một hàng với \(\lambda\) thì định thức bị nhân với \(\lambda\).</li>
+  <li>Cộng vào một hàng một bội của hàng khác thì định thức không đổi.</li>
+  <li>Nếu ma trận có hai hàng tỉ lệ hoặc có một hàng toàn số \(0\), định thức bằng \(0\).</li>
+  <li>Nếu \(A\) là ma trận tam giác thì \(\det A\) bằng tích các phần tử trên đường chéo chính.</li>
+</ul>
+
+<h2>6. Tính định thức bằng biến đổi sơ cấp</h2>
+<h3>Ví dụ 3</h3>
+<p>Tính</p>
+<p>\[
+D=\begin{vmatrix}
+1&2&3\\
+2&5&8\\
+1&0&1
+\end{vmatrix}.
+\]</p>
+<p>Thực hiện \(R_2\leftarrow R_2-2R_1\), \(R_3\leftarrow R_3-R_1\). Hai phép biến đổi này không làm thay đổi định thức:</p>
+<p>\[
+D=\begin{vmatrix}
+1&2&3\\
+0&1&2\\
+0&-2&-2
+\end{vmatrix}.
+\]</p>
+<p>Tiếp tục \(R_3\leftarrow R_3+2R_2\):</p>
+<p>\[
+D=\begin{vmatrix}
+1&2&3\\
+0&1&2\\
+0&0&2
+\end{vmatrix}=1\cdot1\cdot2=2.
+\]</p>
+
+<h2>7. Liên hệ với ma trận nghịch đảo</h2>
+<div class="academic-box theorem">
+  <h4>Điều kiện khả nghịch</h4>
+  <p>Một ma trận vuông \(A\) khả nghịch khi và chỉ khi</p>
+  <p>\[
+  \det A\ne0.
+  \]</p>
+</div>
+
+<div class="academic-box warning">
+  <h4>Sai lầm thường gặp</h4>
+  <p>Nói chung \(\det(A+B)\ne\det A+\det B\). Tính chất nhân đúng là \(\det(AB)=\det A\det B\).</p>
+</div>
+
+<h2>8. Bài tập tự luyện</h2>
+<ol>
+  <li>Tính \(\begin{vmatrix}3&2\\5&-1\end{vmatrix}\).</li>
+  <li>Tính \(\det\begin{pmatrix}1&0&2\\-1&3&1\\2&1&0\end{pmatrix}\).</li>
+  <li>Tính định thức của ma trận tam giác \(A=\begin{pmatrix}2&1&4\\0&-3&2\\0&0&5\end{pmatrix}\).</li>
+  <li>Không khai triển trực tiếp, cho biết định thức của ma trận có hai hàng bằng nhau bằng bao nhiêu.</li>
+  <li>Tìm \(m\) để \(A=\begin{pmatrix}m&1\\2&m\end{pmatrix}\) khả nghịch.</li>
+</ol>
+
+<details>
+  <summary><strong>Đáp số</strong></summary>
+  <ol>
+    <li>\(-13\).</li>
+    <li>\(-15\).</li>
+    <li>\(-30\).</li>
+    <li>\(0\).</li>
+    <li>\(\det A=m^2-2\), nên \(A\) khả nghịch khi \(m\ne\pm\sqrt2\).</li>
+  </ol>
+</details>
+
+<hr>
+<p><a href="/knowledge/algebra/matrix/">← Ma trận</a> &nbsp; | &nbsp; <a href="/knowledge/algebra/">Đại số tuyến tính</a> &nbsp; | &nbsp; <a href="/knowledge/algebra/inverse-matrix/">Ma trận nghịch đảo →</a></p>
