@@ -1,0 +1,150 @@
+---
+layout: page
+title: Ma trận – Khái niệm, phép toán và ví dụ
+description: Bài học cơ bản về ma trận dành cho sinh viên: định nghĩa, kích thước, các loại ma trận, phép cộng, nhân vô hướng, nhân ma trận, chuyển vị, ví dụ và bài tập tự luyện.
+permalink: /knowledge/algebra/matrix/
+---
+
+<h1>Ma trận</h1>
+
+<p>Ma trận là một trong những đối tượng cơ bản của đại số tuyến tính. Bài này giúp sinh viên làm quen với cách ký hiệu ma trận, các phép toán cơ bản và đặc biệt là phép nhân hai ma trận.</p>
+
+<h2>1. Mục tiêu học tập</h2>
+<ul>
+  <li>Nhận biết được kích thước và các phần tử của một ma trận.</li>
+  <li>Thực hiện được phép cộng, trừ, nhân ma trận với một số và phép chuyển vị.</li>
+  <li>Xác định được khi nào hai ma trận có thể nhân với nhau.</li>
+  <li>Tính đúng tích của hai ma trận trong các trường hợp cơ bản.</li>
+</ul>
+
+<h2>2. Khái niệm ma trận</h2>
+<div class="academic-box definition">
+  <h4>Định nghĩa</h4>
+  <p>Một ma trận kích thước \(m\times n\) là một bảng gồm \(m\) hàng và \(n\) cột:</p>
+  <p>\[
+  A=(a_{ij})_{m\times n}=\begin{pmatrix}
+  a_{11}&a_{12}&\cdots&a_{1n}\\
+  a_{21}&a_{22}&\cdots&a_{2n}\\
+  \vdots&\vdots&\ddots&\vdots\\
+  a_{m1}&a_{m2}&\cdots&a_{mn}
+  \end{pmatrix}.
+  \]</p>
+  <p>Phần tử \(a_{ij}\) nằm ở hàng thứ \(i\), cột thứ \(j\).</p>
+</div>
+
+<p>Ví dụ, với</p>
+<p>\[
+A=\begin{pmatrix}1&-2&3\\0&4&5\end{pmatrix},
+\]</p>
+<p>ta có \(A\) là ma trận \(2\times3\), \(a_{12}=-2\), \(a_{23}=5\).</p>
+
+<h3>Một số ma trận thường gặp</h3>
+<ul>
+  <li><strong>Ma trận vuông:</strong> số hàng bằng số cột.</li>
+  <li><strong>Ma trận không:</strong> mọi phần tử đều bằng \(0\).</li>
+  <li><strong>Ma trận đường chéo:</strong> các phần tử ngoài đường chéo chính đều bằng \(0\).</li>
+  <li><strong>Ma trận đơn vị:</strong> \(I_n=\operatorname{diag}(1,\ldots,1)\).</li>
+  <li><strong>Ma trận tam giác trên:</strong> các phần tử phía dưới đường chéo chính bằng \(0\).</li>
+</ul>
+
+<h2>3. Hai ma trận bằng nhau</h2>
+<p>Hai ma trận \(A=(a_{ij})\) và \(B=(b_{ij})\) bằng nhau khi chúng có cùng kích thước và</p>
+<p>\[
+a_{ij}=b_{ij}\quad\text{với mọi }i,j.
+\]</p>
+
+<h2>4. Cộng ma trận và nhân với một số</h2>
+<p>Nếu \(A=(a_{ij})\) và \(B=(b_{ij})\) cùng kích thước thì</p>
+<p>\[
+A+B=(a_{ij}+b_{ij}).
+\]</p>
+<p>Với một số \(\lambda\),</p>
+<p>\[
+\lambda A=(\lambda a_{ij}).
+\]</p>
+
+<h3>Ví dụ 1</h3>
+<p>Cho</p>
+<p>\[
+A=\begin{pmatrix}1&2\\-1&3\end{pmatrix},\qquad
+B=\begin{pmatrix}4&-2\\5&1\end{pmatrix}.
+\]</p>
+<p>Khi đó</p>
+<p>\[
+A+B=\begin{pmatrix}5&0\\4&4\end{pmatrix},\qquad
+2A=\begin{pmatrix}2&4\\-2&6\end{pmatrix}.
+\]</p>
+
+<h2>5. Phép nhân hai ma trận</h2>
+<div class="academic-box definition">
+  <h4>Điều kiện nhân</h4>
+  <p>Nếu \(A\) có kích thước \(m\times n\) và \(B\) có kích thước \(n\times p\), thì tích \(AB\) xác định và có kích thước \(m\times p\).</p>
+  <p>Phần tử hàng \(i\), cột \(j\) của \(AB\) là</p>
+  <p>\[
+  (AB)_{ij}=\sum_{k=1}^{n}a_{ik}b_{kj}.
+  \]</p>
+</div>
+
+<h3>Ví dụ 2</h3>
+<p>Cho</p>
+<p>\[
+A=\begin{pmatrix}1&2&-1\\0&3&4\end{pmatrix},\qquad
+B=\begin{pmatrix}2&1\\1&0\\-1&2\end{pmatrix}.
+\]</p>
+<p>Ta có \(A\) là \(2\times3\), \(B\) là \(3\times2\), nên \(AB\) xác định và là ma trận \(2\times2\).</p>
+<p>\[
+AB=\begin{pmatrix}
+1\cdot2+2\cdot1+(-1)(-1) & 1\cdot1+2\cdot0+(-1)2\\
+0\cdot2+3\cdot1+4(-1) & 0\cdot1+3\cdot0+4\cdot2
+\end{pmatrix}
+=\begin{pmatrix}5&-1\\-1&8\end{pmatrix}.
+\]</p>
+
+<div class="academic-box warning">
+  <h4>Sai lầm thường gặp</h4>
+  <p>Phép nhân ma trận nói chung <strong>không giao hoán</strong>. Có thể \(AB\) xác định nhưng \(BA\) không xác định; hoặc cả hai cùng xác định nhưng \(AB\ne BA\).</p>
+</div>
+
+<h2>6. Ma trận chuyển vị</h2>
+<p>Ma trận chuyển vị của \(A=(a_{ij})_{m\times n}\), ký hiệu \(A^T\), là ma trận \(n\times m\) thu được bằng cách đổi hàng thành cột:</p>
+<p>\[
+(A^T)_{ij}=a_{ji}.
+\]</p>
+
+<h3>Ví dụ 3</h3>
+<p>Nếu</p>
+<p>\[
+A=\begin{pmatrix}1&2&3\\4&5&6\end{pmatrix},
+\]</p>
+<p>thì</p>
+<p>\[
+A^T=\begin{pmatrix}1&4\\2&5\\3&6\end{pmatrix}.
+\]</p>
+
+<h3>Các tính chất cần nhớ</h3>
+<p>\[
+(A+B)^T=A^T+B^T,\qquad (\lambda A)^T=\lambda A^T,\qquad (AB)^T=B^TA^T.
+\]</p>
+
+<h2>7. Bài tập tự luyện</h2>
+<ol>
+  <li>Cho \(A=\begin{pmatrix}2&-1\\3&4\end{pmatrix}\), \(B=\begin{pmatrix}1&5\\0&-2\end{pmatrix}\). Tính \(A+B\) và \(A-B\).</li>
+  <li>Tính \(3A\) với \(A=\begin{pmatrix}1&0&-2\\4&1&3\end{pmatrix}\).</li>
+  <li>Cho \(A=\begin{pmatrix}1&2\\0&1\end{pmatrix}\), \(B=\begin{pmatrix}3&0\\-1&2\end{pmatrix}\). Tính \(AB\) và \(BA\).</li>
+  <li>Cho \(A\) kích thước \(3\times4\), \(B\) kích thước \(4\times2\). Xác định kích thước của \(AB\).</li>
+  <li>Tính \(A^T\) với \(A=\begin{pmatrix}1&-1&2\\0&3&4\end{pmatrix}\).</li>
+</ol>
+
+<details>
+  <summary><strong>Đáp số</strong></summary>
+  <ol>
+    <li>\(A+B=\begin{pmatrix}3&4\\3&2\end{pmatrix}\), \(A-B=\begin{pmatrix}1&-6\\3&6\end{pmatrix}\).</li>
+    <li>\(3A=\begin{pmatrix}3&0&-6\\12&3&9\end{pmatrix}\).</li>
+    <li>\(AB=\begin{pmatrix}1&4\\-1&2\end{pmatrix}\), \(BA=\begin{pmatrix}3&6\\-1&0\end{pmatrix}\).</li>
+    <li>\(AB\) có kích thước \(3\times2\).</li>
+    <li>\(A^T=\begin{pmatrix}1&0\\-1&3\\2&4\end{pmatrix}\).</li>
+  </ol>
+</details>
+
+<hr>
+<p><a href="/knowledge/algebra/">← Đại số tuyến tính</a> &nbsp; | &nbsp; <a href="/knowledge/algebra/determinant/">Bài tiếp theo: Định thức →</a></p>
