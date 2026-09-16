@@ -3,12 +3,14 @@
 
         <a class="site-brand" href="{{ '/' | relative_url }}" aria-label="APMaths - {{ include.t.nav.home }}">
             <img
-                src="{{ '/assets/images/logo/ap-logo.svg' | relative_url }}?v=20260916-4"
-                alt="AP"
+                src="{{ '/assets/images/logo/icon-192x192.png' | relative_url }}?v=20260916-5"
+                alt=""
+                aria-hidden="true"
                 class="site-logo"
-                width="66"
-                height="66"
+                width="42"
+                height="42"
                 decoding="async">
+            <span class="site-brand-text">APMaths</span>
         </a>
 
         <button
@@ -21,6 +23,10 @@
             <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
             <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
         </button>
+
+        <nav id="site-navigation" class="site-nav" aria-label="Main navigation">
+            {% include menu.html t=include.t %}
+        </nav>
 
     </div>
 </header>
