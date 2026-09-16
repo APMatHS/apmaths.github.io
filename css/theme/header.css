@@ -28,7 +28,7 @@
 .site-brand {
     display: inline-flex;
     align-items: center;
-    gap: 16px;
+    gap: 13px;
     min-width: 0;
     color: inherit;
     text-decoration: none;
@@ -39,11 +39,11 @@
 }
 
 .site-logo {
-    width: 92px;
+    width: 62px;
     height: 62px;
     object-fit: contain;
     flex-shrink: 0;
-    border-radius: 0;
+    border-radius: 13px;
 }
 
 .site-brand-copy {
@@ -55,17 +55,18 @@
 .site-title {
     color: var(--primary);
     font-family: Georgia, "Times New Roman", serif;
-    font-size: 2.45rem;
+    font-size: 2.25rem;
     font-weight: 700;
     line-height: 1.05;
     letter-spacing: -.03em;
 }
 
 .site-tagline {
-    margin-top: 6px;
+    margin-top: 5px;
     color: var(--text-light);
-    font-size: .95rem;
+    font-size: .92rem;
     line-height: 1.35;
+    letter-spacing: .08em;
 }
 
 .mobile-nav-toggle {
@@ -94,338 +95,78 @@
     transition: transform .2s ease, opacity .2s ease;
 }
 
-.mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-}
-
-.mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(2) {
-    opacity: 0;
-}
-
-.mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-}
+.mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(2) { opacity: 0; }
+.mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* ==========================================================
    2. MAIN NAVIGATION
    ========================================================== */
 
-.site-nav {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    width: 100%;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
-}
-
-.main-nav {
-    max-width: 1200px;
-    min-height: 58px;
-    margin: 0 auto;
-    padding: 0 24px;
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    list-style: none;
-}
-
-.main-nav > .nav-item {
-    position: relative;
-    margin: 0;
-    padding: 0;
-}
-
-.nav-item-row {
-    display: flex;
-    align-items: stretch;
-    min-height: 58px;
-}
-
-.nav-link {
-    min-height: 58px;
-    padding: 0 17px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    color: var(--text);
-    background: transparent;
-    font-size: 1rem;
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 3px solid transparent;
-    transition: color .18s ease, background-color .18s ease, border-color .18s ease;
-}
-
-.nav-link:hover,
-.nav-item.is-current > .nav-link,
-.nav-item.is-current > .nav-item-row > .nav-link,
-.nav-link[aria-current="page"] {
-    color: var(--primary);
-    background: var(--primary-soft);
-    border-bottom-color: var(--primary);
-    text-decoration: none;
-}
-
-.nav-link .fa-home {
-    font-size: 1rem;
-}
+.site-nav { position: sticky; top: 0; z-index: 1000; width: 100%; background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0, 0, 0, .04); }
+.main-nav { max-width: 1200px; min-height: 58px; margin: 0 auto; padding: 0 24px; display: flex; align-items: stretch; justify-content: center; list-style: none; }
+.main-nav > .nav-item { position: relative; margin: 0; padding: 0; }
+.nav-item-row { display: flex; align-items: stretch; min-height: 58px; }
+.nav-link { min-height: 58px; padding: 0 17px; display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--text); background: transparent; font-size: 1rem; font-weight: 600; text-decoration: none; border-bottom: 3px solid transparent; transition: color .18s ease, background-color .18s ease, border-color .18s ease; }
+.nav-link:hover, .nav-item.is-current > .nav-link, .nav-item.is-current > .nav-item-row > .nav-link, .nav-link[aria-current="page"] { color: var(--primary); background: var(--primary-soft); border-bottom-color: var(--primary); text-decoration: none; }
+.nav-link .fa-home { font-size: 1rem; }
 
 /* ==========================================================
    3. SUBMENU BUTTON
    ========================================================== */
 
-.submenu-toggle {
-    width: 34px;
-    min-height: 58px;
-    margin-left: -10px;
-    padding: 0 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    background: transparent;
-    border: 0;
-    border-bottom: 3px solid transparent;
-    cursor: pointer;
-}
-
-.submenu-toggle:hover {
-    color: var(--primary);
-}
-
-.submenu-toggle__icon {
-    display: inline-block;
-    font-size: .72rem;
-    line-height: 1;
-    transition: transform .18s ease;
-}
-
-.has-submenu:hover > .nav-item-row .submenu-toggle__icon,
-.has-submenu:focus-within > .nav-item-row .submenu-toggle__icon,
-.has-submenu.is-open > .nav-item-row .submenu-toggle__icon {
-    transform: rotate(180deg);
-}
+.submenu-toggle { width: 34px; min-height: 58px; margin-left: -10px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; color: var(--text-muted); background: transparent; border: 0; border-bottom: 3px solid transparent; cursor: pointer; }
+.submenu-toggle:hover { color: var(--primary); }
+.submenu-toggle__icon { display: inline-block; font-size: .72rem; line-height: 1; transition: transform .18s ease; }
+.has-submenu:hover > .nav-item-row .submenu-toggle__icon, .has-submenu:focus-within > .nav-item-row .submenu-toggle__icon, .has-submenu.is-open > .nav-item-row .submenu-toggle__icon { transform: rotate(180deg); }
 
 /* ==========================================================
    4. DROPDOWN MENU
    ========================================================== */
 
-.sub-menu {
-    position: absolute;
-    top: calc(100% - 1px);
-    left: 50%;
-    z-index: 1200;
-    min-width: 230px;
-    margin: 0;
-    padding: 8px;
-    list-style: none;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    box-shadow: var(--shadow-md);
-    opacity: 0;
-    visibility: hidden;
-    transform: translate(-50%, 8px);
-    transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
-}
-
-.has-submenu:hover > .sub-menu,
-.has-submenu:focus-within > .sub-menu,
-.has-submenu.is-open > .sub-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, 0);
-}
-
-.sub-menu li {
-    margin: 0;
-    padding: 0;
-}
-
-.sub-menu a {
-    display: block;
-    padding: 10px 13px;
-    color: var(--text);
-    font-size: .95rem;
-    font-weight: 500;
-    line-height: 1.45;
-    text-decoration: none;
-    border-radius: 7px;
-    transition: color .15s ease, background-color .15s ease;
-}
-
-.sub-menu a:hover,
-.sub-menu a:focus-visible {
-    color: var(--primary);
-    background: var(--primary-soft);
-    text-decoration: none;
-}
+.sub-menu { position: absolute; top: calc(100% - 1px); left: 50%; z-index: 1200; min-width: 230px; margin: 0; padding: 8px; list-style: none; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow-md); opacity: 0; visibility: hidden; transform: translate(-50%, 8px); transition: opacity .16s ease, transform .16s ease, visibility .16s ease; }
+.has-submenu:hover > .sub-menu, .has-submenu:focus-within > .sub-menu, .has-submenu.is-open > .sub-menu { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+.sub-menu li { margin: 0; padding: 0; }
+.sub-menu a { display: block; padding: 10px 13px; color: var(--text); font-size: .95rem; font-weight: 500; line-height: 1.45; text-decoration: none; border-radius: 7px; transition: color .15s ease, background-color .15s ease; }
+.sub-menu a:hover, .sub-menu a:focus-visible { color: var(--primary); background: var(--primary-soft); text-decoration: none; }
 
 /* ==========================================================
    5. KEYBOARD ACCESSIBILITY
    ========================================================== */
 
-.nav-link:focus-visible,
-.submenu-toggle:focus-visible,
-.mobile-nav-toggle:focus-visible,
-.sub-menu a:focus-visible {
-    outline: 2px solid var(--primary-light);
-    outline-offset: -2px;
-}
+.nav-link:focus-visible, .submenu-toggle:focus-visible, .mobile-nav-toggle:focus-visible, .sub-menu a:focus-visible { outline: 2px solid var(--primary-light); outline-offset: -2px; }
 
 /* ==========================================================
    6. TABLET & MOBILE
    ========================================================== */
 
 @media (max-width: 780px) {
-
-    .site-header-inner {
-        padding: 11px 16px;
-        gap: 12px;
-    }
-
-    .site-brand {
-        gap: 12px;
-    }
-
-    .site-logo {
-        width: 54px;
-        height: 54px;
-    }
-
-    .site-title {
-        font-size: 1.85rem;
-    }
-
-    .site-tagline {
-        margin-top: 4px;
-        font-size: .78rem;
-    }
-
-    .mobile-nav-toggle {
-        display: inline-flex;
-    }
-
-    .site-nav {
-        position: static;
-        display: none;
-        box-shadow: none;
-        border-top: 0;
-    }
-
-    .site-nav.is-open {
-        display: block;
-    }
-
-    .main-nav {
-        min-height: 0;
-        padding: 6px 14px 12px;
-        display: block;
-    }
-
-    .main-nav > .nav-item {
-        width: 100%;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .main-nav > .nav-item:last-child {
-        border-bottom: 0;
-    }
-
-    .nav-item-row {
-        min-height: 50px;
-        width: 100%;
-    }
-
-    .nav-link,
-    .nav-item-row .nav-link {
-        width: 100%;
-        min-height: 50px;
-        padding: 0 10px;
-        justify-content: flex-start;
-        white-space: normal;
-        font-size: .98rem;
-        border-bottom: 0;
-    }
-
-    .nav-item-row .nav-link {
-        flex: 1 1 auto;
-    }
-
-    .nav-link:hover,
-    .nav-item.is-current > .nav-link,
-    .nav-item.is-current > .nav-item-row > .nav-link,
-    .nav-link[aria-current="page"] {
-        background: transparent;
-        border-bottom-color: transparent;
-    }
-
-    .submenu-toggle {
-        width: 50px;
-        min-height: 50px;
-        margin-left: 0;
-        padding: 0;
-        flex: 0 0 50px;
-        border-bottom: 0;
-    }
-
-    .sub-menu {
-        position: static;
-        display: none;
-        min-width: 0;
-        width: 100%;
-        margin: 0;
-        padding: 0 0 9px 18px;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        background: transparent;
-        border: 0;
-        border-radius: 0;
-        box-shadow: none;
-        transition: none;
-    }
-
-    .has-submenu:hover > .sub-menu,
-    .has-submenu:focus-within > .sub-menu {
-        display: none;
-        transform: none;
-    }
-
-    .has-submenu.is-open > .sub-menu {
-        display: block;
-    }
-
-    .sub-menu a {
-        padding: 9px 12px;
-        font-size: .94rem;
-    }
+    .site-header-inner { padding: 11px 16px; gap: 12px; }
+    .site-brand { gap: 11px; }
+    .site-logo { width: 50px; height: 50px; border-radius: 11px; }
+    .site-title { font-size: 1.8rem; }
+    .site-tagline { margin-top: 3px; font-size: .75rem; letter-spacing: .06em; }
+    .mobile-nav-toggle { display: inline-flex; }
+    .site-nav { position: static; display: none; box-shadow: none; border-top: 0; }
+    .site-nav.is-open { display: block; }
+    .main-nav { min-height: 0; padding: 6px 14px 12px; display: block; }
+    .main-nav > .nav-item { width: 100%; border-bottom: 1px solid var(--border); }
+    .main-nav > .nav-item:last-child { border-bottom: 0; }
+    .nav-item-row { min-height: 50px; width: 100%; }
+    .nav-link, .nav-item-row .nav-link { width: 100%; min-height: 50px; padding: 0 10px; justify-content: flex-start; white-space: normal; font-size: .98rem; border-bottom: 0; }
+    .nav-item-row .nav-link { flex: 1 1 auto; }
+    .nav-link:hover, .nav-item.is-current > .nav-link, .nav-item.is-current > .nav-item-row > .nav-link, .nav-link[aria-current="page"] { background: transparent; border-bottom-color: transparent; }
+    .submenu-toggle { width: 50px; min-height: 50px; margin-left: 0; padding: 0; flex: 0 0 50px; border-bottom: 0; }
+    .sub-menu { position: static; display: none; min-width: 0; width: 100%; margin: 0; padding: 0 0 9px 18px; opacity: 1; visibility: visible; transform: none; background: transparent; border: 0; border-radius: 0; box-shadow: none; transition: none; }
+    .has-submenu:hover > .sub-menu, .has-submenu:focus-within > .sub-menu { display: none; transform: none; }
+    .has-submenu.is-open > .sub-menu { display: block; }
+    .sub-menu a { padding: 9px 12px; font-size: .94rem; }
 }
 
 @media (max-width: 480px) {
-
-    .site-header-inner {
-        padding: 10px 14px;
-    }
-
-    .site-logo {
-        width: 48px;
-        height: 48px;
-    }
-
-    .site-title {
-        font-size: 1.65rem;
-    }
-
-    .site-tagline {
-        display: none;
-    }
-
-    .mobile-nav-toggle {
-        width: 42px;
-        height: 42px;
-    }
+    .site-header-inner { padding: 10px 14px; }
+    .site-logo { width: 46px; height: 46px; border-radius: 10px; }
+    .site-title { font-size: 1.6rem; }
+    .site-tagline { display: block; font-size: .68rem; white-space: nowrap; }
+    .mobile-nav-toggle { width: 42px; height: 42px; }
 }
