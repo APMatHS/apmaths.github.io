@@ -1,0 +1,20 @@
+/* ==========================================================
+   APMaths Theme V3.4
+   File    : nav-fixed.css
+   Module  : Fixed desktop navigation widths
+   ========================================================== */
+
+/* Desktop/tablet navigation only. Mobile (<= 780px) stays unchanged. */
+@media (min-width: 781px) {
+    .main-nav {
+        justify-content: flex-start;
+        gap: 0;
+    }
+
+    .main-nav > .nav-item:not(.nav-item--clo) {
+        flex: 0 0 104px;
+        width: 104px;
+        min-width: 104px;
+        max-width: 104px;
+    }
+}
