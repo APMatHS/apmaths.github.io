@@ -10,13 +10,13 @@ site:
 # ==========================================
 nav:
   home: "Trang chủ"
-  knowledge: "Toán học"
+  knowledge: "Kiến thức"
   blog: "Blog"
   tools: "Công cụ"
   resources: "Khóa học"
   about: "Giới thiệu"
   menu: "Mở menu điều hướng"
-  knowledge_menu: "Mở menu Toán học"
+  knowledge_menu: "Mở menu Kiến thức"
   tools_menu: "Mở menu Công cụ"
 
 # ==========================================
