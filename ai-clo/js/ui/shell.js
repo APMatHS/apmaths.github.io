@@ -1,7 +1,7 @@
-/* AI-CLO PTITHCM V11 — app shell bridge, preserving legacy V10.8 compatibility. */
+/* AI·CLO APMaths V12.8 — app shell bridge, preserving legacy V10.8 compatibility. */
 (() => {
 'use strict';
-const V='10.8';
+const V='12.8';
 
 function setContextBadge(){
  const heading=$('.page-heading');if(!heading)return;
@@ -12,7 +12,7 @@ function setContextBadge(){
 }
 function setupAppAi(){
  const header=$('.app main>header');if(!header||$('#appAiButton'))return;
- const bell=$('#notificationBell');const b=document.createElement('button');b.id='appAiButton';b.type='button';b.className='app-ai-button';b.innerHTML='<span>💬</span> Hỏi AI-CLO';b.title='Hỏi AI-CLO';
+ const bell=$('#notificationBell');const b=document.createElement('button');b.id='appAiButton';b.type='button';b.className='app-ai-button';b.innerHTML='<span>💬</span> Hỏi AI·CLO';b.title='Hỏi AI·CLO APMaths';
  header.insertBefore(b,bell||null);b.onclick=()=>window.AICLO_CHAT?.open?.({role:role(),view:state.view,space:state.space,subject:activeSubject()?.name||''});
 }
 const openUserProfile=p=>window.AICLO_PROFILE?.openUserProfile?.(p);
