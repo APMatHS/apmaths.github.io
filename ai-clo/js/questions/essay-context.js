@@ -3,7 +3,7 @@
 'use strict';
 if(window.AICLO_ESSAY_CONTEXT_V1272)return;
 const KEY='ai-clo:essay-active-bank:v12.7.2';
-let bank='practice';
+let bank='practice',lastEssayId=null,decorating=false;
 try{bank=sessionStorage.getItem(KEY)==='secure_exam'?'secure_exam':'practice'}catch{}
 const save=value=>{bank=value==='secure_exam'?'secure_exam':'practice';try{sessionStorage.setItem(KEY,bank)}catch{}};
 function syncFromList(){
@@ -23,8 +23,19 @@ function ensureGhost(){
  ghost.innerHTML=`<button type="button" class="active" data-essay-bank="${bank}"></button>`;
  detail.appendChild(ghost);
 }
-function sync(){syncFromList();ensureGhost()}
-document.addEventListener('click',event=>{const tab=event.target.closest?.('[data-essay-bank]');if(tab)save(tab.dataset.essayBank)},true);
+async function decorateWorkspaceCode(){
+ if(decorating||!lastEssayId||!document.querySelector('#essayForm'))return;
+ const heading=document.querySelector('.question-workspace .workspace-head h3');
+ if(!heading||!/^Sửa\s+TL-/i.test(String(heading.textContent||'').trim()))return;
+ const loader=window.AICLO_ESSAY_BANK_V127?.load;if(typeof loader!=='function')return;
+ decorating=true;
+ try{const data=await loader();const item=(data.items||[]).find(x=>String(x.id)===String(lastEssayId));if(item?.display_code)heading.textContent=`Sửa ${item.display_code}`;}catch(ex){console.warn('Không cập nhật được mã câu tự luận trên trang sửa',ex)}finally{decorating=false}
+}
+function sync(){syncFromList();ensureGhost();decorateWorkspaceCode()}
+document.addEventListener('click',event=>{
+ const tab=event.target.closest?.('[data-essay-bank]');if(tab)save(tab.dataset.essayBank);
+ const q=event.target.closest?.('[data-essay-detail],[data-essay-edit]');if(q)lastEssayId=q.dataset.essayDetail||q.dataset.essayEdit||lastEssayId;
+},true);
 document.addEventListener('DOMContentLoaded',()=>{sync();const host=document.querySelector('#content');if(host)new MutationObserver(()=>requestAnimationFrame(sync)).observe(host,{childList:true,subtree:true})});
-window.AICLO_ESSAY_CONTEXT_V1272=Object.freeze({version:'12.7.2',getBank:()=>bank});
+window.AICLO_ESSAY_CONTEXT_V1272=Object.freeze({version:'12.7.2',getBank:()=>bank,getLastEssayId:()=>lastEssayId});
 })();
