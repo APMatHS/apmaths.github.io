@@ -1,13 +1,14 @@
 <header class="site-header">
     <div class="site-header-inner">
 
-        <a class="site-brand" href="/" aria-label="APMaths - {{ include.t.nav.home }}">
+        <a class="site-brand" href="{{ '/' | relative_url }}" aria-label="APMaths - {{ include.t.nav.home }}">
             <img
-                src="/assets/images/logo/ap-logo.png?v=20260916-3"
-                alt="APMaths"
+                src="{{ '/assets/images/logo/ap-logo.png' | relative_url }}?v=20260916-4"
+                alt="AP"
                 class="site-logo"
                 width="66"
-                height="66">
+                height="66"
+                decoding="async">
         </a>
 
         <button
