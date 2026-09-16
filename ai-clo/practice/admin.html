@@ -10,73 +10,62 @@
   <script type="module" src="./admin.js"></script>
 </head>
 <body>
-  <main class="shell">
-    <header class="brandbar">
-      <div>
-        <div class="eyebrow">AI-CLO PTITHCM</div>
-        <h1>Quản lý rút đề ôn tập PDF</h1>
-        <p class="muted">Mỗi môn có mã riêng, trạng thái bật/tắt và ma trận Chương × CLO.</p>
-      </div>
-      <a class="ghost-link" href="./index.html">Trang sinh viên</a>
-    </header>
+<main class="shell">
+  <header class="brandbar"><div><div class="eyebrow">AI-CLO PTITHCM</div><h1>Quản lý rút đề ôn tập PDF</h1><p class="muted">Một mã cho mỗi môn, bên trong có nhiều gói ôn tập theo một hoặc nhiều chương.</p></div><a class="ghost-link" href="./index.html">Trang sinh viên</a></header>
 
-    <section id="loginView" class="card login-card">
-      <h2>Đăng nhập giảng viên</h2>
-      <p class="muted">Dùng tài khoản AI-CLO hiện có.</p>
-      <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username"></div>
-      <div class="field"><label for="password">Mật khẩu</label><input id="password" type="password" autocomplete="current-password"></div>
-      <button id="loginBtn" class="primary">Đăng nhập</button>
-      <p id="loginMessage" class="message" aria-live="polite"></p>
-    </section>
+  <section id="loginView" class="card login-card">
+    <h2>Đăng nhập giảng viên</h2><p class="muted">Dùng tài khoản AI-CLO hiện có.</p>
+    <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username"></div>
+    <div class="field"><label for="password">Mật khẩu</label><input id="password" type="password" autocomplete="current-password"></div>
+    <button id="loginBtn" class="primary">Đăng nhập</button><p id="loginMessage" class="message" aria-live="polite"></p>
+  </section>
 
-    <section id="adminView" class="hidden">
-      <div class="card panel-head">
-        <div><strong id="accountName">—</strong><div id="accountEmail" class="muted small"></div></div>
-        <button id="logoutBtn" class="secondary">Đăng xuất</button>
-      </div>
+  <section id="adminView" class="hidden">
+    <div class="card panel-head"><div><strong id="accountName">Giảng viên / Admin</strong><div id="accountEmail" class="muted small"></div></div><button id="logoutBtn" class="secondary">Đăng xuất</button></div>
+    <div class="admin-grid">
+      <aside class="card"><div class="panel-head"><div><h2>Môn học</h2><p class="muted small">Chọn môn để cấu hình.</p></div><button id="refreshBtn" class="secondary">Làm mới</button></div><div id="subjectList" class="subject-list"></div><p id="listMessage" class="message"></p></aside>
 
-      <div class="admin-grid">
-        <aside class="card">
-          <div class="panel-head"><div><h2>Môn học</h2><p class="muted small">Chọn môn để cấu hình.</p></div><button id="refreshBtn" class="secondary">Làm mới</button></div>
-          <div id="subjectList" class="subject-list"></div>
-          <p id="listMessage" class="message"></p>
-        </aside>
-
-        <section id="editorCard" class="card hidden">
-          <div class="panel-head">
-            <div><div id="editorMeta" class="eyebrow"></div><h2 id="editorTitle">Cấu hình</h2></div>
-            <div id="editorStatus"></div>
-          </div>
-
-          <div class="stats">
-            <div class="stat"><strong id="statAvailable">0</strong><div class="muted small">câu đủ điều kiện</div></div>
-            <div class="stat"><strong id="statWeek">0</strong><div class="muted small">lượt rút 7 ngày</div></div>
-            <div class="stat"><strong id="statTotal">0</strong><div class="muted small">tổng lượt rút</div></div>
-          </div>
-
-          <div class="form-grid" style="margin-top:16px">
+      <section id="editorCard" class="hidden">
+        <div class="card">
+          <div class="panel-head"><div><div id="editorMeta" class="eyebrow"></div><h2 id="editorTitle">Cấu hình</h2></div><div id="editorStatus"></div></div>
+          <div class="stats"><div class="stat"><strong id="statAvailable">0</strong><div class="muted small">câu đủ điều kiện</div></div><div class="stat"><strong id="statWeek">0</strong><div class="muted small">lượt rút 7 ngày</div></div><div class="stat"><strong id="statTotal">0</strong><div class="muted small">tổng lượt rút</div></div></div>
+          <h3 class="section-title">Cấu hình chung của môn</h3>
+          <div class="form-grid">
             <div class="field full"><label for="practiceTitleInput">Tiêu đề PDF</label><input id="practiceTitleInput" placeholder="Đề ôn tập – Tên môn"></div>
             <div class="field"><label for="accessCodeInput">Mã truy cập</label><input id="accessCodeInput" maxlength="32" autocapitalize="characters"></div>
             <div class="field"><label>&nbsp;</label><button id="rotateCodeBtn" class="secondary">Tạo mã mới</button></div>
             <div class="field"><label for="openAtInput">Mở từ (không bắt buộc)</label><input id="openAtInput" type="datetime-local"></div>
             <div class="field"><label for="closeAtInput">Đóng lúc (không bắt buộc)</label><input id="closeAtInput" type="datetime-local"></div>
-            <div class="field"><label for="fallbackCountInput">Số câu nếu không dùng ma trận</label><input id="fallbackCountInput" type="number" min="1" max="200" value="20"></div>
-            <div class="field"><label>Tổng theo ma trận</label><input id="matrixTotalInput" readonly value="0"></div>
           </div>
-
-          <div class="switch-row" style="margin:18px 0">
-            <label><input id="enabledInput" type="checkbox"> Bật môn</label>
-            <label><input id="answersInput" type="checkbox"> Kèm đáp án cuối PDF</label>
-            <label><input id="redrawInput" type="checkbox" checked> Cho rút lại không giới hạn</label>
-          </div>
-
-          <div class="panel-head" style="margin-top:8px"><div><h3>Ma trận Chương × CLO</h3><p class="muted small">Để toàn bộ bằng 0 nếu muốn rút ngẫu nhiên theo “Số câu” ở trên.</p></div></div>
-          <div class="matrix-wrap"><table class="matrix"><thead id="matrixHead"></thead><tbody id="matrixBody"></tbody></table></div>
+          <div class="switch-row"><label><input id="enabledInput" type="checkbox"> Bật môn</label><label><input id="redrawInput" type="checkbox" checked> Cho rút lại không giới hạn</label></div>
           <p id="saveMessage" class="message" aria-live="polite"></p>
-          <div class="admin-actions"><button id="saveBtn" class="primary">Lưu cấu hình</button><a id="publicLink" class="ghost-link" href="./index.html" target="_blank" rel="noopener">Mở trang sinh viên</a></div>
-        </section>
-      </div>
-    </section>
-  </main>
+          <div class="admin-actions"><button id="saveConfigBtn" class="primary">Lưu cấu hình môn</button><a id="publicLink" class="ghost-link" href="./index.html" target="_blank" rel="noopener">Mở trang sinh viên</a></div>
+        </div>
+
+        <div class="card">
+          <div class="panel-head"><div><h3>Gói ôn tập</h3><p class="muted small">Ví dụ: Toàn môn, Chương 1, Chương 1–2, Ôn giữa kỳ.</p></div><button id="addPackageBtn" class="primary">+ Thêm gói</button></div>
+          <div id="packageList" class="package-list"></div>
+          <p id="packageListMessage" class="message"></p>
+        </div>
+
+        <div id="packageEditor" class="card hidden">
+          <div class="panel-head"><div><div class="eyebrow">GÓI ÔN TẬP</div><h3 id="packageEditorTitle">Thêm gói</h3></div><button id="cancelPackageBtn" class="secondary">Đóng</button></div>
+          <div class="form-grid">
+            <div class="field full"><label for="packageNameInput">Tên gói</label><input id="packageNameInput" placeholder="Ví dụ: Ôn Chương 1–2"></div>
+            <div class="field"><label for="drawModeInput">Cách rút câu</label><select id="drawModeInput"><option value="count">Theo số câu</option><option value="matrix">Theo ma trận CLO</option></select></div>
+            <div id="countField" class="field"><label for="questionCountInput">Số câu</label><input id="questionCountInput" type="number" min="1" max="200" value="20"></div>
+          </div>
+          <div class="switch-row"><label><input id="packageEnabledInput" type="checkbox" checked> Bật gói</label><label><input id="packageAnswersInput" type="checkbox"> Kèm đáp án cuối PDF</label></div>
+
+          <h4>Chọn chương</h4><p class="muted small">Có thể chọn một, hai hoặc nhiều chương trong cùng một gói.</p><div id="chapterPicker" class="chapter-picker"></div>
+
+          <div id="matrixSection" class="hidden"><div class="panel-head matrix-heading"><div><h4>Ma trận Chương × CLO</h4><p class="muted small">Chỉ các chương đã chọn mới xuất hiện.</p></div><strong>Tổng: <span id="matrixTotal">0</span> câu</strong></div><div class="matrix-wrap"><table class="matrix"><thead id="matrixHead"></thead><tbody id="matrixBody"></tbody></table></div></div>
+          <p id="packageMessage" class="message" aria-live="polite"></p>
+          <div class="admin-actions"><button id="savePackageBtn" class="primary">Lưu gói ôn tập</button><button id="cancelPackageBtn2" class="secondary">Hủy</button></div>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
 </body>
 </html>
