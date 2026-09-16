@@ -17,4 +17,37 @@
         min-width: 104px;
         max-width: 104px;
     }
+
+    /* Treat the text + dropdown arrow as one visual navigation item. */
+    .has-submenu > .nav-item-row {
+        border-bottom: 3px solid transparent;
+        transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+    }
+
+    .has-submenu > .nav-item-row > .nav-link,
+    .has-submenu > .nav-item-row > .submenu-toggle {
+        background: transparent;
+        border-bottom-color: transparent;
+    }
+
+    .has-submenu:hover > .nav-item-row,
+    .has-submenu:focus-within > .nav-item-row,
+    .has-submenu.is-open > .nav-item-row,
+    .has-submenu.is-current > .nav-item-row {
+        background: var(--primary-soft);
+        border-bottom-color: var(--primary);
+    }
+
+    .has-submenu:hover > .nav-item-row > .nav-link,
+    .has-submenu:focus-within > .nav-item-row > .nav-link,
+    .has-submenu.is-open > .nav-item-row > .nav-link,
+    .has-submenu.is-current > .nav-item-row > .nav-link,
+    .has-submenu:hover > .nav-item-row > .submenu-toggle,
+    .has-submenu:focus-within > .nav-item-row > .submenu-toggle,
+    .has-submenu.is-open > .nav-item-row > .submenu-toggle,
+    .has-submenu.is-current > .nav-item-row > .submenu-toggle {
+        color: var(--primary);
+        background: transparent;
+        border-bottom-color: transparent;
+    }
 }
