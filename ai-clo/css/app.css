@@ -3,8 +3,9 @@
   --brand:#1e3a8a;
   --brand-hover:#2563eb;
   --brand-soft:#eff6ff;
-  --red:#a61d2d;
-  --red2:#7f1422;
+  /* Legacy accent aliases: older modules still use --red/--red2 for brand UI. */
+  --red:#1e3a8a;
+  --red2:#2563eb;
   --danger:#a61d2d;
   --danger-soft:#fff1f2;
   --ink:#18212f;
