@@ -1,0 +1,8 @@
+---
+layout: default
+title: Khóa học 2025–2026
+academic_year: "2025-2026"
+course_year_index: true
+permalink: /courses/2025-2026/
+---
+<h1>Khóa học 2025–2026</h1>{% assign courses = site.pages | where: "course", true | where: "academic_year", "2025-2026" | sort: "title" %}<ul>{% for c in courses %}<li><a href="{{ c.url }}">{{ c.title }}</a></li>{% endfor %}</ul>
