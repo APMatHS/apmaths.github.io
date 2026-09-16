@@ -18,6 +18,11 @@
         max-width: 104px;
     }
 
+    /* Keep CLO as the final item, pinned to the far right. */
+    .main-nav > .nav-item--clo {
+        margin-left: auto !important;
+    }
+
     /* Treat the text + dropdown arrow as one visual navigation item. */
     .has-submenu > .nav-item-row {
         border-bottom: 3px solid transparent;
