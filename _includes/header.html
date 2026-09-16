@@ -7,22 +7,28 @@
                 alt=""
                 aria-hidden="true"
                 class="site-logo"
-                width="42"
-                height="42"
+                width="40"
+                height="40"
                 decoding="async">
             <span class="site-brand-text">APMaths</span>
         </a>
 
-        <button
-            class="mobile-nav-toggle"
-            type="button"
-            aria-controls="site-navigation"
-            aria-expanded="false"
-            aria-label="{{ include.t.nav.menu }}">
-            <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
-            <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
-            <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
-        </button>
+        <div class="mobile-header-actions">
+            <a class="mobile-clo{% if page.url contains '/ai-clo/' %} is-current{% endif %}"
+               href="/ai-clo/"
+               aria-label="AI-CLO">CLO</a>
+
+            <button
+                class="mobile-nav-toggle"
+                type="button"
+                aria-controls="site-navigation"
+                aria-expanded="false"
+                aria-label="{{ include.t.nav.menu }}">
+                <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
+                <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
+                <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
+            </button>
+        </div>
 
         <nav id="site-navigation" class="site-nav" aria-label="Main navigation">
             {% include menu.html t=include.t %}
