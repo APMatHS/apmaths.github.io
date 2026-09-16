@@ -4,6 +4,8 @@
   --aiclo-brand-hover:#2563eb;
   --aiclo-brand-soft:#eff6ff;
   --aiclo-brand-line:#bfdbfe;
+  --aiclo-danger:#a61d2d;
+  --aiclo-danger-soft:#fff1f2;
 }
 
 /* App shell */
@@ -32,11 +34,15 @@ a:not(.danger-link):focus-visible,button:not(.danger):focus-visible{outline-colo
 .v105-scope-option:has(input:checked){border-color:var(--aiclo-brand-hover)!important;background:var(--aiclo-brand-soft)!important;box-shadow:0 0 0 2px #2563eb18!important}
 .v105-scope-option input{accent-color:var(--aiclo-brand)!important}
 
-/* Keep secure/destructive semantics red. */
+/* Keep secure/destructive/error semantics red. */
 .v105-scope-option.secure:has(input:checked){border-color:#c51f36!important;background:#fff5f6!important;box-shadow:0 0 0 2px #c51f3614!important}
-.answer-review details.wrong{border-left-color:#a61d2d!important}
-.toast.error{background:#a61d2d!important}
-.danger,.danger-link{color:#9b1c2e}
+.v105-scope-option.secure input{accent-color:#c51f36!important}
+.badge.red{background:#fdecef!important;color:var(--aiclo-danger)!important}
+.confirm-icon{background:var(--aiclo-danger-soft)!important;color:var(--aiclo-danger)!important}
+.answer-review details.wrong{border-left-color:var(--aiclo-danger)!important}
+.toast.error{background:var(--aiclo-danger)!important}
+.danger,.danger-link{color:#9b1c2e!important}
+.danger{background:#feecef!important}
 
 /* Common selected/active controls from older modules */
 .question-create-mode-btn.active,.qbank-filter-chip.active,.qbank-function-card:hover{border-color:var(--aiclo-brand-line)!important;color:var(--aiclo-brand)!important;background:var(--aiclo-brand-soft)!important}
