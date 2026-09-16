@@ -33,12 +33,22 @@ async function decorateWorkspaceCode(){
  try{const data=await loader();const item=(data.items||[]).find(x=>String(x.id)===String(lastEssayId));if(item?.display_code){heading.textContent=`Sửa ${item.display_code}`;form.dataset.essayCodeDecorated='1'}}catch(ex){console.warn('Không cập nhật được mã câu tự luận trên trang sửa',ex)}finally{decorating=false}
 }
 function sync(){syncFromList();ensureGhost();decorateWorkspaceCode()}
+function loadFastSync(){
+ if(window.AICLO_QBANK_FAST_BANK_SYNC||document.querySelector('script[data-qbank-fast-sync]'))return;
+ const script=document.createElement('script');
+ script.src='js/questions/bank-fast-sync.js?v=12.7.3';
+ script.async=true;
+ script.dataset.qbankFastSync='1';
+ script.onerror=()=>console.warn('Không tải được lớp đồng bộ tab Ngân hàng câu hỏi.');
+ document.head.appendChild(script);
+}
 function loadFastSwitch(){
- if(window.AICLO_QBANK_FAST_SWITCH||document.querySelector('script[data-qbank-fast-switch]'))return;
+ if(window.AICLO_QBANK_FAST_SWITCH||document.querySelector('script[data-qbank-fast-switch]')){loadFastSync();return}
  const script=document.createElement('script');
  script.src='js/questions/bank-fast-switch.js?v=12.7.3';
  script.async=true;
  script.dataset.qbankFastSwitch='1';
+ script.onload=loadFastSync;
  script.onerror=()=>console.warn('Không tải được bộ chuyển tab nhanh của Ngân hàng câu hỏi.');
  document.head.appendChild(script);
 }
