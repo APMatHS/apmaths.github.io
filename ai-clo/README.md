@@ -1,222 +1,77 @@
-# AI-CLO PTITHCM — V12.6.53
+# AI·CLO APMaths
 
-**HỆ THỐNG ỨNG DỤNG TRÍ TUỆ NHÂN TẠO HỖ TRỢ ĐÁNH GIÁ SINH VIÊN THEO CHUẨN ĐẦU RA HỌC PHẦN**
+AI·CLO APMaths là module đánh giá theo chuẩn đầu ra học phần của APMaths. Hệ thống hỗ trợ quản lý học phần, chương, chủ đề, CLO, ngân hàng câu hỏi trắc nghiệm/tự luận, bài đánh giá, bài làm và kết quả CLO; các chức năng AI chỉ hỗ trợ tạo, rà soát và phân tích nội dung.
 
-AI-CLO PTITHCM là hệ thống web hỗ trợ quản lý học phần, ngân hàng câu hỏi, xây dựng bài đánh giá theo CLO, làm bài trực tuyến, theo dõi phiên làm bài, phân tích kết quả và các tác vụ AI theo yêu cầu người dùng.
+## Đường dẫn
 
-## Checkpoint hiện tại
+- Trang giới thiệu và hướng dẫn ngắn: `/ai-clo/`
+- Ứng dụng đăng nhập: `/ai-clo/app.html`
+- Cổng vào nhanh trên APMaths: nút tròn **CLO** trên thanh điều hướng
+- Công cụ độc lập của APMaths: `/tools/` — không nằm trong thư mục `ai-clo/`
 
-- Frontend checkpoint: **V12.6.53**
-- Nhánh chuẩn: `main`
-- Functional commit trước đợt cập nhật tài liệu: `51549fc6157ff8ab369247def6156dc7341a7119`
-- GitHub Pages run #897: **success**
-- Backend Assessment checkpoint: `assessment_schema_version = 12.3.1`
-- Chuỗi V12.6.x hiện tập trung vào Assessment online, Question Bank dùng chung/UX, **AI-CLO | LIVE** và persistence.
-- Các migration Live V12.6.34/V12.6.35 là additive và **không đổi `assessment_schema_version`**.
+## Nhận diện V12.8
+
+- Tên hiển thị: **AI·CLO APMaths**
+- Màu chính: `#1e3a8a`
+- Hover/nhấn mạnh: `#2563eb`
+- Nền xanh nhạt: `#eff6ff`
+- Màu đỏ chỉ dùng cho lỗi, cảnh báo nguy hiểm và thao tác phá hủy dữ liệu.
+- Landing PTITHCM cũ, trang Giới thiệu riêng, Hướng dẫn riêng, Chính sách riêng và `ai-clo/tools/` đã được loại bỏ.
 
 ## Kiến trúc chính
 
-Frontend được phục vụ qua GitHub Pages, backend dùng Supabase:
+Frontend được phục vụ bằng GitHub Pages. Backend dùng Supabase cho PostgreSQL, Auth, Storage, RLS, RPC và Edge Functions. Gemini được gọi qua Edge Functions cho các tác vụ AI; secret không được đưa vào frontend hoặc repository.
+
+Các nhóm frontend chính nằm trong:
 
 ```text
-Public pages / app.html
-        │
-        ├─ CSS theo owner/domain
-        ├─ JS core/UI/domain modules
-        ├─ Assessment single-owner runtime
-        ├─ Shared persistence
-        └─ AI-CLO | LIVE
-                 │
-                 ▼
-              Supabase
-        ├─ PostgreSQL + RLS
-        ├─ Auth / Storage / RPC
-        ├─ Attempt autosave + Live telemetry
-        └─ Edge Functions self-contained
-                 │
-                 └─ AI/Gemini theo thao tác chủ động
+ai-clo/
+├─ app.html
+├─ index.html
+├─ css/
+│  ├─ courses/
+│  ├─ exams/
+│  ├─ questions/
+│  ├─ results/
+│  ├─ students/
+│  ├─ system/
+│  └─ ui/
+├─ js/
+│  ├─ courses/
+│  ├─ questions/
+│  ├─ results/
+│  ├─ system/
+│  └─ ui/
+├─ practice/
+└─ supabase/
 ```
 
-Tài liệu kỹ thuật chính:
+## Nguyên tắc phát triển
 
-- [`docs/project/ARCHITECTURE-AI-CLO.md`](docs/project/ARCHITECTURE-AI-CLO.md)
-- [`docs/project/TECHNICAL-AGREEMENTS.md`](docs/project/TECHNICAL-AGREEMENTS.md)
+- Giữ một owner rõ ràng cho mỗi behavior quan trọng; tránh tạo nhiều lớp render hoặc compatibility cùng xử lý một việc.
+- Chuyển tab con trong Ngân hàng câu hỏi phải dùng dữ liệu/DOM đã có và không gọi lại global `render()` nếu dữ liệu không thay đổi.
+- Trắc nghiệm và Tự luận có cache riêng; chỉ invalidate phần dữ liệu thật sự thay đổi.
+- Câu tự luận dùng rubric điểm để suy ra phân bố CLO; điểm dùng bước `0.25`.
+- AI tạo nội dung ở dạng bản nháp; người dùng kiểm tra trước khi lưu.
+- Không sửa schema hoặc backend khi thay đổi chỉ thuộc giao diện.
+- Trước thay đổi runtime/backend lớn cần tạo backup branch.
 
-## Assessment
+## Backend
 
-Assessment giữ một owner runtime:
+Mã Supabase nằm trong `ai-clo/supabase/`:
 
-```text
-js/
-├─ assessment.js
-└─ assessment/
-   ├─ common.js
-   ├─ online-lifecycle.js
-   ├─ online-builder.js
-   ├─ final-exam.js
-   ├─ student-attempt.js
-   ├─ live-monitor.js
-   └─ results.js
-```
+- `migrations/` — migration SQL.
+- `functions/` — Edge Functions tự chứa dependency cần thiết.
+- `schema/` — snapshot/mô tả cấu trúc.
+- `policies/` — policy SQL độc lập.
+- `docs/` — tài liệu vận hành.
 
-Các module hỗ trợ liên quan:
+Chat hiện dùng Edge Function `ai_clo_chat`, lấy knowledge từ `ai-clo/data/ai-clo-knowledge.json` và chỉ cho phép origin APMaths cùng localhost phục vụ phát triển.
 
-```text
-js/assessment/attempt-monitor.js
-js/assessment/export-dropdown.js
-js/exams/online-export.js
-```
+## Tài liệu kỹ thuật
 
-Nguyên tắc:
+- `docs/project/ARCHITECTURE-AI-CLO.md` — kiến trúc chi tiết và owner các module.
+- `docs/project/PROJECT-NOTES-AI-CLO.md` — các quyết định kỹ thuật/UI/nghiệp vụ.
+- `docs/releases/` — lịch sử các phiên bản cũ; các tên PTITHCM trong thư mục release được giữ như lịch sử của dự án.
 
-- `assessment.js` là owner/router/lifecycle public duy nhất.
-- Child modules đăng ký factory qua `window.AICLO_ASSESSMENT_MODULES`.
-- Student Attempt chạy full-width trong `#content`.
-- Supabase autosave là nguồn chính thức; local draft chỉ dùng recovery.
-- Hết giờ phải dựa vào thời gian server/RPC, không dựa đồng hồ client để quyết định quyền làm lượt mới.
-- Shared subpage persistence quản lý Detail / Builder / Attempt / Result / Export / Live.
-
-## AI-CLO | LIVE
-
-LIVE là subpage trong `app.html`, không phải HTML riêng.
-
-- Entry point: nút **AI-CLO | LIVE** cùng hàng với tên bài kiểm tra, canh phải.
-- Teacher xem tiến độ số câu, câu hiện tại, thời gian còn lại, heartbeat, fullscreen, số lần/tổng thời gian rời màn hình, warning/disconnected/submitted.
-- Teacher không xem A/B/C/D sinh viên đang chọn trong lúc làm bài.
-- Dữ liệu Live/history nằm ở Supabase qua RPC; frontend không query trực tiếp table telemetry.
-- Fullscreen/Live telemetry là **monitoring signal**, không phải secure-browser/kiosk proof tuyệt đối.
-
-Migration backend Live:
-
-```text
-supabase/migrations/assessment-v12.6.34-live-monitoring.sql
-supabase/migrations/assessment-v12.6.35-ios-live-sync.sql
-```
-
-Các bảng `attempt_live_state` và `attempt_monitor_events` cascade theo `exam_attempts`; xóa lượt làm sẽ xóa Live state/history của lượt đó.
-
-## Persistence / giữ nguyên màn hình
-
-Hai lớp dùng chung:
-
-```text
-js/ui/subpage-state.js
-js/ui/form-persistence.js
-```
-
-Contract hiện hành:
-
-- đổi sang browser tab khác rồi quay lại → **giữ nguyên DOM đang sống, không render lại**;
-- giữ scroll/form/workspace nếu không reload/discard;
-- reload/discard thật sự → `subpage-state.js` restore;
-- click sidebar → điều hướng chủ động → vào **trang mẹ** của menu đó.
-
-Không dùng `visibilitychange/pageshow/focus` để dựng lại view còn sống.
-
-## Question Bank
-
-Tách rõ hai nguồn:
-
-1. **Luyện tập – kiểm tra**.
-2. **Đề thi – bảo mật**.
-
-Bài kiểm tra online không được lấy câu chỉ thuộc ngân hàng bảo mật. Thi cuối kỳ dùng workflow bảo mật theo quy tắc đã chốt.
-
-Các contract mới V12.6.x:
-
-- backend có thể giữ `origin_type = 'gemini'`, nhưng UI phải ghi **✦ AI hỗ trợ**;
-- trang Thêm câu hỏi có ba mode **Tạo một câu | Nhận dạng từ ảnh | Tải hàng loạt**;
-- mode nhận dạng ảnh gửi một ảnh PNG/JPG/WEBP lên Edge Function `recognize-question-image`; Gemini điền nội dung, A–D, đáp án và lời giải vào biểu mẫu để giảng viên kiểm tra trước khi lưu;
-- Excel import dùng sheet chính `Cau_hoi`; không có cột Mã câu, hệ thống tự sinh mã số tự nhiên và đệm 0 khi hiển thị;
-- hover desktop của danh sách chỉ có **một owner**: `js/questions/hover-preview.js`;
-- hover hiện toàn bộ câu + A/B/C/D, không đánh dấu đáp án đúng;
-- `js/questions/matrix-panel.js` không được sở hữu hover nội dung câu hỏi lần nữa.
-
-## CSS ownership
-
-Đợt refactor lớn V12.4.x giữ mô hình **owner-based**:
-
-- `css/app.css` — base controls/form primitives.
-- `css/app-brand.css` — sole owner logo/brand.
-- `css/ui/application.css` — app geometry/layout.
-- `css/ui/primitives.css` — panel/table/stats/toolbar/badge/toast…
-- `css/ui/shell.css` — sidebar/header/footer/Drawer chrome.
-- `css/ui/dialogs.css` — dialog/modal/confirm.
-- `css/ui/app-window.css` — AI-CLO app-window.
-- `css/ui/layout-system.css` — generic KPI/action/filter layout classes only.
-- CSS nghiệp vụ nằm trong `css/courses/`, `css/questions/`, `css/exams/`, `css/system/`, `css/students/`, `css/results/`.
-
-Question Bank:
-
-- `css/questions/bank.css` — tab/scope/table/card mobile và layout bảng canonical.
-- `css/questions/bank-layout.css` — toolbar/filter/chips/selection enhancements.
-
-Assessment Live:
-
-- `css/exams/live-monitor.css` — Live subpage/table/detail responsive.
-- `css/exams/attempt-monitor.css` — cảnh báo/monitor UI phía sinh viên.
-
-`css/ui/final-layer.css` đã được loại khỏi runtime và xóa. `css/public.css` không được load trong `app.html`.
-
-## Supabase
-
-```text
-supabase/
-├─ migrations/
-├─ schema/
-├─ policies/
-├─ functions/
-└─ docs/
-```
-
-Edge Function phải:
-
-- self-contained;
-- không phụ thuộc `_shared` giữa các Function;
-- có thể copy/deploy độc lập từ Supabase Dashboard.
-
-Thay code Function trên GitHub không đồng nghĩa Supabase đã redeploy Function đó.
-
-Schema/RPC/RLS thay đổi phải có migration rõ ràng. Frontend-only phải nói rõ không cần thao tác Supabase.
-
-## Công cụ Chấm thi CLO
-
-`/cham-thi-clo/` là công cụ public độc lập, không yêu cầu đăng nhập. Luồng này không được trộn với Assessment online của AI-CLO.
-
-## Tài liệu cần đọc trước khi sửa dự án
-
-Theo thứ tự:
-
-1. [`docs/project/PROJECT-NOTES-AI-CLO.md`](docs/project/PROJECT-NOTES-AI-CLO.md) — quyết định kỹ thuật/UI ưu tiên.
-2. [`docs/project/ARCHITECTURE-AI-CLO.md`](docs/project/ARCHITECTURE-AI-CLO.md) — bản đồ kiến trúc hiện hành.
-3. [`docs/project/TECHNICAL-AGREEMENTS.md`](docs/project/TECHNICAL-AGREEMENTS.md) — quy tắc kỹ thuật bắt buộc.
-4. [`docs/project/PROJECT-STATUS-2026-09-08.md`](docs/project/PROJECT-STATUS-2026-09-08.md) — trạng thái checkpoint mới nhất.
-5. [`docs/project/PROJECT-PROGRESS-2026-09-08.md`](docs/project/PROJECT-PROGRESS-2026-09-08.md) — tiến trình chi tiết ngày 08/09.
-6. Mã mới nhất trên `main`.
-
-## Tổ chức repository
-
-- `docs/releases/` — VERSION, hướng dẫn nâng cấp và technical notes lịch sử.
-- `docs/project/` — kiến trúc, project notes, progress/status và thỏa thuận kỹ thuật.
-- `supabase/migrations/` — migration/upgrade SQL.
-- `supabase/schema/` — snapshot schema/RLS/policies.
-- `supabase/policies/` — policy SQL độc lập.
-- `supabase/functions/` — mã nguồn Edge Function.
-- `supabase/docs/` — hướng dẫn backend/deploy.
-
-## Ưu tiên tiếp theo
-
-Ưu tiên hiện tại là **smoke test nghiệp vụ thực tế**, đặc biệt:
-
-- Teacher Detail → AI-CLO | LIVE xuất hiện ngay không F5;
-- student desktop/iPhone rời màn hình → teacher nhận event;
-- thời gian away dừng khi student quay lại;
-- browser tab switch giữ nguyên DOM, sidebar click vào trang mẹ;
-- Question Bank list/detail đều dùng `AI hỗ trợ`;
-- bulk import workbook mới đọc đúng sheet `Cau_hoi`;
-- hover Question Bank chỉ còn một popup;
-- desktop/mobile không tràn ngang ngoài vùng được thiết kế;
-- teacher/student qua Supabase/RLS;
-- Excel đáp án+CLO với `/cham-thi-clo`;
-- compile TeX với công thức thực tế.
-
+Cập nhật nhận diện APMaths: **16/09/2026**.
