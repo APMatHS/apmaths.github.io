@@ -4,7 +4,7 @@
    Module  : Fixed desktop navigation widths
    ========================================================== */
 
-/* Desktop/tablet navigation only. Mobile (<= 780px) stays unchanged. */
+/* Desktop/tablet navigation only. Mobile (<= 780px) keeps its layout. */
 @media (min-width: 781px) {
     .main-nav {
         justify-content: flex-start;
@@ -18,6 +18,11 @@
         max-width: 104px;
     }
 
+    /* Slightly smaller desktop navigation text. */
+    .nav-link {
+        font-size: .90rem;
+    }
+
     /* Keep CLO as the final item, pinned to the far right. */
     .main-nav > .nav-item--clo {
         margin-left: auto !important;
@@ -25,8 +30,22 @@
 
     /* Treat the text + dropdown arrow as one visual navigation item. */
     .has-submenu > .nav-item-row {
-        border-bottom: 3px solid transparent;
-        transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+        position: relative;
+        border-bottom: 0;
+        transition: color .18s ease, background-color .18s ease;
+    }
+
+    /* Draw the active underline independently so it sits at exactly
+       the same bottom edge as the other navigation links. */
+    .has-submenu > .nav-item-row::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        background: transparent;
+        pointer-events: none;
     }
 
     .has-submenu > .nav-item-row > .nav-link,
@@ -40,7 +59,13 @@
     .has-submenu.is-open > .nav-item-row,
     .has-submenu.is-current > .nav-item-row {
         background: var(--primary-soft);
-        border-bottom-color: var(--primary);
+    }
+
+    .has-submenu:hover > .nav-item-row::after,
+    .has-submenu:focus-within > .nav-item-row::after,
+    .has-submenu.is-open > .nav-item-row::after,
+    .has-submenu.is-current > .nav-item-row::after {
+        background: var(--primary);
     }
 
     .has-submenu:hover > .nav-item-row > .nav-link,
@@ -54,5 +79,14 @@
         color: var(--primary);
         background: transparent;
         border-bottom-color: transparent;
+    }
+}
+
+/* Also reduce text slightly inside the opened mobile menu,
+   without changing the mobile layout or spacing. */
+@media (max-width: 780px) {
+    .nav-link,
+    .nav-item-row .nav-link {
+        font-size: .92rem;
     }
 }
