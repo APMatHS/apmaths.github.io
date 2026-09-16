@@ -17,18 +17,18 @@
 
 .site-header-inner {
     max-width: 1200px;
-    min-height: 70px;
+    min-height: 64px;
     margin: 0 auto;
     padding: 0 24px;
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 20px;
 }
 
 .site-brand {
     display: inline-flex;
     align-items: center;
-    gap: 11px;
+    gap: 10px;
     min-width: 0;
     flex: 0 0 auto;
     color: inherit;
@@ -41,16 +41,16 @@
 
 .site-logo {
     display: block;
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
-    flex: 0 0 42px;
+    flex: 0 0 40px;
     border-radius: 0;
 }
 
 .site-brand-text {
     color: var(--primary);
-    font-size: 1.5rem;
+    font-size: 1.45rem;
     font-weight: 800;
     line-height: 1;
     letter-spacing: -.025em;
@@ -64,7 +64,8 @@
 }
 
 .main-nav {
-    min-height: 70px;
+    width: 100%;
+    min-height: 64px;
     margin: 0;
     padding: 0;
     display: flex;
@@ -80,15 +81,22 @@
     padding: 0;
 }
 
+.main-nav > .nav-item:not(.nav-item--clo) {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
 .nav-item-row {
+    width: 100%;
+    min-height: 64px;
     display: flex;
     align-items: stretch;
-    min-height: 70px;
 }
 
 .nav-link {
-    min-height: 70px;
-    padding: 0 15px;
+    width: 100%;
+    min-height: 64px;
+    padding: 0 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -116,11 +124,15 @@
     font-size: 1rem;
 }
 
+.nav-item-row .nav-link {
+    flex: 1 1 auto;
+}
+
 .submenu-toggle {
-    width: 32px;
-    min-height: 70px;
-    margin-left: -9px;
-    padding: 0 7px;
+    width: 30px;
+    min-height: 64px;
+    margin-left: -8px;
+    padding: 0 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -137,7 +149,8 @@
 
 .submenu-toggle__icon {
     display: inline-block;
-    font-size: .72rem;
+    font-size: 1.05rem;
+    font-weight: 700;
     line-height: 1;
     transition: transform .18s ease;
 }
@@ -202,12 +215,14 @@
 .nav-item--clo {
     display: flex;
     align-items: center;
-    margin-left: 9px !important;
+    margin-left: 10px !important;
+    flex: 0 0 auto;
 }
 
-.nav-clo {
-    width: 43px;
-    height: 43px;
+.nav-clo,
+.mobile-clo {
+    width: 42px;
+    height: 42px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -215,7 +230,7 @@
     color: #fff;
     background: var(--primary);
     box-shadow: 0 5px 14px rgba(30, 58, 138, .2);
-    font-size: .9rem;
+    font-size: .88rem;
     font-weight: 800;
     line-height: 1;
     letter-spacing: .02em;
@@ -225,7 +240,10 @@
 
 .nav-clo:hover,
 .nav-clo:focus-visible,
-.nav-item--clo.is-current .nav-clo {
+.nav-item--clo.is-current .nav-clo,
+.mobile-clo:hover,
+.mobile-clo:focus-visible,
+.mobile-clo.is-current {
     color: #fff;
     background: var(--primary-light);
     text-decoration: none;
@@ -233,11 +251,18 @@
     box-shadow: 0 7px 18px rgba(30, 58, 138, .26);
 }
 
+.mobile-header-actions {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
 .mobile-nav-toggle {
     display: none;
-    width: 44px;
-    height: 44px;
-    padding: 10px;
+    width: 42px;
+    height: 42px;
+    padding: 9px;
     flex: 0 0 auto;
     align-items: center;
     justify-content: center;
@@ -275,7 +300,8 @@
 .submenu-toggle:focus-visible,
 .mobile-nav-toggle:focus-visible,
 .sub-menu a:focus-visible,
-.nav-clo:focus-visible {
+.nav-clo:focus-visible,
+.mobile-clo:focus-visible {
     outline: 2px solid var(--primary-light);
     outline-offset: 2px;
 }
@@ -286,36 +312,46 @@
     }
 
     .site-brand-text {
-        font-size: 1.35rem;
+        font-size: 1.32rem;
     }
 
     .nav-link {
-        padding: 0 10px;
-        font-size: .94rem;
+        padding: 0 7px;
+        font-size: .92rem;
     }
 }
 
 @media (max-width: 780px) {
     .site-header-inner {
-        min-height: 62px;
-        padding: 9px 16px;
+        min-height: 58px;
+        padding: 7px 14px;
         flex-wrap: wrap;
-        gap: 9px 12px;
+        gap: 8px 12px;
     }
 
     .site-logo {
-        width: 40px;
-        height: 40px;
-        flex-basis: 40px;
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
     }
 
     .site-brand-text {
-        font-size: 1.3rem;
+        font-size: 1.26rem;
+    }
+
+    .mobile-header-actions {
+        display: flex;
+    }
+
+    .mobile-clo {
+        width: 40px;
+        height: 40px;
+        font-size: .82rem;
+        box-shadow: 0 4px 12px rgba(30, 58, 138, .18);
     }
 
     .mobile-nav-toggle {
         display: inline-flex;
-        margin-left: auto;
     }
 
     .site-nav {
@@ -331,12 +367,14 @@
 
     .main-nav {
         min-height: 0;
-        padding: 5px 0 8px;
+        padding: 4px 0 7px;
         display: block;
     }
 
-    .main-nav > .nav-item {
+    .main-nav > .nav-item,
+    .main-nav > .nav-item:not(.nav-item--clo) {
         width: 100%;
+        flex: none;
         border-bottom: 1px solid var(--border);
     }
 
@@ -345,23 +383,19 @@
     }
 
     .nav-item-row {
-        min-height: 50px;
+        min-height: 48px;
         width: 100%;
     }
 
     .nav-link,
     .nav-item-row .nav-link {
         width: 100%;
-        min-height: 50px;
+        min-height: 48px;
         padding: 0 10px;
         justify-content: flex-start;
         white-space: normal;
-        font-size: .98rem;
+        font-size: .97rem;
         border-bottom: 0;
-    }
-
-    .nav-item-row .nav-link {
-        flex: 1 1 auto;
     }
 
     .nav-link:hover,
@@ -373,12 +407,16 @@
     }
 
     .submenu-toggle {
-        width: 50px;
-        min-height: 50px;
+        width: 48px;
+        min-height: 48px;
         margin-left: 0;
         padding: 0;
-        flex: 0 0 50px;
+        flex: 0 0 48px;
         border-bottom: 0;
+    }
+
+    .submenu-toggle__icon {
+        font-size: 1.08rem;
     }
 
     .sub-menu {
@@ -387,7 +425,7 @@
         min-width: 0;
         width: 100%;
         margin: 0;
-        padding: 0 0 9px 18px;
+        padding: 0 0 8px 18px;
         opacity: 1;
         visibility: visible;
         transform: none;
@@ -414,35 +452,28 @@
     }
 
     .nav-item--clo {
-        min-height: 58px;
-        margin-left: 0 !important;
-        padding: 7px 10px;
-        align-items: center;
-    }
-
-    .nav-clo {
-        width: 46px;
-        height: 46px;
+        display: none;
     }
 }
 
 @media (max-width: 480px) {
     .site-header-inner {
-        padding: 8px 14px;
+        padding: 6px 12px;
     }
 
     .site-logo {
-        width: 38px;
-        height: 38px;
-        flex-basis: 38px;
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
     }
 
     .site-brand-text {
-        font-size: 1.22rem;
+        font-size: 1.18rem;
     }
 
+    .mobile-clo,
     .mobile-nav-toggle {
-        width: 42px;
-        height: 42px;
+        width: 38px;
+        height: 38px;
     }
 }
