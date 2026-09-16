@@ -1,4 +1,4 @@
-/* AI-CLO PTITHCM V11 — Admin export of the complete course question bank. */
+/* AI·CLO APMaths V12.8 — Admin export of the complete course question bank. */
 (() => {
 'use strict';
 
@@ -117,7 +117,7 @@ async function exportQuestionBank(target={}){
   ];
   const workbook=XLSXLib.utils.book_new();
   const bankName=bank?.name||subject?.question_banks?.name||subject?.name||'Ngân hàng';
-  workbook.Props={Title:`Ngân hàng câu hỏi - ${bankName}`,Subject:'Sao lưu ngân hàng câu hỏi AI-CLO PTITHCM',Author:state.profile?.full_name||state.user?.email||'Admin',CreatedDate:new Date()};
+  workbook.Props={Title:`Ngân hàng câu hỏi - ${bankName}`,Subject:'Sao lưu ngân hàng câu hỏi AI·CLO APMaths',Author:state.profile?.full_name||state.user?.email||'Admin',CreatedDate:new Date()};
   const questionSheet=XLSXLib.utils.json_to_sheet(rows),revisionSheet=XLSXLib.utils.json_to_sheet(revisionRows),infoSheet=XLSXLib.utils.json_to_sheet(info);
   setSheetLayout(questionSheet,[7,14,38,60,38,38,38,38,12,55,28,13,28,13,12,45,25,20,20,24,18,28,30,28,20,28,20,38,22,22]);
   setSheetLayout(revisionSheet,[7,14,38,14,28,22,90]);
