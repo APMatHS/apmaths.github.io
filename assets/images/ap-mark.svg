@@ -12,7 +12,9 @@
     </linearGradient>
   </defs>
   <rect width="128" height="128" rx="27" fill="url(#bg)"/>
-  <path d="M18 91 L47 32 Q49 28 54 28 H61 L87 91 H70 L57 59 L43 91 Z" fill="#fff"/>
-  <path d="M43 91 L57 59 L64 76 L52 91 Z" fill="url(#fold)"/>
-  <path d="M72 32 H94 Q108 32 108 48 Q108 64 94 64 H87 V91 H72 Z M87 45 V52 H94 Q98 52 98 48.5 Q98 45 94 45 Z" fill="#fff"/>
+  <!-- Compact stylized A with more breathing room -->
+  <path d="M21 89 L45 38 Q47 34 51 34 H57 L77 89 H63 L54 63 L43 89 Z" fill="#fff"/>
+  <path d="M43 89 L54 63 L60 78 L51 89 Z" fill="url(#fold)"/>
+  <!-- Separate P for legibility at favicon size -->
+  <path d="M80 34 H96 Q107 34 107 49 Q107 64 96 64 H91 V89 H80 Z M91 46 V53 H96 Q99 53 99 49.5 Q99 46 96 46 Z" fill="#fff"/>
 </svg>
