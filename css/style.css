@@ -1,10 +1,11 @@
 /* ==========================================================
-   APMaths Theme V3.3
+   APMaths Theme V3.4
    Main stylesheet entry point
    ========================================================== */
 
 @import url("theme/foundation.css");
-@import url("theme/header.css?v=20260916-3");
+@import url("theme/header.css?v=20260916-5");
 @import url("theme/article.css");
 @import url("theme/academic.css");
-@import url("theme/footer.css");
+@import url("theme/home.css?v=20260916-5");
+@import url("theme/footer.css?v=20260916-5");
