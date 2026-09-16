@@ -1,0 +1,24 @@
+/* AI-CLO PTITHCM V12.7.1 — AI essay drafting. */
+.essay-ai-create{font-weight:700}
+.essay-ai-page{max-width:1100px;margin:0 auto}
+.essay-ai-clo-box{border:1px solid var(--border,#dbe3ef);border-radius:12px;padding:14px;background:var(--surface,#fff)}
+.essay-ai-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.essay-ai-section-head h4{margin:0 0 4px}.essay-ai-section-head p{margin:0;color:var(--muted,#667085);font-size:.88rem}
+#essayAiCloTargets{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.essay-ai-clo-target{display:grid;grid-template-columns:minmax(0,1fr) 88px auto;gap:8px;align-items:center;padding:9px 10px;border:1px solid var(--border,#dbe3ef);border-radius:9px;background:var(--surface-2,#f8fafc)}
+.essay-ai-clo-target span{min-width:0;display:flex;flex-direction:column}.essay-ai-clo-target small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted,#667085)}
+.essay-ai-clo-target input{width:88px;min-width:0}.essay-ai-clo-target em{font-style:normal;color:var(--muted,#667085);font-size:.85rem}
+.essay-ai-score-summary{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:10px;padding:9px 11px;border-radius:9px;background:#fff7ed;border:1px solid #fed7aa}
+.essay-ai-score-summary.ok{background:#ecfdf3;border-color:#a7f3d0}.essay-ai-score-summary.bad{background:#fff7ed;border-color:#fed7aa}
+.essay-ai-score-summary span{font-size:.86rem;color:var(--muted,#667085)}
+.essay-ai-note,.essay-ai-draft-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid #c7d7fe;border-radius:10px;background:#eff6ff}
+.essay-ai-note{flex-direction:column;align-items:flex-start}.essay-ai-note span,.essay-ai-draft-banner span{color:var(--muted,#58667a);font-size:.88rem}
+.essay-ai-draft-banner>div{display:flex;flex-direction:column;gap:3px}
+#essayForm [data-rubric-points]:invalid{outline:2px solid #f59e0b;outline-offset:1px}
+@media(max-width:720px){
+  #essayAiCloTargets{grid-template-columns:1fr}
+  .essay-ai-clo-target{grid-template-columns:minmax(0,1fr) 82px auto}
+  .essay-ai-score-summary,.essay-ai-draft-banner{align-items:flex-start;flex-direction:column}
+  .essay-bank-actions{flex-wrap:wrap}
+  .essay-ai-create,#addEssayQuestion{flex:1 1 auto}
+}
