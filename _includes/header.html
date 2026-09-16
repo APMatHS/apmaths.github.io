@@ -1,18 +1,28 @@
 <header class="site-header">
+    <div class="site-header-inner">
 
-    <a href="/" aria-label="APMaths Home">
-        <img
-            src="/assets/images/logo.png"
-            alt="APMaths Logo"
-            class="site-logo">
-    </a>
+        <a class="site-brand" href="/" aria-label="APMaths - {{ include.t.nav.home }}">
+            <img
+                src="/assets/images/logo.png"
+                alt="APMaths"
+                class="site-logo">
 
-    <div>
+            <span class="site-brand-copy">
+                <span class="site-title">{{ include.t.site.title }}</span>
+                <span class="site-tagline">{{ include.t.site.tagline }}</span>
+            </span>
+        </a>
 
-        <h1>{{ include.t.site.title }}</h1>
-
-        <p>{{ include.t.site.tagline }}</p>
+        <button
+            class="mobile-nav-toggle"
+            type="button"
+            aria-controls="site-navigation"
+            aria-expanded="false"
+            aria-label="Menu">
+            <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
+            <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
+            <span class="mobile-nav-toggle__line" aria-hidden="true"></span>
+        </button>
 
     </div>
-
 </header>
