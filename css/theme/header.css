@@ -9,92 +9,17 @@
    1. SITE HEADER
    ========================================================== */
 
-.site-header {
-    width: 100%;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-}
-
-.site-header-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 12px 24px 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.site-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 13px;
-    min-width: 0;
-    color: inherit;
-    text-decoration: none;
-}
-
-.site-brand:hover {
-    text-decoration: none;
-}
-
-.site-logo {
-    width: 62px;
-    height: 62px;
-    object-fit: contain;
-    flex-shrink: 0;
-    border-radius: 13px;
-}
-
-.site-brand-copy {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.site-title {
-    color: var(--primary);
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 2.25rem;
-    font-weight: 700;
-    line-height: 1.05;
-    letter-spacing: -.03em;
-}
-
-.site-tagline {
-    margin-top: 5px;
-    color: var(--text-light);
-    font-size: .92rem;
-    line-height: 1.35;
-    letter-spacing: .08em;
-}
-
-.mobile-nav-toggle {
-    display: none;
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 5px;
-    color: var(--text);
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.mobile-nav-toggle__line {
-    display: block;
-    width: 20px;
-    height: 2px;
-    background: currentColor;
-    border-radius: 999px;
-    transition: transform .2s ease, opacity .2s ease;
-}
-
+.site-header { width: 100%; background: var(--surface); border-bottom: 1px solid var(--border); }
+.site-header-inner { max-width: 1200px; margin: 0 auto; padding: 12px 24px 10px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.site-brand { display: inline-flex; align-items: center; gap: 13px; min-width: 0; color: inherit; text-decoration: none; }
+.site-brand:hover { text-decoration: none; }
+.site-logo { width: 62px; height: 62px; object-fit: contain; flex-shrink: 0; border-radius: 13px; }
+.site-brand-copy { display: flex; flex-direction: column; min-width: 0; }
+.site-title { color: #0f172a; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 2.18rem; font-weight: 800; line-height: 1.02; letter-spacing: -.045em; }
+.site-title::first-letter { color: #176cf2; }
+.site-tagline { margin-top: 5px; color: var(--text-light); font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: .92rem; line-height: 1.35; letter-spacing: .12em; }
+.mobile-nav-toggle { display: none; width: 44px; height: 44px; padding: 10px; flex: 0 0 auto; align-items: center; justify-content: center; flex-direction: column; gap: 5px; color: var(--text); background: transparent; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+.mobile-nav-toggle__line { display: block; width: 20px; height: 2px; background: currentColor; border-radius: 999px; transition: transform .2s ease, opacity .2s ease; }
 .mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(2) { opacity: 0; }
 .mobile-nav-toggle[aria-expanded="true"] .mobile-nav-toggle__line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
@@ -144,8 +69,8 @@
     .site-header-inner { padding: 11px 16px; gap: 12px; }
     .site-brand { gap: 11px; }
     .site-logo { width: 50px; height: 50px; border-radius: 11px; }
-    .site-title { font-size: 1.8rem; }
-    .site-tagline { margin-top: 3px; font-size: .75rem; letter-spacing: .06em; }
+    .site-title { font-size: 1.78rem; }
+    .site-tagline { margin-top: 3px; font-size: .75rem; letter-spacing: .09em; }
     .mobile-nav-toggle { display: inline-flex; }
     .site-nav { position: static; display: none; box-shadow: none; border-top: 0; }
     .site-nav.is-open { display: block; }
@@ -166,7 +91,7 @@
 @media (max-width: 480px) {
     .site-header-inner { padding: 10px 14px; }
     .site-logo { width: 46px; height: 46px; border-radius: 10px; }
-    .site-title { font-size: 1.6rem; }
-    .site-tagline { display: block; font-size: .68rem; white-space: nowrap; }
+    .site-title { font-size: 1.56rem; }
+    .site-tagline { display: block; font-size: .67rem; white-space: nowrap; }
     .mobile-nav-toggle { width: 42px; height: 42px; }
 }
