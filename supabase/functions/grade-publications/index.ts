@@ -4,8 +4,8 @@ import { validateTable,tableFromMatrix } from "./core.js";
 const url=Deno.env.get('SUPABASE_URL')!;
 const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db=createClient(url,key,{auth:{persistSession:false}});
-const origins=new Set(['https://apmaths.github.io']);
-const actions=new Set(['list','meta','create','unlock','read','save','restore','upload','original','sync_now','password','lookup','settings','set_code','reset_password','delete','google_preview','connector']);
+const origins=new Set(['https://apmaths.github.io','https://apmaths.pages.dev']);
+const actions=new Set(['check_code','list','meta','create','unlock','read','save','restore','upload','original','sync_now','password','lookup','settings','set_code','reset_password','delete','google_preview','connector']);
 const adminActions=new Set(['settings','set_code','reset_password','delete']);
 let googleToken={token:'',until:0};
 function googleConfig(){
@@ -79,10 +79,17 @@ Deno.serve(async(req:Request)=>{
   if(adminActions.has(action)&&!admin)return reply({error:'Cần đăng nhập admin'},403);
   if(!admin){
    const ip=req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()??req.headers.get('cf-connecting-ip')??'unknown';
-   const sensitive=['unlock','create','lookup','password','google_preview'].includes(action);
+   const sensitive=['check_code','unlock','create','lookup','password','google_preview'].includes(action);
    const category=action==='lookup'?'lookup':sensitive?'credentials':'general';
    const rate=await gateway('rate',{key:await hash(ip+':'+category),limit:action==='lookup'?300:sensitive?30:200});
    if(!rate.allowed)return reply({error:'Quá nhiều yêu cầu. Vui lòng thử lại sau 10 phút.'},429);
+  }
+  if(action==='check_code'){
+   if(typeof payload.code!=='string'||! /^[0-9]{4}$/.test(payload.code))throw Error('Mã tạo phải gồm đúng 4 chữ số.');
+   const {data,error}=await db.rpc('grade_check_creation_code',{p_code:payload.code});
+   if(error)throw Error(error.message);
+   if(!data)throw Error('Mã tạo không đúng.');
+   return reply({ok:true});
   }
   if(action==='connector'){
    let email=null;try{email=googleConfig().client_email;}catch{}
@@ -150,3 +157,4 @@ Deno.serve(async(req:Request)=>{
   return reply(await gateway(action,payload,admin));
  }catch(e){return reply({error:(e as Error).message??'Không xử lý được yêu cầu'},400);}
 });
+

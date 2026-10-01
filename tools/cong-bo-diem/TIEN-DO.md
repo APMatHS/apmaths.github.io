@@ -41,3 +41,13 @@
 - Thông báo Lưu cập nhật xuất hiện giữa màn hình; phân biệt lưu dữ liệu thành công với lỗi tải file gốc.
 - Header dùng chung tools/css/header.css với tools/all; đồng bộ cỡ chữ, chiều cao, màu và bỏ gạch chân link cả khi hover.
 - Bổ sung kiểm thử trình duyệt cho ô lỗi, vị trí/cỡ chữ thông báo Đã lưu và link header.
+
+
+## Cập nhật luồng tạo và tên miền 01/10/2026
+- Mã chung 4 chữ số nhập trong hộp thoại giữa màn hình, kiểm tra trên server trước khi mở biểu mẫu; không nhập lại trong biểu mẫu, không lưu mã trong URL hoặc bộ nhớ trình duyệt lâu dài.
+- Mở lại công bố bằng link qua hộp thoại cùng phong cách thông báo lỗi, hỗ trợ link GitHub Pages và Cloudflare Pages.
+- Hiển thị link quản lý để giảng viên lưu cùng mật khẩu; mật khẩu không bắt buộc khác nhau giữa các bài.
+- Chỉnh autocomplete, tên trường và chỉ mở nhập khi tương tác để hạn chế trình duyệt điền email vào Học kỳ và tự điền mật khẩu chỉnh sửa. Password manager của trình duyệt có thể áp dụng quy tắc riêng.
+- Backend cho phép đúng hai origin apmaths.github.io và apmaths.pages.dev; giữ xác thực Admin và phiên chỉnh sửa như cũ.
+- Sửa file chức năng hiện có, không thêm JS vá phiên bản.
+- Đã kiểm tra cú pháp JS, core và hàm kiểm tra mã/quyền trong giao dịch rollback. Bổ sung kiểm tra trình duyệt cho mã sai/đúng, hộp thoại giữa màn hình, link khác miền và link quản lý.

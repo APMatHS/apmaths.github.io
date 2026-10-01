@@ -1,5 +1,5 @@
 
-import {$,esc,api,busy,showQR,bindQR,stamp,status} from './api.js';
+import {$,esc,api,busy,showQR,bindQR,stamp,status,fieldError} from './api.js';
 let offset=0,count=0;
 async function load(){
  const list=await api('list',{search:$('#search').value.trim(),offset});count=list.length;
@@ -11,5 +11,17 @@ $('#search').onkeydown=e=>{if(e.key==='Enter')$('#searchBtn').click();};
 $('#prev').onclick=()=>{offset=Math.max(0,offset-50);busy(null,load);};
 $('#next').onclick=()=>{offset+=50;busy(null,load);};
 $('#list').onclick=e=>{const button=e.target.closest('[data-qr]');if(button)busy(button,()=>showQR(button.dataset.qr));};
-$('#openManage').onclick=()=>{const id=prompt('Dán mã công bố hoặc link tra cứu/quản lý:');if(!id)return;let value=id.trim();try{value=new URL(value).searchParams.get('id')||value;}catch{}if(!/^[0-9a-f-]{36}$/i.test(value)){status('Mã công bố không hợp lệ.',true);return;}location.href='quan-ly/?id='+encodeURIComponent(value);};
+$('#openManage').onclick=()=>{$('#manageLink').value='';$('#manageDialog').showModal();};
+$('#cancelManage').onclick=()=>$('#manageDialog').close();
+$('#manageForm').onsubmit=e=>{e.preventDefault();busy(null,async()=>{
+ const text=$('#manageLink').value.trim();let value=text;
+ if(!/^[0-9a-f-]{36}$/i.test(value)){
+  let link;try{link=new URL(text);}catch{throw fieldError('Dán link công bố đã lưu.',['#manageLink']);}
+  if(!['https://apmaths.github.io','https://apmaths.pages.dev'].includes(link.origin)||!/^\/tools\/cong-bo-diem\/(tra-cuu|quan-ly)\/?$/.test(link.pathname))throw fieldError('Link phải là trang tra cứu hoặc quản lý công bố của APMaths.',['#manageLink']);
+  value=link.searchParams.get('id')||'';
+ }
+ if(!/^[0-9a-f-]{36}$/i.test(value))throw fieldError('Link chưa có thông tin công bố hợp lệ.',['#manageLink']);
+ location.href='quan-ly/?id='+encodeURIComponent(value);
+});};
 bindQR();busy(null,load);
+

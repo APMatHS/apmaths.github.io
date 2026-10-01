@@ -7,12 +7,12 @@ Admin xem cả bản nháp và bài đang mở, sửa công bố, đặt lại m
 Không có mã tạo mặc định được ghi trong mã nguồn.
 
 ## Giảng viên
-1. Chọn Tạo công bố, nhập môn, giảng viên, lớp, học kỳ, mã chung và đặt mật khẩu chỉnh sửa từ 8 ký tự.
+1. Chọn Tạo công bố, nhập mã chung 4 chữ số trong hộp thoại giữa màn hình. Sau khi kiểm tra đúng mã, nhập môn, giảng viên, lớp, học kỳ và đặt mật khẩu chỉnh sửa từ 8 ký tự. Mật khẩu các công bố có thể giống nhau.
 2. Chọn một nguồn: Excel/CSV, dán bảng, hoặc Google Sheets. Mỗi công bố chỉ dùng một sheet và một lớp.
 3. Với Excel, chọn đúng sheet và dòng tên cột. Với bảng dán, sao chép cả hàng tiêu đề.
 4. Chọn các cột sinh viên được xem. Chọn một đến bốn trường xác nhận từ MSSV, SĐT, ngày sinh, mã riêng có trong dữ liệu.
 5. Kiểm tra dữ liệu và xem thử một sinh viên. Bật công bố, Lưu cập nhật rồi gửi link/QR.
-6. Lưu mã công bố và mật khẩu. Có thể mở lại qua danh sách hoặc nút Mở quản lý bằng mã công bố (nhận cả link).
+6. Lưu link quản lý và mật khẩu. Có thể mở lại qua nút Chỉnh sửa trong danh sách hoặc Mở lại công bố → dán link trong hộp thoại. Không cần nhớ mã dài.
 7. Muốn sửa: nhập mật khẩu riêng. Excel/bảng dán sửa ô, thêm/xóa dòng/cột hoặc dán vùng; xem trước rồi áp dụng, có hoàn tác.
 8. Khôi phục dữ liệu trước lần lưu/đồng bộ gần nhất sẽ tắt công bố để kiểm tra lại. File Excel gốc chỉ giữ bản mới nhất; khôi phục bảng không khôi phục file nhị phân cũ.
 
@@ -57,3 +57,7 @@ Không tải file gốc hay toàn bộ lớp về trình duyệt. Không thể t
 - Gateway SQL chỉ service_role được gọi. anon/authenticated không có quyền đọc bảng riêng tư.
 - Giới hạn lượt yêu cầu theo IP và loại thao tác; API công khai chỉ có metadata tối thiểu và kết quả sau xác nhận.
 - Không lưu bản PDF/Excel mới mỗi lần sửa; một file gốc và tối đa một bản dữ liệu trước.
+
+
+## Hai địa chỉ website
+Công cụ hoạt động tại apmaths.github.io và apmaths.pages.dev, cùng dùng dữ liệu APMaths AI-CLO. Link quản lý, tra cứu và QR lấy tên miền đang truy cập. Hộp Mở lại công bố nhận link của cả hai địa chỉ và mở trên tên miền hiện tại. Phiên đăng nhập Admin thuộc từng tên miền; khi đổi tên miền cần đăng nhập lại.

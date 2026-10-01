@@ -21,6 +21,13 @@ export function status(message,error=false){
  close.setAttribute('aria-label','Đóng thông báo');close.onclick=()=>{clearTimeout(noticeTimer);el.replaceChildren();};
  el.append(text,close);if(!error)noticeTimer=setTimeout(()=>el.replaceChildren(),6000);
 }
+document.addEventListener('close',e=>{if(e.target instanceof HTMLDialogElement&&e.target.contains($('#status')))document.body.append($('#status'));},true);
+export function manualEntry(){
+ document.querySelectorAll('[data-manual-entry]').forEach(el=>{
+  const enable=()=>el.removeAttribute('readonly');
+  el.addEventListener('focus',enable);el.addEventListener('pointerdown',enable);
+ });
+}
 document.addEventListener('input',e=>e.target.removeAttribute?.('aria-invalid'));
 document.addEventListener('change',e=>e.target.removeAttribute?.('aria-invalid'));
 document.addEventListener('invalid',e=>{e.preventDefault();markErrors(e.target.id?['#'+e.target.id]:[]);e.target.setAttribute('aria-invalid','true');status('Kiểm tra ô '+(e.target.closest('label')?.childNodes[0]?.textContent?.trim()||'đang nhập')+': '+e.target.validationMessage,true);},true);
@@ -33,6 +40,7 @@ export async function api(action,payload={},admin=false){
   const message=data.error||'Yêu cầu thất bại.';let fields=[];
   if(action==='lookup')fields=['[data-field]'];
   if(action==='unlock')fields=['#editPassword'];
+  if(action==='check_code')fields=['#creationCode'];
   if(action==='create')fields=/Mã tạo/.test(message)?['#creationCode']:/Mật khẩu/.test(message)?['#editPassword']:[];
   if(action==='set_code')fields=['#code'];
   if(action==='google_preview'&&/sheet|Sheets|Link/.test(message))fields=['#googleLink','#googleSheet'];
@@ -50,4 +58,5 @@ export function bindQR(){
  $('#qrClose')?.addEventListener('click',()=>$('#qrDialog').close());
  $('#copyLink')?.addEventListener('click',()=>busy($('#copyLink'),async()=>{await navigator.clipboard.writeText($('#qrLink').value);status('Đã sao chép link tra cứu.');}));
 }
+
 
