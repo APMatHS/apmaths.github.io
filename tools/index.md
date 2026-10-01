@@ -1,60 +1,100 @@
 ---
 layout: page
 permalink: /tools/
-title: Công cụ & Tiện ích
+title: Công cụ PTIT
+description: Các công cụ hỗ trợ giảng dạy, quản lý CLO, xử lý đề thi và học liệu.
 ---
 
-<div class="tools-container" style="max-width: 800px; margin: 0 auto; line-height: 1.8; color: #3c4043; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+<link rel="stylesheet" href="/tools/css/directory.css">
+<div class="tools-directory">
 
-Chào mừng bạn đến với chuyên mục **APMaths Tools**. Nhằm hỗ trợ tối đa cho công tác giảng dạy, số hóa đề thi và nghiên cứu toán học, chúng tôi phát triển và tổng hợp các công cụ trực tuyến tối ưu dưới đây để bạn có thể truy cập và sử dụng một cách nhanh chóng, thuận tiện.
+            <section class="hero">
+                <h1>Công cụ PTIT</h1>
+                <p>Các công cụ hỗ trợ giảng dạy, quản lý CLO, xử lý đề thi và học liệu.</p>
+            </section>
 
-<hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 2rem 0;">
+            <section class="tools-grid">
+                <!-- Công bố điểm -->
+                <a class="tool-card" href="/tools/cong-bo-diem/" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-icon">📋</div>
+                    <h2>Công bố điểm</h2>
+                    <p>Công bố điểm, điểm danh và kết quả học tập; sinh viên tra cứu bằng thông tin xác nhận.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
 
-<!-- Mục 1: Quản lý đề thi -->
-<div class="tool-section" style="margin-bottom: 2.5rem;">
-    <h3 style="color: #1a73e8; margin-bottom: 0.5rem;">📝 Quản lý & Thiết kế đề thi</h3>
-    <div class="tool-item" style="background: #f8f9fa; padding: 1rem 1.25rem; border-left: 4px solid #1a73e8; border-radius: 4px;">
-        <strong style="font-size: 1.1rem;"><a href="https://apmaths.github.io/tools/exam-clo/index.html" style="color: #1557b0; text-decoration: none;" target="_blank" rel="noopener noreferrer">Công cụ Chấm bài thi trắc nghiệm EXAM-CLO</a></strong>
-        <p style="margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #5f6368;">
-            Hỗ trợ giảng viên chấm bài làm sinh viên xuất từ app UnT có xuất chuyển đầu ra (Course Learning Outcomes - CLO). Tự động xuất bảng điểm theo phách và bảng điểm chi tiết các CLO.
-        </p>
-    </div>
-</div>
+                <!-- Chấm thi CLO -->
+                <a class="tool-card" href="/tools/exam-clo/"target="_blank" rel="noopener noreferrer">
+                    <div class="tool-icon">📊</div>
+                    <h2>Chấm thi CLO</h2>
+                    <p>Chấm điểm bài thi và thống kê kết quả theo từng CLO.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
 
-<!-- Mục 2: Soạn thảo & Hỗ trợ code -->
-<div class="tool-section" style="margin-bottom: 2.5rem;">
-    <h3 style="color: #1a73e8; margin-bottom: 0.5rem;">💻 Soạn thảo & Hỗ trợ lập trình</h3>
-    
-    <div class="tool-item" style="background: #f8f9fa; padding: 1rem 1.25rem; border-left: 4px solid #1a73e8; border-radius: 4px; margin-bottom: 1rem;">
-        <strong style="font-size: 1.1rem;"><a href="html-code.html" style="color: #1557b0; text-decoration: none;">Trình biên tập & Xem trước HTML (HTML Editor)</a></strong>
-        <p style="margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #5f6368;">
-            Môi trường sandbox nhỏ gọn giúp viết, chỉnh sửa và xem trước kết quả hiển thị của mã HTML/CSS theo thời gian thực (Real-time Preview).
-        </p>
-    </div>
+                <!-- Tách CLO -->
+                <a class="tool-card" href="/tools/tach-clo/" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-icon">✂️</div>
+                    <h2>Tách CLO</h2>
+                    <p>Tách và xử lý dữ liệu CLO phục vụ tổng hợp kết quả đánh giá.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
 
-    <div class="tool-item" style="background: #f8f9fa; padding: 1rem 1.25rem; border-left: 4px solid #1a73e8; border-radius: 4px;">
-        <strong style="font-size: 1.1rem;"><a href="latex-code" style="color: #1557b0; text-decoration: none;">Hệ soạn thảo & Tối ưu LaTeX (LaTeX Code Generator)</a></strong>
-        <p style="margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #5f6368;">
-            Hỗ trợ biên dịch nhanh các công thức toán học, biểu thức đại số phức tạp sang định dạng LaTeX chuẩn, tương thích tốt với các phần mềm soạn thảo chuyên dụng.
-        </p>
-    </div>
-</div>
+                <!-- Trộn đề CLO -->
+                <a class="tool-card" href="/tools/exam-shuffler/" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-icon">🔀</div>
+                    <h2>Trộn đề CLO</h2>
+                    <p>Trộn câu hỏi, đáp án và tạo nhiều mã đề trong khi vẫn giữ thông tin CLO.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
 
-<!-- Mục 3: Tính toán chuyên sâu -->
-<div class="tool-section" style="margin-bottom: 2.5rem;">
-    <h3 style="color: #1a73e8; margin-bottom: 0.5rem;">🧮 Máy tính & Tính toán toán học</h3>
-    <div class="tool-item" style="background: #f8f9fa; padding: 1rem 1.25rem; border-left: 4px solid #1a73e8; border-radius: 4px;">
-        <strong style="font-size: 1.1rem;"><a href="quaternion-calc" style="color: #1557b0; text-decoration: none;">Máy tính Quaternion (Quaternion Calculator)</a></strong>
-        <p style="margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #5f6368;">
-            Thực hiện các phép toán trên đại số số siêu phức Quaternion 4 chiều. Hỗ trợ tính toán ma trận xoay, phép cộng, phép nhân và các biến đổi không gian nâng cao.
-        </p>
-    </div>
-</div>
+                <!-- Tạo âm tanh -->
+                <a class="tool-card" href="/tools/tts/" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-icon">📢</div>
+                    <h2>Tạo âm thanh</h2>
+                    <p>Tạo âm thanh từ văn bản, sử dụng mô hình AI của Gemini.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
 
-<hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 2rem 0;">
+                 <!-- Tạo mã QR -->
+                <a class="tool-card" href="/tools/qr/" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-icon"><i class="fa fa-qrcode" style="color: #2563eb;"></i></div>
+                    <h2>Tạo mã QR</h2>
+                    <p>Tạo mã QR từ văn bản, dùng để chuyển văn bản nhanh chóng.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
 
-<p style="font-size: 0.9rem; color: #70757a; font-style: italic; text-align: center;">
-    Tất cả các công cụ trên đều được cung cấp miễn phí và hoạt động hoàn toàn trên trình duyệt của bạn.
-</p>
+                <!-- LaTeX -->
+                <a class="tool-card" href="/tools/latex/" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-icon">∑</div>
+                    <h2>Render LaTeX</h2>
+                    <p>Nhập và hiển thị nhanh các công thức toán học bằng LaTeX.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
 
+                <!-- Quiz -->
+                <a class="tool-card developing" href="/tools/quiz/" target="_blank" rel="noopener noreferrer">
+                    <span class="badge">Đang phát triển</span>
+                    <div class="tool-icon">🗂️</div>
+                    <h2>Ngân hàng câu hỏi</h2>
+                    <p>Quản lý câu hỏi theo môn học, chương, chủ đề và CLO.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
+
+		<!-- Games -->
+                <a class="tool-card developing" href="/games/" target="_blank" rel="noopener noreferrer">
+                    <span class="badge">Có thể truy cập</span>
+                    <div class="tool-icon">🗂️</div>
+                    <h2>Mini games</h2>
+                    <p>Một số mini game đang được phát triển</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
+
+
+                <!-- Z3 -->
+                <a class="tool-card" href="/tools/z3/" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-icon">🧮</div>
+                    <h2>Tính toán ma trận Z₃</h2>
+                    <p>Thực hiện các phép tính ma trận trên trường hữu hạn Z₃.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
+            </section>
 </div>

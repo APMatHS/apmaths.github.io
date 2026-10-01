@@ -53,3 +53,7 @@
 - Đã kiểm tra cú pháp JS, core và hàm kiểm tra mã/quyền trong giao dịch rollback. Bổ sung kiểm tra trình duyệt cho mã sai/đúng, hộp thoại giữa màn hình, link khác miền và link quản lý.
 
 - Xác nhận sau triển khai: GitHub Actions đạt core và toàn bộ kiểm tra Chromium; GitHub Pages và Cloudflare Pages triển khai thành công. API trả 200/CORS đúng cho hai tên miền và 403 cho origin ngoài danh sách. Đã kiểm tra hộp Mở lại công bố, hộp nhập mã và danh sách công bố trên Cloudflare Pages.
+
+
+## Nút phân trang 01/10/2026
+- Đổi con trỏ của nút vô hiệu hóa từ wait thành not-allowed; Trước/Sau ở giới hạn trang không còn hiển thị vòng chờ.

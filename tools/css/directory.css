@@ -1,0 +1,107 @@
+/* Danh sách công cụ; giữ nguyên head/nav APMaths. */
+main.container:has(.tools-directory){max-width:1164px;padding:0 32px;background:transparent;box-shadow:none;}
+.tools-directory{max-width:1100px;margin:0 auto;color:#1f2937;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+.tools-directory *{box-sizing:border-box;}
+        /* Main */
+        .tools-directory {
+            padding: 38px 0 50px;
+        }
+        .tools-directory .hero {
+            text-align: center;
+            margin-bottom: 42px;
+        }
+        .tools-directory .hero h1 {
+            margin: 0 0 12px;
+            font-size: clamp(30px, 5vw, 44px);
+            color: #111827;
+        }
+        .tools-directory .hero p {
+            text-align: center;
+            margin: 0 auto;
+            max-width: 680px;
+            line-height: 1.7;
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        /* Tools */
+        .tools-directory .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .tools-directory .tool-card {
+            font-weight: 400;
+            display: flex;
+            flex-direction: column;
+            min-height: 210px;
+            padding: 24px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        }
+        .tools-directory .tool-card:hover {
+            text-decoration: none;
+            transform: translateY(-4px);
+            border-color: #bfdbfe;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        }
+        .tools-directory .tool-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #eff6ff;
+            font-size: 25px;
+            margin-bottom: 18px;
+        }
+        .tools-directory .tool-card h2 {
+            border-bottom: 0;
+            padding-bottom: 0;
+            margin: 0 0 9px;
+            font-size: 19px;
+            color: #111827;
+        }
+        .tools-directory .tool-card p {
+            text-align: left;
+            margin: 0;
+            line-height: 1.6;
+            color: #6b7280;
+            font-size: 14px;
+            flex: 1;
+        }
+        .tools-directory .open-tool {
+            margin-top: 18px;
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Developing */
+        .tools-directory .tool-card.developing {
+            position: relative;
+        }
+        .tools-directory .badge {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: #fff7ed;
+            color: #c2410c;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+
+.tools-directory .tool-card:focus-visible{outline:3px solid #2563eb;outline-offset:3px;}
+@media(max-width:850px){.tools-directory .tools-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:560px){.tools-directory{padding:24px 0 38px;}.tools-directory .hero{margin-bottom:30px;}.tools-directory .tools-grid{grid-template-columns:1fr;gap:14px;}.tools-directory .tool-card{min-height:auto;padding:20px;}}
+@media(prefers-reduced-motion:reduce){.tools-directory .tool-card{transition:none;}.tools-directory .tool-card:hover{transform:none;}}
+
+@media(max-width:560px){main.container:has(.tools-directory){margin:16px 0;padding:0 12px;}}
