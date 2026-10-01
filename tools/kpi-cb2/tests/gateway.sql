@@ -1,5 +1,6 @@
 -- Run with Supabase SQL/management role. ALL fixture changes roll back.
 begin;
+set local role service_role;
 do $$
 declare a uuid;teacher uuid;mid uuid;rid uuid;v jsonb;claim jsonb;tok text;rec jsonb;expected boolean;
 begin
@@ -13,13 +14,14 @@ begin
  expected:=false;begin perform public.kpi_gateway('load','{}',null);exception when insufficient_privilege then expected:=true;end;assert expected;
  v:=public.kpi_gateway('metric','{"code":"TEST_KPI_ROLLBACK","name":"Test only","method":"sum","visible":true}',a);mid:=(v->>'id')::uuid;
  perform public.kpi_gateway('pin','{"code":"0012"}',a);v:=public.kpi_gateway('unlock','{"code":"0012","client":"test"}',null);tok:=v->>'token';assert length(tok)=64;
+ v:=public.kpi_gateway('load','{}',a);assert v->>'current_code'='0012';assert not(v->'settings'?'pin_code');
  claim:=public.kpi_gateway('sync_claim','{"force":true}',a);assert (claim->>'claimed')::bool;
  rec:=jsonb_build_object('source_key','TEST_ROLLBACK','source_hash','v1','year',2026,'month',1,'code','TEST_KPI_ROLLBACK','effective',jsonb_build_object('title','From Form','quantity',1,'dedup_key','doi-1'));
  v:=public.kpi_gateway('sync_done',jsonb_build_object('lease',claim->>'lease','records',jsonb_build_array(rec)),a);assert (v->>'changed')::int=1;
  select id into rid from public.kpi_records where source_key='TEST_ROLLBACK';
  v:=public.kpi_gateway('view',jsonb_build_object('year',2026,'token',tok),null);assert not exists(select 1 from jsonb_array_elements(v->'records') x where x->>'id'=rid::text);
  perform public.kpi_gateway('record',jsonb_build_object('id',rid,'version',1,'metric_id',mid,'year',2026,'month',1,'status','approved','effective',jsonb_build_object('title','Manager edited','quantity',2,'dedup_key','doi-1')),a);
- v:=public.kpi_gateway('view',jsonb_build_object('year',2026,'token',tok),null);assert exists(select 1 from jsonb_array_elements(v->'records') x where x->>'id'=rid::text);assert not(v->'settings'?'sheet_id');assert v->'audit'='[]'::jsonb;
+ v:=public.kpi_gateway('view',jsonb_build_object('year',2026,'token',tok),null);assert exists(select 1 from jsonb_array_elements(v->'records') x where x->>'id'=rid::text);assert not(v->'settings'?'sheet_id');assert v->'audit'='[]'::jsonb;assert v->'current_code'='null'::jsonb;assert not(v->'settings'?'pin_code');
  expected:=false;begin perform public.kpi_gateway('record',jsonb_build_object('metric_id',mid,'year',2026,'month',1,'status','approved','effective',jsonb_build_object('title','Duplicate','dedup_key','DOI-1')),a);exception when raise_exception then expected:=true;end;assert expected;
  claim:=public.kpi_gateway('sync_claim','{"force":true}',a);rec:=jsonb_set(rec,'{source_hash}','"v2"');perform public.kpi_gateway('sync_done',jsonb_build_object('lease',claim->>'lease','records',jsonb_build_array(rec)),a);
  assert (select effective->>'title'='Manager edited' and status='pending' and source_changed and version=3 from public.kpi_records where id=rid);
@@ -30,7 +32,7 @@ begin
  v:=public.kpi_gateway('view',jsonb_build_object('year',2026,'token',tok),null);assert not exists(select 1 from jsonb_array_elements(v->'metrics') x where x->>'id'=mid::text);
  if teacher is not null then
   expected:=false;begin perform public.kpi_gateway('load','{}',teacher);exception when insufficient_privilege then expected:=true;end;assert expected;
-  perform public.kpi_gateway('delegate',jsonb_build_object('user_id',teacher,'enabled',true),a);v:=public.kpi_gateway('load','{}',teacher);assert v->'owner'='false'::jsonb;
+  perform public.kpi_gateway('delegate',jsonb_build_object('user_id',teacher,'enabled',true),a);v:=public.kpi_gateway('load','{}',teacher);assert v->'owner'='false'::jsonb;assert v->'current_code'='null'::jsonb;
   expected:=false;begin perform public.kpi_gateway('delegate',jsonb_build_object('user_id',teacher,'enabled',true),teacher);exception when insufficient_privilege then expected:=true;end;assert expected;
   perform public.kpi_gateway('pin','{"code":"9876"}',teacher);
   perform public.kpi_gateway('delegate',jsonb_build_object('user_id',teacher,'enabled',false),a);

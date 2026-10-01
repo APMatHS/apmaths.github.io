@@ -7,3 +7,9 @@
 - Duyệt hồ sơ có phiên bản, định danh chống trùng, link minh chứng, lịch sử thay đổi, xuất CSV.
 - Tự đồng bộ theo chu kỳ khi trang quản lý đang mở; không có cron nền khi đóng trang.
 - Cần chủ sở hữu đặt mã xem và chia sẻ Sheet cho email kết nối hiển thị trong Thiết lập. Không tự tạo mã mặc định hoặc công khai nguồn.
+
+## Sửa mã xem
+
+- Sửa thao tác đổi mã để tương thích safeupdate của kết nối REST; câu lệnh thu hồi phiên có điều kiện rõ ràng.
+- Admin xem được mã hiện tại sau khi lưu; cán bộ và người xem không nhận mã trong phản hồi dữ liệu.
+- Nút Lưu mã thẳng hàng với ô nhập, kiểm tra bằng Playwright.

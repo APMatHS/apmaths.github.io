@@ -1,47 +1,5 @@
--- KPI CB2: additive schema. Existing AI-CLO accounts and policies are unchanged.
-begin;
-create table public.kpi_settings (
- id boolean primary key default true check(id), pin_hash text, pin_code text check(pin_code ~ '^[0-9]{4}$'), pin_version integer not null default 1,
- sheet_id text not null default '17G1lAcjt5iaAwtT3rYU_ofnwN_9rwuOzZYBDbNylTbM', sheet_name text not null default 'Câu trả lời biểu mẫu 1',
- form_url text not null default 'https://docs.google.com/forms/d/e/1FAIpQLSeottKcoUj5tdWL6tBdxZPffA9br8OfSWAeQIHCd8JITw3iGw/viewform?usp=dialog',
- auto_sync boolean not null default true, sync_minutes integer not null default 15 check(sync_minutes between 5 and 1440),
- synced_at timestamptz, sync_error text, sync_lease uuid, lease_until timestamptz
-);
-insert into public.kpi_settings(id) values(true);
-create table public.kpi_managers(user_id uuid primary key references public.profiles(id), assigned_by uuid references public.profiles(id),created_at timestamptz not null default now());
-create table public.kpi_metrics(id uuid primary key default gen_random_uuid(),code text not null unique,name text not null,unit text not null default 'Hồ sơ',method text not null check(method in('sum','people','stock','ratio')),visible boolean not null default true,archived boolean not null default false,position integer not null default 0);
-create table public.kpi_plans(metric_id uuid references public.kpi_metrics(id),year integer check(year between 2000 and 2100),target numeric check(target>=0),deadline date,active boolean not null default true,primary key(metric_id,year));
-create table public.kpi_months(metric_id uuid references public.kpi_metrics(id),year integer check(year between 2000 and 2100),month integer check(month between 1 and 12),value numeric check(value>=0),numerator numeric check(numerator>=0),denominator numeric check(denominator>0),reason text not null default '',updated_at timestamptz not null default now(),primary key(metric_id,year,month));
-create table public.kpi_records(
- id uuid primary key default gen_random_uuid(),source_key text unique,source_data jsonb not null default '{}',source_hash text,
- effective jsonb not null default '{}',metric_id uuid references public.kpi_metrics(id),year integer not null check(year between 2000 and 2100),month integer not null check(month between 1 and 12),
- status text not null default 'pending' check(status in('pending','approved','rejected','archived')),source_changed boolean not null default false,
- review_note text not null default '',reviewed_by uuid references public.profiles(id),reviewed_at timestamptz,version integer not null default 1,created_at timestamptz not null default now(),updated_at timestamptz not null default now()
-);
-create index kpi_records_period on public.kpi_records(year,month,status);
-create table public.kpi_audit(id bigint generated always as identity primary key,actor uuid references public.profiles(id),action text not null,object_id text,details jsonb not null default '{}',created_at timestamptz not null default now());
-create table public.kpi_view_sessions(token_hash text primary key,pin_version integer not null,expires_at timestamptz not null);
-create table public.kpi_rates(key text primary key,window_start timestamptz not null default now(),attempts integer not null default 0);
-insert into public.kpi_metrics(code,name,unit,method,position) values
- ('I.10','Bài giảng điện tử xây dựng mới / học liệu số','Bài giảng','sum',10),
- ('II.1','Công bố WoS/Scopus','Bài','sum',20),('II.2','Patent đăng ký mới','Đơn','sum',30),
- ('II.3','Sản phẩm, giải pháp KHCN, bản quyền sáng tạo','GCN','sum',40),
- ('II.9','Nhiệm vụ KHCN cấp Bộ/tương đương trở lên đang thực hiện','Nhiệm vụ','stock',50),
- ('III.1_dl2','Chuyên gia nước ngoài / Việt kiều tham gia giảng dạy, nghiên cứu','Người','people',60),
- ('III.2','Hội thảo quốc tế chủ trì / phối hợp tổ chức','Hội thảo','sum',70),
- ('IV.4','Hoạt động ngoại khóa cho sinh viên','Hoạt động','sum',80),
- ('V.1','Lao động mới','Người','sum',90),('V.2','Tỷ lệ giảng viên có trình độ tiến sĩ','%','ratio',100),
- ('VII.5','Tỷ lệ hài lòng của người học về hoạt động giảng dạy','%','ratio',110);
--- All application data is server-only. Even a signed-in student cannot read it via REST.
-do $$ declare t text;begin
- foreach t in array array['kpi_settings','kpi_managers','kpi_metrics','kpi_plans','kpi_months','kpi_records','kpi_audit','kpi_view_sessions','kpi_rates'] loop
- execute format('alter table public.%I enable row level security',t);
- execute format('revoke all on public.%I from anon, authenticated',t);
- execute format('grant all on public.%I to service_role',t);
- end loop;
-end $$;
-grant usage,select on sequence public.kpi_audit_id_seq to service_role;
-create function public.kpi_gateway(p_action text,p_payload jsonb default '{}',p_actor uuid default null) returns jsonb
+alter table public.kpi_settings add column pin_code text check(pin_code ~ '^[0-9]{4}$');
+create or replace function public.kpi_gateway(p_action text,p_payload jsonb default '{}',p_actor uuid default null) returns jsonb
 language plpgsql security invoker set search_path=pg_catalog,public,extensions as $$
 declare s public.kpi_settings; metricrow public.kpi_metrics; r public.kpi_records; idv uuid; owner boolean:=false; manager boolean:=false;
  v jsonb; outv jsonb; yy integer; mm integer; n numeric; token text; keyv text; attempts integer; old jsonb; changed integer; item jsonb;
@@ -175,6 +133,3 @@ begin
  insert into public.kpi_audit(actor,action,object_id,details) values(p_actor,p_action,idv::text,p_payload-'code');
  return jsonb_build_object('ok',true,'id',idv);
 end $$;
-revoke all on function public.kpi_gateway(text,jsonb,uuid) from public,anon,authenticated;
-grant execute on function public.kpi_gateway(text,jsonb,uuid) to service_role;
-commit;
