@@ -92,9 +92,10 @@ description: Các công cụ hỗ trợ giảng dạy, quản lý CLO, xử lý 
                 <!-- Z3 -->
                 <a class="tool-card" href="/tools/z3/" target="_blank" rel="noopener noreferrer">
                     <div class="tool-icon">🧮</div>
-                    <h2>Tính toán ma trận Z₃</h2>
-                    <p>Thực hiện các phép tính ma trận trên trường hữu hạn Z₃.</p>
+                    <h2>Ma trận trên trường hữu hạn</h2>
+                    <p>Tính toán chính xác ma trận trên Fp, biểu thức kết hợp và các phép toán nâng cao.</p>
                     <div class="open-tool">Mở công cụ →</div>
                 </a>
             </section>
 </div>
+

@@ -1,289 +1,35 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Máy tính ma trận Z₃</title>
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    .controls, .result, .matrix-area { margin-top: 20px; }
-    .matrix-input { display: inline-block; margin: 10px; }
-    table { border-collapse: collapse; margin: auto; }
-    td { border: 1px solid #333; padding: 5px; }
-    input[type=number] { width: 40px; text-align: center; }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma trận trên trường hữu hạn | APMaths</title>
+<meta name="description" content="Tính toán ma trận chính xác trên Fp: định thức, nghịch đảo, hạng, lũy thừa, Kronecker và biểu thức ma trận.">
+<link rel="icon" href="/assets/images/logo/favicon.ico">
+<link rel="stylesheet" href="css/app.css"><link rel="stylesheet" href="/tools/css/header.css">
+<script type="module" src="js/app.js"></script>
 </head>
 <body>
-  <h2>Máy tính ma trận trên trường Z<sub>3</sub></h2>
-
-  <div class="controls">
-    <label for="matrix-size">Cấp ma trận (2-6):</label>
-    <select id="matrix-size">
-      <option>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
-    </select>
-    <label for="matrix-count">Số ma trận (1-4):</label>
-    <input type="number" id="matrix-count" value="2" min="1" max="4" />
-    <button onclick="generateMatrices()">Tạo ma trận</button>
-  </div>
-
-  <div class="matrix-area" id="matrix-area"></div>
-
-  <div class="controls">
-    <label for="expression">Biểu thức (ví dụ: A*(B+C), A^3, det(A), A*B*A^-1*B^-1, A^T*B):</label>
-    <input type="text" id="expression" size="16" />
-    <button onclick="evaluateExpression()">Tính toán</button>
-  </div>
-
-  <div class="result">
-    <h3>Kết quả</h3>
-    <div id="result"></div>
-  </div>
-
-<script>
-  const fieldMod = 3;
-
-  function generateMatrices() {
-    const size = +document.getElementById('matrix-size').value;
-    const count = Math.max(1, Math.min(4, +document.getElementById('matrix-count').value));
-    const area = document.getElementById('matrix-area');
-    area.innerHTML = '';
-    for (let m = 0; m < count; m++) {
-      const div = document.createElement('div');
-      div.className = 'matrix-input';
-      div.innerHTML = `<div>${String.fromCharCode(65 + m)}</div>`;
-      const table = document.createElement('table');
-      for (let i = 0; i < size; i++) {
-        const row = document.createElement('tr');
-        for (let j = 0; j < size; j++) {
-          const cell = document.createElement('td');
-          cell.innerHTML = `<input type="number" min="0" max="2" value="0" id="m${m}_${i}_${j}" />`;
-          row.appendChild(cell);
-        }
-        table.appendChild(row);
-      }
-      div.appendChild(table);
-      area.appendChild(div);
-    }
-  }
-
-  function getMatrix(index, size) {
-    const mat = [];
-    for (let i = 0; i < size; i++) {
-      const row = [];
-      for (let j = 0; j < size; j++) {
-        let val = +document.getElementById(`m${index}_${i}_${j}`).value;
-        row.push((val % fieldMod + fieldMod) % fieldMod);
-      }
-      mat.push(row);
-    }
-    return mat;
-  }
-
-  function modInv(a, mod = fieldMod) {
-    for (let i = 1; i < mod; i++) if ((a * i) % mod === 1) return i;
-    return null;
-  }
-
-  function matrixAdd(A, B) {
-    return A.map((r, i) => r.map((v, j) => (v + B[i][j]) % fieldMod));
-  }
-
-  function matrixSub(A, B) {
-    return A.map((r, i) => r.map((v, j) => (v - B[i][j] + fieldMod) % fieldMod));
-  }
-
-  function matrixMult(A, B) {
-    const n = A.length;
-    const C = Array.from({ length: n }, () => Array(n).fill(0));
-    for (let i = 0; i < n; i++)
-      for (let j = 0; j < n; j++)
-        for (let k = 0; k < n; k++)
-          C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % fieldMod;
-    return C;
-  }
-
-  function matrixScalarMult(scalar, A) {
-    scalar = ((scalar % fieldMod) + fieldMod) % fieldMod;
-    return A.map(row => row.map(v => (v * scalar) % fieldMod));
-  }
-
-  function matrixInverse(A) {
-    const n = A.length;
-    let M = A.map((r, i) => [...r, ...Array.from({ length: n }, (_, j) => i === j ? 1 : 0)]);
-    for (let i = 0; i < n; i++) {
-      let pivot = -1;
-      for (let j = i; j < n; j++) if (M[j][i] !== 0) { pivot = j; break; }
-      if (pivot === -1) return null;
-      [M[i], M[pivot]] = [M[pivot], M[i]];
-      const inv = modInv(M[i][i]);
-      if (inv === null) return null;
-      M[i] = M[i].map(x => (x * inv) % fieldMod);
-      for (let j = 0; j < n; j++) {
-        if (j !== i) {
-          const factor = M[j][i];
-          for (let k = 0; k < 2 * n; k++) {
-            M[j][k] = (M[j][k] - factor * M[i][k]) % fieldMod;
-            if (M[j][k] < 0) M[j][k] += fieldMod;
-          }
-        }
-      }
-    }
-    return M.map(r => r.slice(n));
-  }
-
-  function matrixPower(A, k) {
-    const n = A.length;
-    if (k === 0) {
-      return Array.from({ length: n }, (_, i) =>
-        Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))
-      );
-    }
-    let R = A.map(row => row.slice());
-    for (let i = 1; i < k; i++) {
-      R = matrixMult(R, A);
-    }
-    return R;
-  }
-
-  function matrixDet(A) {
-    const n = A.length;
-    if (n === 1) return A[0][0] % fieldMod;
-    let det = 0;
-    for (let j = 0; j < n; j++) {
-      const subMatrix = A.slice(1).map(row => row.filter((_, k) => k !== j));
-      const cofactor = ((j % 2 === 0 ? 1 : -1) * A[0][j]) % fieldMod;
-      det = (det + cofactor * matrixDet(subMatrix)) % fieldMod;
-    }
-    return (det + fieldMod) % fieldMod;
-  }
-
-  function matrixTranspose(A) {
-    const n = A.length;
-    const m = A[0].length;
-    const T = Array.from({ length: m }, () => Array(n).fill(0));
-    for (let i = 0; i < n; i++)
-      for (let j = 0; j < m; j++)
-        T[j][i] = A[i][j];
-    return T;
-  }
-
-  function parseExpression(expr, mats) {
-    const tokenRegex = /det|\d+|[A-D]|\^T|\^-1|\^\d+|[+\-*()]|\s+/g;
-    let rawTokens = [];
-    let m;
-    while ((m = tokenRegex.exec(expr)) !== null) {
-      if (m[0].trim() !== '') rawTokens.push(m[0]);
-    }
-
-    const precedence = { '+': 1, '-': 1, '*': 2 };
-    const output = [];
-    const ops = [];
-
-    function applyOp() {
-      const op = ops.pop();
-      if (op === '^T') {
-        const val = output.pop();
-        if (typeof val === 'number') throw 'Không thể chuyển vị số';
-        output.push(matrixTranspose(val));
-      } else if (op === '^-1') {
-        const val = output.pop();
-        if (typeof val === 'number') throw 'Không thể nghịch đảo số';
-        const inv = matrixInverse(val);
-        if (!inv) throw 'Ma trận không khả nghịch';
-        output.push(inv);
-      } else if (op.startsWith('^')) {
-        const k = parseInt(op.slice(1));
-        const val = output.pop();
-        if (typeof val === 'number') output.push(Math.pow(val, k) % fieldMod);
-        else output.push(matrixPower(val, k));
-      } else {
-        const b = output.pop();
-        const a = output.pop();
-        if (typeof a === 'number' && typeof b === 'number') {
-          if (op === '+') output.push((a + b) % fieldMod);
-          else if (op === '-') output.push((a - b + fieldMod) % fieldMod);
-          else if (op === '*') output.push((a * b) % fieldMod);
-        } else if (typeof a === 'number' && Array.isArray(b)) {
-          if (op === '*') output.push(matrixScalarMult(a, b));
-          else throw 'Không hợp lệ giữa số và ma trận';
-        } else if (Array.isArray(a) && typeof b === 'number') {
-          if (op === '*') output.push(matrixScalarMult(b, a));
-          else throw 'Không hợp lệ giữa ma trận và số';
-        } else if (Array.isArray(a) && Array.isArray(b)) {
-          if (op === '+') output.push(matrixAdd(a, b));
-          else if (op === '-') output.push(matrixSub(a, b));
-          else if (op === '*') output.push(matrixMult(a, b));
-        } else {
-          throw `Không hợp lệ với toán tử '${op}'`;
-        }
-      }
-    }
-
-    for (let i = 0; i < rawTokens.length; i++) {
-      const t = rawTokens[i];
-      if (/^\d+$/.test(t)) {
-        output.push(parseInt(t));
-      } else if (/^[A-D]$/.test(t)) {
-        output.push(mats[t.charCodeAt(0) - 65]);
-      } else if (t === 'det') {
-        if (rawTokens[i + 1] === '(' && /^[A-D]$/.test(rawTokens[i + 2]) && rawTokens[i + 3] === ')') {
-          const mat = mats[rawTokens[i + 2].charCodeAt(0) - 65];
-          output.push(matrixDet(mat));
-          i += 3;
-        } else throw 'Cú pháp det(A) không hợp lệ';
-      } else if (t === '(') {
-        ops.push(t);
-      } else if (t === ')') {
-        while (ops.length && ops[ops.length - 1] !== '(') applyOp();
-        if (ops.length === 0) throw 'Dấu ngoặc không khớp';
-        ops.pop();
-      } else if (['+', '-', '*'].includes(t)) {
-        while (ops.length && ops[ops.length - 1] !== '(' &&
-               precedence[ops[ops.length - 1]] >= precedence[t]) applyOp();
-        ops.push(t);
-      } else if (/^\^T$|^\^-1$|^\^\d+$/.test(t)) {
-        ops.push(t);
-        applyOp(); // áp dụng ngay lập tức cho toán tử hậu tố
-      } else {
-        throw `Ký tự không hợp lệ: ${t}`;
-      }
-    }
-
-    while (ops.length) {
-      if (ops[ops.length - 1] === '(' || ops[ops.length - 1] === ')') throw 'Dấu ngoặc không khớp';
-      applyOp();
-    }
-
-    if (output.length !== 1) throw 'Biểu thức không hợp lệ';
-    return output[0];
-  } 
-
-
-  function renderMatrix(M) {
-    if (!M) return 'Không khả nghịch';
-    return '<table>' + M.map(r => '<tr>' + r.map(v => `<td>${v}</td>`).join('') + '</tr>').join('') + '</table>';
-  }
-
-  function evaluateExpression() {
-    const size = +document.getElementById('matrix-size').value;
-    const count = Math.max(1, Math.min(4, +document.getElementById('matrix-count').value));
-    const mats = Array.from({ length: count }, (_, i) => getMatrix(i, size));
-    const expr = document.getElementById('expression').value;
-    try {
-      const result = parseExpression(expr, mats);
-      if (typeof result === 'number') {
-        document.getElementById('result').innerText = `Kết quả scalar: ${result % fieldMod}`;
-      } else {
-        document.getElementById('result').innerHTML = renderMatrix(result);
-        MathJax.typeset();
-      }
-    } catch (e) {
-      document.getElementById('result').innerText = 'Lỗi trong biểu thức: ' + e;
-    }
-  }
-</script>
-</body>
-</html>
+<header><div class="shell"><a class="brand" href="/">AP<span>Maths</span></a><nav aria-label="Điều hướng công cụ"><a href="/tools/z3/">Ma trận Fp</a><a href="/tools/">Công cụ</a><a href="/">Trang chủ</a></nav></div></header>
+<main class="shell">
+<section class="hero"><div><span class="eyebrow">ĐẠI SỐ TUYẾN TÍNH</span><h1>Ma trận trên trường hữu hạn</h1><p>Tính chính xác theo modulo p · nhập ma trận, chọn phép toán hoặc kết hợp biểu thức.</p></div><button id="helpButton">Hướng dẫn / Cú pháp</button></section>
+<section class="panel field-panel" aria-label="Trường tính toán">
+<div class="field-controls"><label>Chọn nhanh<select id="primePreset"><option value="2">F₂</option><option value="3" selected>F₃</option><option value="5">F₅</option><option value="7">F₇</option><option value="11">F₁₁</option><option value="13">F₁₃</option><option value="17">F₁₇</option><option value="custom">Nhập p khác</option></select></label><label>Số nguyên tố p<input id="primeInput" type="text" inputmode="numeric" value="3" maxlength="1000" autocomplete="off"></label><button id="applyPrime" class="primary">Áp dụng trường</button><span id="fieldLabel" class="badge">F₃ · p = 3</span></div>
+<p id="primeInfo" class="muted">Đang dùng p = 3. Các ma trận dùng chung trường; số nguyên và phân số được chuẩn hóa modulo p khi tính.</p>
+</section>
+<div id="status" role="status" aria-live="polite" hidden></div>
+<section aria-labelledby="matrixHeading"><div class="section-title"><h2 id="matrixHeading">Ma trận đầu vào</h2><div class="toolbar"><button id="undoButton" disabled>Hoàn tác</button><button id="addMatrix">+ Thêm ma trận</button></div></div><p class="muted">Nhập số nguyên hoặc a/b. Dán bảng từ Excel; chỉ số dòng và cột bắt đầu từ 1.</p><div id="matrixList" class="matrix-list"></div></section>
+<section class="panel" aria-labelledby="operationHeading"><h2 id="operationHeading">Phép toán</h2>
+<div class="operation-controls"><label>Ma trận thứ nhất<select id="leftMatrix"></select></label><label>Phép toán<select id="operation">
+<option value="add">A + B</option><option value="subtract">A − B</option><option value="multiply">A × B</option><option value="scale">Nhân vô hướng cA</option><option value="power">Lũy thừa Aᵏ</option><option value="transpose">Chuyển vị</option><option value="det">Định thức</option><option value="inv">Nghịch đảo</option><option value="rank">Hạng</option><option value="trace">Vết</option><option value="adj">Ma trận phụ hợp</option><option value="cofactor">Phần bù đại số</option><option value="ref">Dạng bậc thang</option><option value="rref">Bậc thang rút gọn</option><option value="kron">Tích Kronecker</option><option value="had">Tích từng phần tử</option><option value="hcat">Ghép ngang</option><option value="vcat">Ghép dọc</option><option value="sub">Lấy ma trận con</option><option value="droprow">Bỏ dòng</option><option value="dropcol">Bỏ cột</option><option value="commutator">Giao hoán tử ABA⁻¹B⁻¹</option>
+</select></label><label id="rightControl">Ma trận thứ hai<select id="rightMatrix"></select></label><label id="parameterControl" hidden><span id="parameterLabel">Tham số</span><input id="parameter" value="2" autocomplete="off"></label></div>
+<div id="subControls" class="sub-controls" hidden><label>Từ dòng<input id="fromRow" type="number" min="1" value="1"></label><label>Đến dòng<input id="toRow" type="number" min="1" value="2"></label><label>Từ cột<input id="fromCol" type="number" min="1" value="1"></label><label>Đến cột<input id="toCol" type="number" min="1" value="2"></label></div><div class="toolbar"><button id="runOperation" class="primary">Tính phép chọn</button><button id="insertOperation">Đưa vào ô biểu thức</button></div>
+</section>
+<section class="panel expression-panel"><label for="expression">Biểu thức kết hợp</label><div class="expression-row"><input id="expression" placeholder="Ví dụ: A^3 + 2*A + I" autocomplete="off" spellcheck="false" maxlength="10000"><button id="calculate" class="primary">Tính toán</button><button id="cancelJob" hidden>Hủy tính</button></div><div class="examples"><span>Ví dụ:</span><button data-example="A^3+2*A+I">Đa thức ma trận</button><button data-example="det(A+B)">det(A+B)</button><button data-example="A*B*A^-1*B^-1">Giao hoán tử</button><button data-example="kron(A,B)">Kronecker</button><button data-example="sub(A,1,2,1,2)">Ma trận con</button></div></section>
+<section id="resultPanel" class="panel" aria-labelledby="resultHeading" hidden><div class="section-title"><h2 id="resultHeading">Kết quả</h2><span id="resultMeta" class="badge"></span></div><p id="resultExpression" class="math-expression"></p><div id="result" class="result-area"></div><p id="resultNote" class="muted"></p><div class="toolbar"><button id="copyTable">Sao chép kết quả</button><button id="copyLatex">Sao chép LaTeX</button><button id="useNew">Thành ma trận mới</button><label id="replaceControl">Đưa vào<select id="resultTarget"></select></label><button id="replaceMatrix">Thay ma trận</button></div></section>
+<section class="panel"><div class="section-title"><h2>Lịch sử tính toán</h2><button id="clearHistory">Xóa lịch sử</button></div><p class="muted">Giữ tối đa 20 kết quả trong phiên trang này. Chọn một kết quả để xem lại.</p><div id="historyList" class="history-list"><p>Chưa có phép tính.</p></div></section>
+</main>
+<footer>APMaths · Ma trận trên Fp · Tính toán tại trình duyệt</footer>
+<dialog id="pasteDialog" aria-labelledby="pasteTitle"><h2 id="pasteTitle">Dán ma trận</h2><p>Dán các ô từ Excel, hoặc nhập mỗi dòng trên một hàng. Phân cách cột bằng tab, khoảng trắng, dấu phẩy hoặc dấu chấm phẩy.</p><textarea id="pasteText" rows="7" placeholder="1 0 2&#10;0 1 1" aria-label="Dữ liệu ma trận"></textarea><div id="pasteError" class="dialog-error" role="alert"></div><div class="toolbar"><button id="applyPaste" class="primary">Áp dụng</button><button id="closePaste">Hủy</button></div></dialog>
+<dialog id="helpDialog" aria-labelledby="helpTitle"><h2 id="helpTitle">Cú pháp và phép toán</h2><p>Mọi phần tử và phép toán số được tính modulo p. Hạng là số nguyên thông thường. Phân số a/b chỉ hợp lệ khi b khác 0 modulo p.</p><table class="help-table"><thead><tr><th>Biểu thức</th><th>Ý nghĩa</th></tr></thead><tbody>
+<tr><td>A+B, A-B, A*B, 2A</td><td>Cộng, trừ, nhân, nhân vô hướng</td></tr><tr><td>A^T, A^0, A^-3, -A</td><td>Chuyển vị, lũy thừa, đối ma trận</td></tr><tr><td>I, eye(3), zero(2,3)</td><td>Đơn vị theo kích thước ngữ cảnh; đơn vị cấp 3; ma trận không</td></tr><tr><td>det(A+B), inv(A), rank(A), trace(A)</td><td>Định thức, nghịch đảo, hạng, vết</td></tr><tr><td>adj(A), cofactor(A), ref(A), rref(A)</td><td>Phụ hợp, phần bù đại số, các dạng bậc thang</td></tr><tr><td>kron(A,B), had(A,B)</td><td>Kronecker và tích từng phần tử; cũng dùng ⊗ và ∘</td></tr><tr><td>hcat(A,B), vcat(A,B)</td><td>Ghép ngang, ghép dọc</td></tr><tr><td>sub(A,1,2,2,3)</td><td>Lấy dòng 1–2, cột 2–3</td></tr><tr><td>droprow(A,2), dropcol(A,1)</td><td>Bỏ dòng 2, bỏ cột 1</td></tr></tbody></table><p>Nhân ma trận giữ đúng thứ tự. Nghịch đảo và lũy thừa âm cần ma trận khả nghịch. Số mũ là số nguyên trực tiếp; dùng ngoặc khi kết hợp nhiều lũy thừa. Kết quả tối đa 4096 ô, tối đa 25 ma trận A–Z (I dành cho đơn vị).</p><p>p nhỏ hơn 2⁶⁴ được kiểm tra nguyên tố xác định. p lớn hơn được kiểm tra Miller–Rabin với 32 cơ sở ngẫu nhiên; kết quả ghi rõ “nguyên tố xác suất”, chưa phải chứng minh nguyên tố.</p><div class="toolbar"><button id="closeHelp">Đóng</button></div></dialog>
+</body></html>

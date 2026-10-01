@@ -1,0 +1,30 @@
+name: Finite-field matrix checks
+on:
+  push:
+    paths:
+      - 'tools/z3/**'
+      - '.github/workflows/finite-field-matrices.yml'
+  pull_request:
+    paths:
+      - 'tools/z3/**'
+      - '.github/workflows/finite-field-matrices.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check finite-field arithmetic and expressions
+        run: node tools/z3/tests/core.mjs
+      - name: Install browser test runtime
+        run: npm install --no-save --package-lock=false playwright@1.55.1
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Check browser workflows and mobile layout
+        run: node tools/z3/tests/browser.mjs

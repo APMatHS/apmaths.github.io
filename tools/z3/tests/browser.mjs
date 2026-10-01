@@ -1,0 +1,31 @@
+import {chromium} from 'playwright';import assert from 'node:assert/strict';import http from 'node:http';import fs from 'node:fs';import path from 'node:path';
+const root=process.cwd();const server=http.createServer((req,res)=>{let p=new URL(req.url,'http://localhost').pathname;if(p.endsWith('/'))p+='index.html';const f=path.resolve(root,'.'+p);if(!f.startsWith(root+path.sep)||!fs.existsSync(f)){res.writeHead(404);res.end();return;}res.setHeader('Content-Type',f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(f));});await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const origin='http://127.0.0.1:'+server.address().port,browser=await chromium.launch();const context=await browser.newContext({permissions:['clipboard-read','clipboard-write']});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+const run=async s=>{await page.locator('#expression').fill(s);await page.locator('#calculate').click();await page.locator('#calculate').waitFor({state:'visible'});await page.waitForFunction(()=>!document.querySelector('#calculate').disabled);};
+const paste=async(name,text)=>{await page.locator(`[data-action=paste][data-name=${name}]`).click();await page.locator('#pasteText').fill(text);await page.locator('#applyPaste').click();await page.locator('#pasteDialog').waitFor({state:'hidden'});};
+try{
+ await page.goto(origin+'/tools/z3/');await page.locator('[data-cell][data-name=A]').first().waitFor();assert.equal(await page.locator('.matrix-card').count(),2);
+ assert.equal(await page.locator('header nav a').allTextContents().then(x=>x.join('|')),'Ma trận Fp|Công cụ|Trang chủ');
+ await run('1-5');assert.equal(await page.locator('.scalar-result').innerText(),'2');
+ await run('A@');assert.match(await page.locator('#status').innerText(),/Ký tự không hợp lệ/);assert.equal(await page.locator('#expression').getAttribute('aria-invalid'),'true');
+ await paste('A','1\t1\n0\t1');await paste('B','1 0\n1 1');await run('A*B*A^-1*B^-1');assert.deepEqual(await page.locator('#result td').allTextContents(),['0','2','1','0']);
+ await page.locator('#copyLatex').click();const latex=await page.evaluate(()=>navigator.clipboard.readText());assert.ok(latex.includes('\\begin{pmatrix}'));assert.ok(latex.includes('0 & 2 \\\\'));
+ await page.locator('#useNew').click();assert.equal(await page.locator('.matrix-card').count(),3);assert.equal(await page.locator('[data-cell][data-name=C][data-row="0"][data-col="1"]').inputValue(),'2');
+ await page.locator('#undoButton').click();assert.equal(await page.locator('.matrix-card').count(),2);
+ await page.locator('#primeInput').fill('9');await page.locator('#applyPrime').click();await page.waitForFunction(()=>!document.querySelector('#applyPrime').disabled);assert.match(await page.locator('#status').innerText(),/hợp số/);assert.match(await page.locator('#fieldLabel').innerText(),/p = 3/);
+ await page.locator('#primeInput').fill('5');await page.locator('#applyPrime').click();await page.waitForFunction(()=>document.querySelector('#fieldLabel').textContent.includes('p = 5'));assert.equal(await page.locator('#useNew').isDisabled(),true);
+ await run('A^(-1)*A');assert.deepEqual(await page.locator('#result td').allTextContents(),['1','0','0','1']);
+ await paste('A','1 2 3\n4 0 1');await paste('B','1 0\n0 1\n1 1');await run('A*B');assert.deepEqual(await page.locator('#result td').allTextContents(),['4','0','0','1']);
+ await page.locator('#operation').selectOption('sub');await page.locator('#fromRow').fill('1');await page.locator('#toRow').fill('1');await page.locator('#fromCol').fill('2');await page.locator('#toCol').fill('3');await page.locator('#runOperation').click();await page.waitForFunction(()=>!document.querySelector('#runOperation').disabled);assert.deepEqual(await page.locator('#result td').allTextContents(),['2','3']);
+ await page.locator('#resultTarget').selectOption('B');await page.locator('#replaceMatrix').click();assert.equal(await page.locator('[data-cell][data-name=B]').count(),2);
+ await page.locator('#undoButton').click();assert.equal(await page.locator('[data-cell][data-name=B]').count(),6);
+ await paste('B','1/2');await run('B');assert.equal(await page.locator('#result td').innerText(),'3');
+ await page.locator('#primeInput').fill('2');await page.locator('#applyPrime').click();await page.waitForFunction(()=>document.querySelector('#fieldLabel').textContent.includes('p = 2'));await run('B');assert.match(await page.locator('#status').innerText(),/nghịch đảo/);assert.equal(await page.locator('[data-cell][data-name=B]').getAttribute('aria-invalid'),'true');
+ await page.locator('[data-cell][data-name=B]').fill('1');await run('B');assert.equal(await page.locator('#result td').innerText(),'1');
+ await page.locator('#primeInput').fill('18446744073709551557');await page.locator('#applyPrime').click();await page.waitForFunction(()=>document.querySelector('#fieldLabel').textContent.includes('18446744073709551557'));await run('18446744073709551556^2');assert.equal(await page.locator('.scalar-result').innerText(),'1');
+ await page.locator('#primeInput').fill('170141183460469231731687303715884105727');await page.locator('#applyPrime').click();await page.waitForFunction(()=>document.querySelector('#primeInfo').textContent.includes('nguyên tố xác suất'));
+ await page.locator('#helpButton').click();assert.equal(await page.locator('#helpDialog').isVisible(),true);await page.locator('#closeHelp').click();
+ await page.setViewportSize({width:390,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.screenshot({path:'/tmp/fp-mobile.png',fullPage:true});
+ await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:'/tmp/fp-desktop.png',fullPage:true});assert.deepEqual(errors,[]);
+ console.log('Browser passed: worker calculations, paste, fractions, field validation, exact large primes, history, copy/export, result reuse, rectangular operations and mobile layout.');
+}finally{await context.close();await browser.close();server.close();}
