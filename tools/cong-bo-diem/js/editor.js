@@ -1,5 +1,5 @@
 
-import {$,esc,api,busy,client,stamp,status,showQR,bindQR,lookupLink} from './api.js';
+import {$,esc,api,busy,client,stamp,status,showQR,bindQR,lookupLink,fieldError,clearErrors} from './api.js';
 import {normalize,validateTable,tableFromMatrix,parseTSV} from './core.js';
 const params=new URLSearchParams(location.search);let id=params.get('id');const admin=params.get('admin')==='1';
 let token='',g=null,columns=[],rows=[],visible=[],verification=[],page=0,book=null,file=null,dirty=false,undo=null,pendingPaste=null,pasteOrigin=null,loadedSource='excel',loadedGoogleConfig=null,connectorLoaded=false;
@@ -12,8 +12,16 @@ function metadata(){
  return {title:$('#title').value.trim(),teacher:$('#teacher').value.trim(),class_name:$('#className').value.trim(),semester:$('#semester').value.trim(),note:$('#note').value,published:$('#published').checked};
 }
 function validate(){
- if(!metadata().title||!metadata().teacher||!metadata().class_name)throw Error('Nhập đầy đủ tên công bố, giảng viên và lớp.');
- validateTable(columns,rows,visible,verification);
+ clearErrors();
+ const missing=['title','teacher','className'].filter(id=>!$('#'+id).value.trim());
+ if(missing.length)throw fieldError('Nhập đầy đủ tên công bố, giảng viên và lớp.',missing.map(id=>'#'+id));
+ try{validateTable(columns,rows,visible,verification);}catch(e){
+  if(Number.isInteger(e.row)){page=Math.floor(e.row/50);renderTable();}
+  e.fields=(e.columns||[]).map(col=>Number.isInteger(e.row)?'[data-row="'+e.row+'"][data-cell="'+col+'"]':'[data-column="'+col+'"]');
+  if(!visible.length)e.fields.push('#visibleColumns');
+  if(!verification.length||/cột xác nhận/.test(e.message))e.fields.push('#verification');
+  throw e;
+ }
  if($('#source').value!==loadedSource)throw Error('Nguồn đã đổi. Hãy đọc dữ liệu nguồn mới trước khi lưu.');
  if(loadedSource==='google'&&JSON.stringify(googleConfig())!==JSON.stringify(loadedGoogleConfig))throw Error('Thông tin Google Sheets đã đổi. Hãy đọc lại trước khi lưu.');
 }
@@ -63,6 +71,7 @@ async function open(){fill(await request('read'));history.replaceState(null,'','
 $('#newFields').hidden=!!id;if(id){$('#heading').textContent='Mở quản lý công bố';$('#passwordLabel small').textContent='Nhập mật khẩu chỉnh sửa của công bố. Nếu quên, liên hệ admin.';$('#editPassword').removeAttribute('minlength');}
 if(admin){$('#codeLabel').hidden=true;}
 $('#gateForm').onsubmit=e=>{e.preventDefault();busy($('#gateBtn'),async()=>{
+ if(!id){const missing=['newTitle','newTeacher','newClass'].filter(id=>!$('#'+id).value.trim());if(missing.length)throw fieldError('Nhập tên công bố, giảng viên và lớp.',missing.map(id=>'#'+id));}
  if(id){token=(await request('unlock',{password:$('#editPassword').value})).token;}
  else{
   const created=await api('create',{title:$('#newTitle').value.trim(),teacher:$('#newTeacher').value.trim(),class_name:$('#newClass').value.trim(),semester:$('#newSemester').value.trim(),code:$('#creationCode').value,password:$('#editPassword').value},admin);
@@ -112,14 +121,16 @@ $('#file').onchange=()=>busy($('#readExcel'),async()=>{
 $('#readExcel').onclick=()=>busy($('#readExcel'),async()=>{
  if(!book)throw Error('Chọn file trước.');
  const matrix=window.XLSX.utils.sheet_to_json(book.Sheets[$('#sheet').value],{header:1,raw:false,defval:'',blankrows:true});
- const header=Number($('#headerRow').value)-1;if(!Number.isInteger(header)||header<0||header>99)throw Error('Dòng tiêu đề phải từ 1 đến 100.');
+ const header=Number($('#headerRow').value)-1;if(!Number.isInteger(header)||header<0||header>99)throw fieldError('Dòng tiêu đề phải từ 1 đến 100.',['#headerRow']);
  if(matrix.length>header+5001)throw Error('Bảng vượt 5000 dòng.');
  setTable(tableFromMatrix(matrix,header),'excel');status('Đã đọc bảng. Kiểm tra các cột và thông tin xác nhận.');
 });
 function googleConfig(){
- let url;try{url=new URL($('#googleLink').value);}catch{throw Error('Dán link Google Sheets hợp lệ.');}
- if(url.hostname!=='docs.google.com')throw Error('Cần link docs.google.com.');
- const match=url.pathname.match(/\/spreadsheets\/d\/([\w-]+)/);if(!match)throw Error('Link Google Sheets không hợp lệ.');
+ let url;try{url=new URL($('#googleLink').value);}catch{throw fieldError('Dán link Google Sheets hợp lệ.',['#googleLink']);}
+ if(url.hostname!=='docs.google.com')throw fieldError('Cần link docs.google.com.',['#googleLink']);
+ const match=url.pathname.match(/\/spreadsheets\/d\/([\w-]+)/);if(!match)throw fieldError('Link Google Sheets không hợp lệ.',['#googleLink']);
+ if(!$('#googleSheet').value.trim())throw fieldError('Nhập tên sheet.',['#googleSheet']);
+ const header=Number($('#googleHeader').value);if(!Number.isInteger(header)||header<1||header>100)throw fieldError('Dòng tiêu đề phải từ 1 đến 100.',['#googleHeader']);
  return {spreadsheet_id:match[1],sheet_name:$('#googleSheet').value.trim(),header_row:Number($('#googleHeader').value)};
 }
 $('#readGoogle').onclick=()=>busy($('#readGoogle'),async()=>{
@@ -175,7 +186,7 @@ $('#previewForm').onsubmit=e=>{e.preventDefault();try{
  const matches=rows.filter(r=>verification.every((v,i)=>normalize(r[v.column],v.type)===wanted[i]));
  if(wanted.some(v=>!v)||matches.length!==1)throw Error('Không tìm thấy kết quả phù hợp.');
  $('#previewResult').innerHTML=visible.map(i=>'<div><dt>'+esc(columns[i])+'</dt><dd>'+esc(matches[0][i])+'</dd></div>').join('');$('#previewNote').textContent=$('#note').value;
-}catch(e){$('#previewNote').textContent=e.message;}};
+}catch(e){document.querySelectorAll('[data-preview]').forEach(el=>el.setAttribute('aria-invalid','true'));status(e.message,true);}};
 $('#closePreview').onclick=()=>$('#previewDialog').close();
 $('#save').onclick=()=>busy($('#save'),async()=>{
  validate();
@@ -198,3 +209,4 @@ $('#changePassword').onclick=()=>busy($('#changePassword'),async()=>{
 });
 $('#share').onclick=()=>busy($('#share'),()=>showQR(id));bindQR();
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
+

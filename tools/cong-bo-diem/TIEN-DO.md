@@ -33,3 +33,11 @@
 - Phiên chỉnh sửa 2 giờ; nhập lại mật khẩu nếu hết hạn.
 - 5000 dòng, 100 cột; file gốc tối đa 5 MB.
 - Không chỉnh dữ liệu Sheets trong công cụ; giảng viên sửa nguồn Sheets.
+
+
+## Cập nhật giao diện 01/10/2026
+- Thông báo xuất hiện giữa màn hình, chữ lớn, có nút đóng; thông báo thành công tự ẩn sau 6 giây.
+- Lỗi nhập liệu tô đỏ trường cần sửa; lỗi dữ liệu xác nhận chuyển đến trang chứa dòng sai và tô đỏ ô.
+- Thông báo Lưu cập nhật xuất hiện giữa màn hình; phân biệt lưu dữ liệu thành công với lỗi tải file gốc.
+- Header dùng chung tools/css/header.css với tools/all; đồng bộ cỡ chữ, chiều cao, màu và bỏ gạch chân link cả khi hover.
+- Bổ sung kiểm thử trình duyệt cho ô lỗi, vị trí/cỡ chữ thông báo Đã lưu và link header.

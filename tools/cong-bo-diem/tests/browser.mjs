@@ -51,18 +51,30 @@ try{
  await page.goto(origin+'/tools/cong-bo-diem/quan-ly/');
  await page.locator('#newTitle').fill('Giải tích 1');await page.locator('#newTeacher').fill('Nam');await page.locator('#newClass').fill('D26A');
  await page.locator('#creationCode').fill('1234');await page.locator('#editPassword').fill('password-test');
+ await page.locator('#newClass').fill('');await page.locator('#gateBtn').click();
+ await page.locator('#status.error').waitFor();assert.equal(await page.locator('#newClass').getAttribute('aria-invalid'),'true');
+ await page.getByRole('button',{name:'Đóng thông báo'}).click();await page.locator('#newClass').fill('D26A');
  await page.locator('#gateBtn').click();await page.locator('#editor').waitFor();
  await page.locator('#source').selectOption('paste');
  await page.locator('#pasteWhole').click();await page.locator('#pasteText').fill('MSSV\tĐiểm\tNgày sinh\n001\t8\t01/02/2000\n002\t9\t02/03/2000');
  await page.locator('#inspectPaste').click();await page.locator('#applyPaste').click();
  assert.equal(await page.locator('#table tbody tr').count(),2);
  assert.equal(await page.locator('[data-visible="2"]').isChecked(),false);
+ await page.locator('[data-row="0"][data-cell="0"]').fill('');await page.locator('#validate').click();
+ await page.locator('#status.error').waitFor();assert.equal(await page.locator('[data-row="0"][data-cell="0"]').getAttribute('aria-invalid'),'true');
+ await page.getByRole('button',{name:'Đóng thông báo'}).click();await page.locator('[data-row="0"][data-cell="0"]').fill('001');
  await page.locator('#validate').click();await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('Dữ liệu hợp lệ'));
  await page.locator('#preview').click();await page.locator('[data-preview="0"]').fill('001');await page.locator('#previewForm button').click();
  assert.match(await page.locator('#previewResult').innerText(),/Điểm\s+8/);await page.locator('#closePreview').click();
  await page.locator('[data-row="0"][data-cell="1"]').fill('7.5');
  await page.locator('#published').check();await page.locator('#save').click();
  await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('Đã lưu và mở công bố'));
+ const notice=await page.locator('#status').boundingBox(),viewport=page.viewportSize();
+ assert.ok(Math.abs(notice.x+notice.width/2-viewport.width/2)<2);assert.ok(Math.abs(notice.y+notice.height/2-viewport.height/2)<2);
+ assert.ok(await page.locator('#status').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=20));
+ assert.equal(await page.locator('header nav a').first().evaluate(el=>getComputedStyle(el).textDecorationLine),'none');
+ await page.locator('header nav a').first().hover();assert.equal(await page.locator('header nav a').first().evaluate(el=>getComputedStyle(el).textDecorationLine),'none');
+ await page.screenshot({path:'/tmp/grade-saved.png'});
  assert.equal(g.rows[0][1],'7.5');assert.equal(g.published,true);
  await page.goto(origin+'/tools/cong-bo-diem/login/');
  await page.locator('#email').fill('admin@example.test');await page.locator('#password').fill('password-test');await page.locator('#loginBtn').click();
@@ -72,3 +84,4 @@ try{
  assert.deepEqual(errors,[]);
  console.log('Browser workflows passed: list, private lookup, create, paste, preview, cell edit, save, admin login/settings.');
 }finally{await browser.close();server.close();}
+

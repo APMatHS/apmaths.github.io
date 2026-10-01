@@ -1,5 +1,5 @@
 
-import {$,esc,api,busy,client,stamp,status} from './api.js';
+import {$,esc,api,busy,client,stamp,status,fieldError} from './api.js';
 let offset=0;
 async function list(){
  const rows=await api('list',{search:$('#search').value.trim(),offset},true);
@@ -15,7 +15,7 @@ async function init(){
 }
 $('#loginForm').onsubmit=e=>{e.preventDefault();busy($('#loginBtn'),async()=>{
  const {error}=await client.auth.signInWithPassword({email:$('#email').value.trim(),password:$('#password').value});
- if(error)throw Error('Đăng nhập không thành công. Kiểm tra email và mật khẩu.');
+ if(error)throw fieldError('Đăng nhập không thành công. Kiểm tra email và mật khẩu.',['#email','#password']);
  $('#password').value='';try{await init();status('Đã đăng nhập admin.');}catch(e){await client.auth.signOut();throw e;}
 });};
 $('#logout').onclick=()=>busy($('#logout'),async()=>{await client.auth.signOut();$('#adminPanel').hidden=true;$('#loginPanel').hidden=false;$('#adminList').replaceChildren();status('Đã đăng xuất.');});
@@ -30,3 +30,4 @@ $('#adminList').onclick=e=>{
  if(del&&confirm('Xóa công bố và file gốc? Thao tác này không thể hoàn tác.'))busy(del,async()=>{await api('delete',{id:del.dataset.delete},true);await list();status('Đã xóa công bố.');});
 };
 busy(null,async()=>{const {data}=await client.auth.getSession();if(data.session)await init();});
+
