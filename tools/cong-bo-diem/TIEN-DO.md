@@ -51,3 +51,5 @@
 - Backend cho phép đúng hai origin apmaths.github.io và apmaths.pages.dev; giữ xác thực Admin và phiên chỉnh sửa như cũ.
 - Sửa file chức năng hiện có, không thêm JS vá phiên bản.
 - Đã kiểm tra cú pháp JS, core và hàm kiểm tra mã/quyền trong giao dịch rollback. Bổ sung kiểm tra trình duyệt cho mã sai/đúng, hộp thoại giữa màn hình, link khác miền và link quản lý.
+
+- Xác nhận sau triển khai: GitHub Actions đạt core và toàn bộ kiểm tra Chromium; GitHub Pages và Cloudflare Pages triển khai thành công. API trả 200/CORS đúng cho hai tên miền và 403 cho origin ngoài danh sách. Đã kiểm tra hộp Mở lại công bố, hộp nhập mã và danh sách công bố trên Cloudflare Pages.
