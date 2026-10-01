@@ -23,7 +23,7 @@ description: Các công cụ hỗ trợ giảng dạy, quản lý CLO, xử lý 
                 </a>
 
                 <!-- Chấm thi CLO -->
-                <a class="tool-card" href="/tools/exam-clo/"target="_blank" rel="noopener noreferrer">
+                <a class="tool-card" href="/tools/exam-clo/" target="_blank" rel="noopener noreferrer">
                     <div class="tool-icon">📊</div>
                     <h2>Chấm thi CLO</h2>
                     <p>Chấm điểm bài thi và thống kê kết quả theo từng CLO.</p>
