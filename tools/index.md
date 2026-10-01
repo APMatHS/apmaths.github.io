@@ -14,6 +14,12 @@ description: Các công cụ hỗ trợ giảng dạy, quản lý CLO, xử lý 
             </section>
 
             <section class="tools-grid">
+                <a class="tool-card" href="/tools/kpi-cb2/" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-icon">📈</div>
+                    <h2>KPI Khoa Cơ bản 2</h2>
+                    <p>Theo dõi kết quả theo tháng, quản lý chỉ tiêu năm và duyệt minh chứng từ Google Form.</p>
+                    <div class="open-tool">Mở công cụ →</div>
+                </a>
                 <!-- Công bố điểm -->
                 <a class="tool-card" href="/tools/cong-bo-diem/" target="_blank" rel="noopener noreferrer">
                     <div class="tool-icon">📋</div>
