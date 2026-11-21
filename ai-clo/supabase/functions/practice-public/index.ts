@@ -71,6 +71,15 @@ Deno.serve(async(req)=>{
 
   const byId=new Map(pool.map((q:any)=>[q.id,q])),selected=selectedIds.map(id=>byId.get(id)).filter(Boolean);if(!selected.length)return json({success:false,error:"Không thể tái tạo đề từ seed này."},409);
   const {data:opts,error:opte}=await admin.from("question_options").select("question_id,option_key,content,image_path").in("question_id",selectedIds).order("option_key");if(opte)throw opte;const optionsBy=new Map<string,any[]>();for(const o of opts||[]){const arr=optionsBy.get(o.question_id)||[];arr.push({key:o.option_key,content:o.content,image_path:o.image_path||null});optionsBy.set(o.question_id,arr);}
+  // CLO metadata is required by Word export; it does not alter question order, options, or HTML.
+  const cloIds=[...new Set(selected.map((q:any)=>q.clo_id).filter(Boolean))];
+  if(cloIds.length!==new Set(selected.map((q:any)=>q.clo_id)).size)
+   throw new Error("Một số câu hỏi chưa được gán CLO.");
+  const {data:cloRows,error:cloError}=await admin.from("clos").select("id,code").in("id",cloIds);
+  if(cloError)throw cloError;
+  const cloById=new Map((cloRows||[]).map((cl:any)=>[cl.id,cl.code]));
+  if(selected.some((q:any)=>!/^CLO[0-9]+$/.test(String(cloById.get(q.clo_id)||""))))
+   throw new Error("Một số câu hỏi có mã CLO không hợp lệ.");
   // Distribute correct answers evenly among A/B/C/D; shuffle distractors too.
   // Both operations use the draw seed, so the same seed reproduces the same HTML.
   const letters=["A","B","C","D"];
@@ -86,7 +95,7 @@ Deno.serve(async(req)=>{
     const choice=key===correctLetter?right:distractors[d++];
     return {key,content:choice.content,image_path:choice.image_path||null};
    });
-   const base:any={number:i+1,display_code:q.display_code,content:q.content,options};
+   const base:any={number:i+1,display_code:q.display_code,clo_code:cloById.get(q.clo_id),content:q.content,options};
    if(pkg.include_answers){base.correct_answer=correctLetter;base.explanation=q.explanation||null;}
    return base;
   });
