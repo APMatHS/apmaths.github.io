@@ -38,9 +38,17 @@ Deno.serve(async(req)=>{
   let selectedIds:string[]|null=null;const {data:old,error:oe}=await admin.from("practice_draws").select("selected_question_ids").eq("subject_id",subject.id).eq("package_id",pkg.id).eq("seed",seed).maybeSingle();if(oe)throw oe;if(old?.selected_question_ids?.length)selectedIds=old.selected_question_ids;
 
   const topicIds=Array.isArray(pkg.topic_ids)?pkg.topic_ids:[];
-  let poolQuery=admin.from("questions").select("id,content,correct_answer,explanation,chapter_id,topic_id,clo_id,display_code").eq("question_bank_id",subject.question_bank_id).eq("question_scope","practice").eq("approval_status","approved").eq("status","active").in("chapter_id",pkg.chapter_ids).order("id");
-  if(topicIds.length)poolQuery=poolQuery.in("topic_id",topicIds);
-  const {data:poolRows,error:poolError}=await poolQuery;if(poolError)throw poolError;const pool=poolRows||[];if(!pool.length)return json({success:false,error:"Phạm vi của gói này chưa có câu hỏi luyện tập đã duyệt."},409);
+  // Supabase PostgREST limits a single response to 1,000 rows by default.
+  // Paginate so whole-course draws can include every approved question.
+  const pool:any[]=[];
+  for(let from=0;;from+=1000){
+   let poolQuery=admin.from("questions").select("id,content,correct_answer,explanation,chapter_id,topic_id,clo_id,display_code").eq("question_bank_id",subject.question_bank_id).eq("question_scope","practice").eq("approval_status","approved").eq("status","active").in("chapter_id",pkg.chapter_ids).order("id").range(from,from+999);
+   if(topicIds.length)poolQuery=poolQuery.in("topic_id",topicIds);
+   const {data:page,error:poolError}=await poolQuery;if(poolError)throw poolError;
+   pool.push(...(page||[]));
+   if((page||[]).length<1000)break;
+  }
+  if(!pool.length)return json({success:false,error:"Phạm vi của gói này chưa có câu hỏi luyện tập đã duyệt."},409);
 
   if(!selectedIds){
    const picked:string[]=[];
@@ -63,7 +71,25 @@ Deno.serve(async(req)=>{
 
   const byId=new Map(pool.map((q:any)=>[q.id,q])),selected=selectedIds.map(id=>byId.get(id)).filter(Boolean);if(!selected.length)return json({success:false,error:"Không thể tái tạo đề từ seed này."},409);
   const {data:opts,error:opte}=await admin.from("question_options").select("question_id,option_key,content,image_path").in("question_id",selectedIds).order("option_key");if(opte)throw opte;const optionsBy=new Map<string,any[]>();for(const o of opts||[]){const arr=optionsBy.get(o.question_id)||[];arr.push({key:o.option_key,content:o.content,image_path:o.image_path||null});optionsBy.set(o.question_id,arr);}
-  const questions=selected.map((q:any,i:number)=>{const base:any={number:i+1,display_code:q.display_code,content:q.content,options:optionsBy.get(q.id)||[]};if(pkg.include_answers){base.correct_answer=q.correct_answer;base.explanation=q.explanation||null;}return base;});
+  // Distribute correct answers evenly among A/B/C/D; shuffle distractors too.
+  // Both operations use the draw seed, so the same seed reproduces the same HTML.
+  const letters=["A","B","C","D"];
+  const answerSlots=shuffled(selected.map((_:any,i:number)=>letters[i%4]),`${seed}|${pkg.id}|ANSWER-SLOTS`);
+  const questions=selected.map((q:any,i:number)=>{
+   const original:any[]=optionsBy.get(q.id)||[];
+   if(original.length!==4||new Set(original.map(o=>o.key)).size!==4||!original.some(o=>o.key===q.correct_answer))
+    throw new Error(`Câu ${q.display_code} thiếu phương án hợp lệ hoặc đáp án đúng.`);
+   const right=original.find(o=>o.key===q.correct_answer);
+   const distractors=shuffled(original.filter(o=>o.key!==q.correct_answer),`${seed}|${pkg.id}|${q.id}|DISTRACTORS`);
+   const correctLetter=answerSlots[i];let d=0;
+   const options=letters.map(key=>{
+    const choice=key===correctLetter?right:distractors[d++];
+    return {key,content:choice.content,image_path:choice.image_path||null};
+   });
+   const base:any={number:i+1,display_code:q.display_code,content:q.content,options};
+   if(pkg.include_answers){base.correct_answer=correctLetter;base.explanation=q.explanation||null;}
+   return base;
+  });
   return json({success:true,seed,subject:{name:subject.name,semester:subject.semester,academic_year:subject.academic_year},practice:{title:`${config.title||`Đề ôn tập – ${subject.name}`} • ${pkg.name}`,package_name:pkg.name,include_answers:pkg.include_answers,allow_unlimited_redraw:config.allow_unlimited_redraw},questions});
  }catch(error){console.error(error);return json({success:false,error:"Không thể rút đề lúc này. Vui lòng thử lại."},500);}
 });
